@@ -1,44 +1,93 @@
-<div class="register-container">
-  <div class="register-card">
-    <h2>Register</h2>
-    <p class="subtitle">Create your account</p>
+<div class="page-wrapper">
+  <div class="auth-card">
 
-    @if (errorMessage) {
-      <p style="color: red; text-align: center;">{{ errorMessage }}</p>
-    }
-    @if (successMessage) {
-      <p style="color: green; text-align: center;">{{ successMessage }}</p>
-    }
-
-    <div class="form-group">
-      <label>Username</label>
-      <input [(ngModel)]="userName" name="userName" placeholder="Enter your username" />
+    <!-- Left: Branding Panel -->
+    <div class="brand-panel">
+      <div class="brand-badge">
+        <span class="material-symbols-outlined">lock</span>
+        SECURE PORTAL
+      </div>
+      <div class="brand-body">
+        <h1>Join the<br />Sanctuary.</h1>
+        <p>Treat your education with the reverence it deserves. Access a world of curated knowledge.</p>
+      </div>
+      <div class="brand-footer">
+        <div class="brand-line"></div>
+        <span>INSTITUTIONAL ACCESS</span>
+      </div>
     </div>
 
-    <div class="form-group">
-      <label>Full Name</label>
-      <input [(ngModel)]="fullName" name="fullName" placeholder="Enter your full name" />
+    <!-- Right: Form Panel -->
+    <div class="form-panel">
+      <div class="form-header">
+        <h2>Create Account</h2>
+        <p>Enter your credentials to begin.</p>
+      </div>
+
+      @if (errorMessage) {
+        <div class="alert alert-error">
+          <span class="material-symbols-outlined">error</span>
+          {{ errorMessage }}
+        </div>
+      }
+      @if (successMessage) {
+        <div class="alert alert-success">
+          <span class="material-symbols-outlined">check_circle</span>
+          {{ successMessage }}
+        </div>
+      }
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="fullName">Full Name</label>
+          <input id="fullName" [(ngModel)]="fullName" name="fullName" placeholder="John Doe" />
+        </div>
+        <div class="form-group">
+          <label for="userName">Username</label>
+          <input id="userName" [(ngModel)]="userName" name="userName" placeholder="john_doe" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <div class="input-icon-wrap">
+          <span class="material-symbols-outlined input-icon">alternate_email</span>
+          <input id="email" type="email" [(ngModel)]="email" name="email" placeholder="name@university.edu" />
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input id="password" type="password" [(ngModel)]="password" name="password" placeholder="••••••••" />
+        </div>
+        <div class="form-group">
+          <label for="confirmPassword">Confirm Password</label>
+          <input id="confirmPassword" type="password" [(ngModel)]="confirmPassword" name="confirmPassword" placeholder="••••••••" />
+        </div>
+      </div>
+
+      <button class="btn-primary" (click)="onRegister()">
+        Create Account
+        <span class="material-symbols-outlined">arrow_forward</span>
+      </button>
+
+      <div class="form-footer">
+        Already have an account?
+        <a routerLink="/">Log in instead</a>
+      </div>
+
+      <div class="trust-badges">
+        <div class="badge">
+          <span class="material-symbols-outlined">verified_user</span>
+          SSL SECURE
+        </div>
+        <div class="badge">
+          <span class="material-symbols-outlined">encrypted</span>
+          END-TO-END
+        </div>
+      </div>
     </div>
 
-    <div class="form-group">
-      <label>Email</label>
-      <input type="email" [(ngModel)]="email" name="email" placeholder="Enter your email" />
-    </div>
-
-    <div class="form-group">
-      <label>Password</label>
-      <input type="password" [(ngModel)]="password" name="password" placeholder="Enter your password" />
-    </div>
-
-    <div class="form-group">
-      <label>Confirm Password</label>
-      <input type="password" [(ngModel)]="confirmPassword" name="confirmPassword" placeholder="Confirm your password" />
-    </div>
-
-    <button (click)="onRegister()">Register</button>
-
-    <div class="login-link">
-      Already have an account? <a routerLink="/">Login</a>
-    </div>
   </div>
 </div>

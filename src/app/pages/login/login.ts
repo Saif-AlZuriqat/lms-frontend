@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
+import { AuthService } from '../../services/auth';
 
 @Component({
   selector: 'app-login',
@@ -11,9 +12,23 @@ import { RouterLink } from '@angular/router';
 export class Login {
   email = '';
   password = '';
+  errorMessage = '';
+
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+  ) {}
 
   onLogin() {
-    console.log('Email:', this.email);
-    console.log('Password:', this.password);
+    this.errorMessage = '';
+    this.authService.login(this.email, this.password).subscribe({
+      next: (response) => {
+        this.authService.saveToken(response.Token);
+        this.router.navigate(['/dashboard']);
+      },
+      error: (err) => {
+        this.errorMessage = err.error || 'Login failed. Please check your credentials.';
+      },
+    });
   }
 }

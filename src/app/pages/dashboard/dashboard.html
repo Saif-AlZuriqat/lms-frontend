@@ -1,1 +1,186 @@
-<p>dashboard works!</p>
+<div class="dashboard-layout">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <span class="material-symbols-outlined">school</span>
+      <span class="brand-name">LMS Portal</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="nav-item active">
+        <span class="material-symbols-outlined">dashboard</span>
+        Dashboard
+      </a>
+      <a class="nav-item">
+        <span class="material-symbols-outlined">menu_book</span>
+        My Courses
+      </a>
+      <a class="nav-item">
+        <span class="material-symbols-outlined">route</span>
+        Learning Path
+      </a>
+      <a class="nav-item">
+        <span class="material-symbols-outlined">person</span>
+        Profile
+      </a>
+    </nav>
+
+    <button class="sidebar-logout" (click)="logout()">
+      <span class="material-symbols-outlined">logout</span>
+      Logout
+    </button>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+
+    <!-- Header Bar -->
+    <header class="top-bar">
+      <div class="welcome-text">
+        <h1>Welcome back, <span>{{ userName }}</span></h1>
+        <p>Here's what's happening with your learning today.</p>
+      </div>
+      <button class="btn-logout-top" (click)="logout()">
+        <span class="material-symbols-outlined">logout</span>
+        Sign Out
+      </button>
+    </header>
+
+    <!-- Stats Row -->
+    <section class="stats-row">
+      <div class="stat-card">
+        <div class="stat-icon blue">
+          <span class="material-symbols-outlined">library_books</span>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value">{{ stats.enrolled }}</span>
+          <span class="stat-label">Enrolled Courses</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon green">
+          <span class="material-symbols-outlined">task_alt</span>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value">{{ stats.completed }}</span>
+          <span class="stat-label">Completed Courses</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon amber">
+          <span class="material-symbols-outlined">insights</span>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value">{{ stats.progress }}%</span>
+          <span class="stat-label">Overall Progress</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="content-grid">
+      <div class="content-left">
+
+        <!-- Continue Learning -->
+        <section class="section-card highlight-card">
+          <div class="section-header">
+            <span class="material-symbols-outlined">play_circle</span>
+            <h2>Continue Learning</h2>
+          </div>
+          <div class="continue-card">
+            <div class="continue-badge">Last Accessed</div>
+            <h3>{{ lastCourse.title }}</h3>
+            <p>{{ lastCourse.instructor }}</p>
+            <div class="progress-row">
+              <div class="progress-bar">
+                <div class="progress-fill" [style.width.%]="lastCourse.progress"></div>
+              </div>
+              <span class="progress-pct">{{ lastCourse.progress }}%</span>
+            </div>
+            <button class="btn-resume">
+              <span class="material-symbols-outlined">play_arrow</span>
+              Resume
+            </button>
+          </div>
+        </section>
+
+        <!-- My Courses -->
+        <section class="section-card">
+          <div class="section-header">
+            <span class="material-symbols-outlined">menu_book</span>
+            <h2>My Courses</h2>
+          </div>
+          <div class="courses-grid">
+            @for (course of courses; track course.id) {
+              <div class="course-card">
+                <div class="course-icon" [class]="course.color">
+                  <span class="material-symbols-outlined">{{ course.icon }}</span>
+                </div>
+                <div class="course-info">
+                  <h4>{{ course.title }}</h4>
+                  <p>{{ course.instructor }}</p>
+                  <div class="progress-row">
+                    <div class="progress-bar">
+                      <div class="progress-fill" [style.width.%]="course.progress"></div>
+                    </div>
+                    <span class="progress-pct">{{ course.progress }}%</span>
+                  </div>
+                </div>
+                <button class="btn-continue">Continue</button>
+              </div>
+            }
+          </div>
+        </section>
+
+      </div>
+
+      <div class="content-right">
+
+        <!-- My Learning Path -->
+        <section class="section-card">
+          <div class="section-header">
+            <span class="material-symbols-outlined">route</span>
+            <h2>My Learning Path</h2>
+          </div>
+          <div class="path-card">
+            <div class="path-title">{{ learningPath.title }}</div>
+            <p class="path-desc">{{ learningPath.description }}</p>
+            <div class="path-progress-label">
+              <span>Progress</span>
+              <span>{{ learningPath.completed }}/{{ learningPath.total }} modules</span>
+            </div>
+            <div class="progress-bar large">
+              <div class="progress-fill green" [style.width.%]="(learningPath.completed / learningPath.total) * 100"></div>
+            </div>
+            @for (step of learningPath.steps; track step.name) {
+              <div class="path-step" [class.done]="step.done">
+                <span class="material-symbols-outlined">{{ step.done ? 'check_circle' : 'radio_button_unchecked' }}</span>
+                {{ step.name }}
+              </div>
+            }
+          </div>
+        </section>
+
+        <!-- Upcoming Deadlines -->
+        <section class="section-card">
+          <div class="section-header">
+            <span class="material-symbols-outlined">event</span>
+            <h2>Upcoming Deadlines</h2>
+          </div>
+          @for (deadline of deadlines; track deadline.title) {
+            <div class="deadline-item">
+              <div class="deadline-dot" [class]="deadline.urgency"></div>
+              <div class="deadline-info">
+                <span class="deadline-title">{{ deadline.title }}</span>
+                <span class="deadline-date">{{ deadline.date }}</span>
+              </div>
+              <span class="deadline-tag" [class]="deadline.urgency">{{ deadline.tag }}</span>
+            </div>
+          }
+        </section>
+
+      </div>
+    </div>
+
+  </main>
+</div>

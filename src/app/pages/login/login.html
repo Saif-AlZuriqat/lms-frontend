@@ -1,26 +1,63 @@
-<div class="login-container">
-  <div class="login-card">
-    <h2>Welcome Back</h2>
-    <p class="subtitle">Login to your LMS account</p>
+<div class="page-wrapper">
+  <div class="auth-card">
 
-    <div class="form-group">
-      <label>Email</label>
-      <input type="email" [(ngModel)]="email" name="email" placeholder="Enter your email" />
+    <!-- Left: Branding Panel -->
+    <div class="brand-panel">
+      <div class="brand-badge">
+        <span class="material-symbols-outlined">lock</span>
+        SECURE INTERNAL PORTAL
+      </div>
+      <div class="brand-body">
+        <h1>Cultivating the<br />Academic Mind.</h1>
+        <p>Access your personalized learning journey, research archives, and professional development modules in our curated digital sanctuary.</p>
+      </div>
+      <div class="brand-footer">
+        <div class="brand-line"></div>
+        <span>ESTABLISHED MMXXIV</span>
+      </div>
     </div>
 
-    <div class="form-group">
-      <label>Password</label>
-      <input
-        type="password"
-        [(ngModel)]="password"
-        name="password"
-        placeholder="Enter your password"
-      />
-      <p class="forgot-password">Forgot Password?</p>
+    <!-- Right: Form Panel -->
+    <div class="form-panel">
+      <div class="form-header">
+        <h2>Welcome Back</h2>
+        <p>Please enter your credentials to access the dashboard.</p>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Work Email</label>
+        <div class="input-icon-wrap">
+          <span class="material-symbols-outlined input-icon-left">mail</span>
+          <input id="email" type="email" [(ngModel)]="email" name="email" placeholder="name@university.edu" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div class="label-row">
+          <label for="password">Password</label>
+          <a class="forgot-link" href="#">Forgot?</a>
+        </div>
+        <div class="input-icon-wrap">
+          <span class="material-symbols-outlined input-icon-left">lock_person</span>
+          <input id="password" type="password" [(ngModel)]="password" name="password" placeholder="••••••••••••" />
+        </div>
+      </div>
+
+      @if (errorMessage) {
+        <div class="error-alert">{{ errorMessage }}</div>
+      }
+
+      <button class="btn-primary" (click)="onLogin()">
+        Sign In to Dashboard
+        <span class="material-symbols-outlined">arrow_forward</span>
+      </button>
+
+      <div class="divider">
+        <span>New Personnel</span>
+      </div>
+
+      <a routerLink="/register" class="btn-secondary">Create Internal Account</a>
     </div>
 
-    <button (click)="onLogin()">Login</button>
-
-    <p class="register-link">Don't have an account? <a routerLink="/register">Register</a></p>
   </div>
 </div>

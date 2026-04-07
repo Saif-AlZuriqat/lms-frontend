@@ -1,86 +1,313 @@
-.register-container {
+/* ── Page wrapper ── */
+.page-wrapper {
+  min-height: 100vh;
   display: flex;
-  justify-content: center;
   align-items: center;
-  min-height: 80vh;
+  justify-content: center;
+  padding: 24px 16px;
+  background-color: var(--gray-bg);
 }
 
-.register-card {
-  background-color: white;
-  padding: 40px;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+/* ── Card ── */
+.auth-card {
+  display: flex;
   width: 100%;
-  max-width: 420px;
+  max-width: 860px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow-xl);
 }
 
-.register-card h2 {
-  margin: 0 0 5px 0;
-  color: #1a1a2e;
-  font-size: 28px;
-  text-align: center;
+/* ── Left brand panel ── */
+.brand-panel {
+  width: 40%;
+  background: linear-gradient(160deg, var(--navy) 0%, var(--navy-light) 100%);
+  color: #fff;
+  padding: 48px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
 }
 
-.subtitle {
-  text-align: center;
-  color: #888;
-  margin: 0 0 30px 0;
+.brand-panel::after {
+  content: '';
+  position: absolute;
+  bottom: -40px;
+  right: -40px;
+  width: 160px;
+  height: 160px;
+  background: var(--blue);
+  border-radius: 50%;
+  opacity: 0.15;
+}
+
+.brand-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.12);
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  width: fit-content;
+}
+
+.brand-badge .material-symbols-outlined {
   font-size: 14px;
 }
 
-.form-group {
+.brand-body h1 {
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 16px;
+  margin-top: 40px;
+}
+
+.brand-body p {
+  font-size: 14px;
+  line-height: 1.7;
+  opacity: 0.75;
+  font-weight: 300;
+}
+
+.brand-footer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  opacity: 0.6;
+  margin-top: 48px;
+}
+
+.brand-line {
+  width: 32px;
+  height: 2px;
+  background: #fff;
+  border-radius: 2px;
+}
+
+/* ── Right form panel ── */
+.form-panel {
+  width: 60%;
+  background: #fff;
+  padding: 48px 44px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.form-header {
+  margin-bottom: 28px;
+}
+
+.form-header h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--gray-900);
+  margin-bottom: 4px;
+}
+
+.form-header p {
+  font-size: 14px;
+  color: var(--gray-500);
+}
+
+/* ── Alerts ── */
+.alert {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
   margin-bottom: 20px;
+}
+
+.alert .material-symbols-outlined {
+  font-size: 18px;
+}
+
+.alert-error {
+  background: var(--red-light);
+  color: var(--red);
+}
+
+.alert-success {
+  background: var(--green-light);
+  color: var(--green);
+}
+
+/* ── Form grid (2 columns) ── */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* ── Form groups ── */
+.form-group {
+  margin-bottom: 18px;
 }
 
 .form-group label {
   display: block;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--gray-500);
   margin-bottom: 6px;
-  font-weight: 600;
-  color: #333;
-  font-size: 14px;
 }
 
 .form-group input {
   width: 100%;
-  padding: 12px 16px;
-  border: 2px solid #e0e0e0;
-  border-radius: 8px;
-  font-size: 15px;
+  padding: 12px 14px;
+  background: var(--gray-100);
+  border: none;
+  border-bottom: 2px solid transparent;
+  border-radius: 8px 8px 0 0;
+  font-size: 14px;
+  color: var(--gray-900);
   box-sizing: border-box;
-  transition: border-color 0.3s;
+  transition: border-color 0.25s;
+  font-family: inherit;
 }
 
 .form-group input:focus {
   outline: none;
-  border-color: #4a90d9;
+  border-bottom-color: var(--blue);
 }
 
-button {
+.form-group input::placeholder {
+  color: var(--gray-400);
+}
+
+/* ── Input with icon ── */
+.input-icon-wrap {
+  position: relative;
+}
+
+.input-icon-wrap input {
+  padding-right: 44px;
+}
+
+.input-icon {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  color: var(--gray-400);
+  pointer-events: none;
+}
+
+/* ── Primary button ── */
+.btn-primary {
   width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   padding: 14px;
-  background-color: #4a90d9;
-  color: white;
+  background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 100%);
+  color: #fff;
   border: none;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 600;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 700;
   cursor: pointer;
-  transition: background-color 0.3s;
+  letter-spacing: 0.02em;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+  transition:
+    transform 0.15s,
+    box-shadow 0.15s;
+  margin-top: 8px;
+  font-family: inherit;
 }
 
-button:hover {
-  background-color: #357abd;
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.45);
 }
 
-.login-link {
+.btn-primary:active {
+  transform: scale(0.98);
+}
+
+.btn-primary .material-symbols-outlined {
+  font-size: 18px;
+  transition: transform 0.2s;
+}
+
+.btn-primary:hover .material-symbols-outlined {
+  transform: translateX(3px);
+}
+
+/* ── Footer link ── */
+.form-footer {
   text-align: center;
+  margin-top: 24px;
+  font-size: 14px;
+  color: var(--gray-500);
+  padding-top: 20px;
+  border-top: 1px solid var(--gray-200);
+}
+
+.form-footer a {
+  color: var(--blue);
+  font-weight: 700;
+  text-decoration: none;
+  margin-left: 4px;
+}
+
+.form-footer a:hover {
+  text-decoration: underline;
+}
+
+/* ── Trust badges ── */
+.trust-badges {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
   margin-top: 20px;
-  color: #888;
+  opacity: 0.5;
+}
+
+.badge {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--gray-600);
+}
+
+.badge .material-symbols-outlined {
   font-size: 14px;
 }
 
-.login-link a {
-  color: #4a90d9;
-  text-decoration: none;
-  font-weight: 600;
+/* ── Responsive ── */
+@media (max-width: 700px) {
+  .auth-card {
+    flex-direction: column;
+  }
+
+  .brand-panel,
+  .form-panel {
+    width: 100%;
+    padding: 36px 28px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
 }
