@@ -5,22 +5,23 @@ import { HttpClient } from '@angular/common/http';
   providedIn: 'root',
 })
 export class AuthService {
-  private baseUrl = 'http://localhost:5232/api/user';
+  private baseUrl = 'http://localhost:5232/api/User';
   private token: string | null = null;
 
   constructor(private http: HttpClient) {}
 
-  register(userName: string, email: string, password: string, fullName: string) {
-    return this.http.post(this.baseUrl + '/register', {
-      UserName: userName,
-      Email: email,
-      Password: password,
-      FullName: fullName,
+  register(userName: string, email: string, password: string,passwordConfirm: string, fullName: string) {
+    return this.http.post(this.baseUrl + '/Register', {
+      userName: userName,
+      email: email,
+      password: password,
+      confirmPassword: passwordConfirm,
+      fullName: fullName,
     });
   }
 
   login(email: string, password: string) {
-    return this.http.post<{ Token: string; Expiration: string }>(this.baseUrl + '/login', {
+    return this.http.post<{ Token: string; Expiration: string }>(this.baseUrl + '/Login', {
       Email: email,
       Password: password,
     });

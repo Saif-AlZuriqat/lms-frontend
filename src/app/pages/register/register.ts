@@ -32,7 +32,7 @@ export class Register {
       return;
     }
 
-    this.authService.register(this.userName, this.email, this.password, this.fullName).subscribe({
+    this.authService.register(this.userName, this.email, this.password,this.confirmPassword, this.fullName).subscribe({
       next: (response) => {
         this.successMessage = 'Account created! Redirecting to login...';
         setTimeout(() => {
