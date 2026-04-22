@@ -17,6 +17,7 @@ export class ResetPassword implements OnInit {
   
   errorMessage = '';
   successMessage = '';
+  isLoading = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -31,7 +32,7 @@ export class ResetPassword implements OnInit {
     });
   }
 
-  onResetPassword() {
+  onReset() {
     this.errorMessage = '';
     this.successMessage = '';
 
@@ -50,11 +51,14 @@ export class ResetPassword implements OnInit {
       return;
     }
 
+    this.isLoading = true;
     this.passwordResetService.resetPassword(this.email, this.token, this.newPassword).subscribe({
       next: (response) => {
+        this.isLoading = false;
         this.successMessage = 'Your password has been successfully reset. You can now login with your new password.';
       },
       error: (err) => {
+        this.isLoading = false;
         this.errorMessage = err.error || 'Failed to reset password. The link might be expired or invalid.';
       }
     });

@@ -1,0 +1,132 @@
+.page-container {
+  padding: 40px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+.header {
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--gray-200);
+}
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.back-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: 50%;
+  color: var(--gray-700);
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.back-btn:hover {
+  background: var(--gray-100);
+  color: var(--blue);
+}
+h1 {
+  font-size: 28px;
+  color: var(--gray-900);
+  margin: 0;
+}
+h2 {
+  font-size: 20px;
+  color: var(--gray-900);
+  margin-bottom: 16px;
+}
+.path-overview {
+  background: var(--white);
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 30px;
+}
+.path-overview p {
+  color: var(--gray-600);
+  line-height: 1.6;
+  font-size: 15px;
+}
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.courses-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.course-card {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: var(--white);
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid var(--gray-200);
+  box-shadow: var(--shadow-sm);
+}
+.course-icon {
+  width: 48px;
+  height: 48px;
+  background: var(--blue-light);
+  color: var(--blue);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.course-icon .material-symbols-outlined {
+  font-size: 24px;
+}
+.course-info {
+  flex: 1;
+}
+.course-info h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin-bottom: 4px;
+}
+.course-info p {
+  font-size: 14px;
+  color: var(--gray-500);
+  margin: 0;
+}
+.btn-secondary {
+  padding: 8px 16px;
+  background: transparent;
+  color: var(--blue);
+  border: 1px solid var(--blue);
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+}
+.btn-secondary:hover {
+  background: var(--blue);
+  color: var(--white);
+}
+.loading-state, .empty-state {
+  text-align: center;
+  padding: 40px;
+  color: var(--gray-500);
+  background: var(--white);
+  border-radius: 12px;
+  border: 1px dashed var(--gray-300);
+}
+.error-alert {
+  background-color: var(--red-light);
+  color: var(--red);
+  padding: 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  border-left: 4px solid var(--red);
+}

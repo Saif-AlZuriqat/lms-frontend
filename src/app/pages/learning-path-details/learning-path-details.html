@@ -1,0 +1,52 @@
+<div class="page-container">
+  <div class="header">
+    <div class="header-content">
+      <a routerLink="/learning-path" class="back-btn">
+        <span class="material-symbols-outlined">arrow_back</span>
+      </a>
+      @if (path) {
+        <h1>{{ path.title }}</h1>
+      } @else {
+        <h1>Loading...</h1>
+      }
+    </div>
+  </div>
+
+  @if (isLoading) {
+    <div class="loading-state">Loading learning path details...</div>
+  } @else if (error) {
+    <div class="error-alert">{{ error }}</div>
+  } @else if (path) {
+    <div class="path-overview">
+      <h2>Description</h2>
+      <p>{{ path.description }}</p>
+    </div>
+
+    <div class="courses-section">
+      <div class="section-header">
+        <h2>Courses in this Path ({{ path.courses.length || 0 }})</h2>
+      </div>
+
+      @if (!path.courses || path.courses.length === 0) {
+        <div class="empty-state">
+          No courses have been added to this learning path yet.
+        </div>
+      } @else {
+        <div class="courses-list">
+          @for (course of path.courses; track course.id) {
+            <div class="course-card">
+              <div class="course-icon">
+                <span class="material-symbols-outlined">menu_book</span>
+              </div>
+              <div class="course-info">
+                <h3>{{ course.title }}</h3>
+                <p>{{ course.description || 'No description provided.' }}</p>
+              </div>
+              <button class="btn-secondary">View Course</button>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>
