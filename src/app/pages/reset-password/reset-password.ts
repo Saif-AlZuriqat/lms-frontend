@@ -1,0 +1,62 @@
+import { Component, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import { PasswordResetService } from '../../services/password-reset.service';
+
+@Component({
+  selector: 'app-reset-password',
+  imports: [FormsModule, RouterLink],
+  templateUrl: './reset-password.html',
+  styleUrl: './reset-password.css',
+})
+export class ResetPassword implements OnInit {
+  email = '';
+  token = '';
+  newPassword = '';
+  confirmPassword = '';
+  
+  errorMessage = '';
+  successMessage = '';
+
+  constructor(
+    private route: ActivatedRoute,
+    private passwordResetService: PasswordResetService
+  ) {}
+
+  ngOnInit(): void {
+    this.route.queryParams.subscribe(params => {
+      this.email = params['email'] || '';
+      // Sometimes token has spaces replaced with + in URLs, Angular handles decoding but let's be safe
+      this.token = params['token'] ? params['token'].replace(/ /g, '+') : '';
+    });
+  }
+
+  onResetPassword() {
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    if (!this.newPassword || !this.confirmPassword) {
+      this.errorMessage = 'Please enter both password fields.';
+      return;
+    }
+
+    if (this.newPassword !== this.confirmPassword) {
+      this.errorMessage = 'Passwords do not match.';
+      return;
+    }
+
+    if (!this.email || !this.token) {
+      this.errorMessage = 'Invalid password reset link. Missing email or token.';
+      return;
+    }
+
+    this.passwordResetService.resetPassword(this.email, this.token, this.newPassword).subscribe({
+      next: (response) => {
+        this.successMessage = 'Your password has been successfully reset. You can now login with your new password.';
+      },
+      error: (err) => {
+        this.errorMessage = err.error || 'Failed to reset password. The link might be expired or invalid.';
+      }
+    });
+  }
+}
