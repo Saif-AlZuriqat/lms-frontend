@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink, Router } from '@angular/router';
 import { PasswordResetService } from '../../services/password-reset.service';
 
 @Component({
@@ -21,6 +21,7 @@ export class ResetPassword implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private passwordResetService: PasswordResetService
   ) {}
 
@@ -55,7 +56,7 @@ export class ResetPassword implements OnInit {
     this.passwordResetService.resetPassword(this.email, this.token, this.newPassword).subscribe({
       next: (response) => {
         this.isLoading = false;
-        this.successMessage = 'Your password has been successfully reset. You can now login with your new password.';
+        this.router.navigate(['/']);
       },
       error: (err) => {
         this.isLoading = false;

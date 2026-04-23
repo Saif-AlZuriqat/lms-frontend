@@ -15,6 +15,6 @@ export class PasswordResetService {
       email,
       token,
       newPassword
-    });
+    }, { responseType: 'text' });
   }
 }
