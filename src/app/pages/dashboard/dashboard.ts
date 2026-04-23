@@ -19,20 +19,32 @@ export class Dashboard {
 
   lastCourse = {
     title: 'Advanced Web Development',
-    instructor: 'Dr. Sarah Mitchell',
     progress: 72,
   };
 
   courses = [
-    { id: 1, title: 'Advanced Web Development', instructor: 'Dr. Sarah Mitchell', progress: 72, icon: 'code', color: 'blue' },
-    { id: 2, title: 'Data Structures & Algorithms', instructor: 'Prof. James Carter', progress: 45, icon: 'data_object', color: 'amber' },
-    { id: 3, title: 'Database Management', instructor: 'Dr. Emily Chen', progress: 90, icon: 'storage', color: 'green' },
-    { id: 4, title: 'Machine Learning Fundamentals', instructor: 'Prof. Alan Brooks', progress: 20, icon: 'psychology', color: 'purple' },
+    { id: 1, title: 'Advanced Web Development', progress: 72, icon: 'code', color: 'blue' },
+    {
+      id: 2,
+      title: 'Data Structures & Algorithms',
+      progress: 45,
+      icon: 'data_object',
+      color: 'amber',
+    },
+    { id: 3, title: 'Database Management', progress: 90, icon: 'storage', color: 'green' },
+    {
+      id: 4,
+      title: 'Machine Learning Fundamentals',
+      progress: 20,
+      icon: 'psychology',
+      color: 'purple',
+    },
   ];
 
   learningPath = {
     title: 'Full-Stack Engineering Track',
-    description: 'Master front-end, back-end, and deployment skills through a structured curriculum.',
+    description:
+      'Master front-end, back-end, and deployment skills through a structured curriculum.',
     completed: 5,
     total: 8,
     steps: [
