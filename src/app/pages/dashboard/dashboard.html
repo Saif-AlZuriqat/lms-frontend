@@ -20,6 +20,12 @@
         <span class="material-symbols-outlined">route</span>
         Learning Path
       </a>
+      @if (canCreateUsers) {
+        <a class="nav-item" routerLink="/hr/create-user" routerLinkActive="active">
+          <span class="material-symbols-outlined">person_add</span>
+          HR - Create User
+        </a>
+      }
       <a class="nav-item">
         <span class="material-symbols-outlined">person</span>
         Profile

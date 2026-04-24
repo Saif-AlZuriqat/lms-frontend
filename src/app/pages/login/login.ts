@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink, Router } from '@angular/router';
 import { AuthService } from '../../services/auth';
@@ -9,7 +9,7 @@ import { AuthService } from '../../services/auth';
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
-export class Login {
+export class Login implements OnInit {
   email = '';
   password = '';
   errorMessage = '';
@@ -19,11 +19,22 @@ export class Login {
     private router: Router,
   ) {}
 
+  ngOnInit(): void {
+    if (this.authService.isLoggedIn()) {
+      this.router.navigate(['/dashboard']);
+    }
+  }
+
   onLogin() {
     this.errorMessage = '';
     this.authService.login(this.email, this.password).subscribe({
       next: (response) => {
-        this.authService.saveToken(response.Token);
+        const token = response.Token ?? response.token;
+        if (!token) {
+          this.errorMessage = 'Login response did not include a token.';
+          return;
+        }
+        this.authService.saveToken(token);
         this.router.navigate(['/dashboard']);
       },
       error: (err) => {

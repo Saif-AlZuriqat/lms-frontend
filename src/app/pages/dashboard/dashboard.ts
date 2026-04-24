@@ -1,15 +1,16 @@
 import { Component } from '@angular/core';
 import { AuthService } from '../../services/auth';
-import { Router } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [],
+  imports: [RouterLink, RouterLinkActive],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
 export class Dashboard {
   userName = 'Student';
+  canCreateUsers = false;
 
   stats = {
     enrolled: 6,
@@ -57,7 +58,9 @@ export class Dashboard {
   constructor(
     private authService: AuthService,
     private router: Router,
-  ) {}
+  ) {
+    this.canCreateUsers = this.authService.hasAnyRole(['Admin', 'HR']);
+  }
 
   logout() {
     this.authService.logout();

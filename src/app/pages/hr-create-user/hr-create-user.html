@@ -1,0 +1,97 @@
+<div class="page-wrapper">
+  <div class="auth-card">
+    <div class="brand-panel">
+      <div class="brand-badge">
+        <span class="material-symbols-outlined">admin_panel_settings</span>
+        HR ADMIN
+      </div>
+      <div class="brand-body">
+        <h1>Create New<br />User Account</h1>
+        <p>Create employee, HR, or admin accounts and trigger secure password reset onboarding.</p>
+      </div>
+      <div class="brand-footer">
+        <div class="brand-line"></div>
+        <span>USER MANAGEMENT</span>
+      </div>
+    </div>
+
+    <div class="form-panel">
+      <div class="form-header">
+        <h2>Create User</h2>
+        <p>Required fields are marked with an asterisk.</p>
+      </div>
+
+      @if (errorMessage) {
+        <div class="alert alert-error">
+          <span class="material-symbols-outlined">error</span>
+          {{ errorMessage }}
+        </div>
+      }
+
+      @if (successMessage) {
+        <div class="alert alert-success">
+          <span class="material-symbols-outlined">check_circle</span>
+          {{ successMessage }}
+        </div>
+      }
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="fullName">Full Name</label>
+          <input id="fullName" [(ngModel)]="fullName" name="fullName" placeholder="Jane Miller" />
+        </div>
+
+        <div class="form-group">
+          <label for="userName">Username *</label>
+          <input id="userName" [(ngModel)]="userName" name="userName" placeholder="jane.miller" />
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="email">Email *</label>
+          <div class="input-icon-wrap">
+            <span class="material-symbols-outlined input-icon">alternate_email</span>
+            <input id="email" type="email" [(ngModel)]="email" name="email" placeholder="jane@company.com" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="role">Role</label>
+          <select id="role" [(ngModel)]="role" name="role">
+            @for (roleOption of availableRoles; track roleOption) {
+              <option [value]="roleOption">{{ roleOption }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="password">Password *</label>
+          <input id="password" type="password" [(ngModel)]="password" name="password" placeholder="••••••••" />
+        </div>
+
+        <div class="form-group">
+          <label for="confirmPassword">Confirm Password *</label>
+          <input
+            id="confirmPassword"
+            type="password"
+            [(ngModel)]="confirmPassword"
+            name="confirmPassword"
+            placeholder="••••••••"
+          />
+        </div>
+      </div>
+
+      <button class="btn-primary" (click)="onCreateUser()" [disabled]="isSubmitting">
+        {{ isSubmitting ? 'Creating User...' : 'Create User' }}
+        <span class="material-symbols-outlined">person_add</span>
+      </button>
+
+      <div class="form-footer">
+        <a routerLink="/dashboard">Back to dashboard</a>
+      </div>
+    </div>
+  </div>
+</div>

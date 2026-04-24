@@ -1,6 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
+export type UserRole = 'Admin' | 'HR' | 'Employee';
+export type LoginResponse = {
+  Token?: string;
+  token?: string;
+  Expiration?: string;
+  expiration?: string;
+};
+
 @Injectable({
   providedIn: 'root',
 })
@@ -21,23 +29,98 @@ export class AuthService {
   }
 
   login(email: string, password: string) {
-    return this.http.post<{ Token: string; Expiration: string }>(this.baseUrl + '/Login', {
+    return this.http.post<LoginResponse>(this.baseUrl + '/Login', {
       Email: email,
       Password: password,
     });
   }
 
+  createUser(payload: {
+    userName: string;
+    email: string;
+    password: string;
+    confirmPassword: string;
+    fullName?: string;
+    role?: 'Admin' | 'HR' | 'Employee';
+  }) {
+    return this.http.post(this.baseUrl + '/create-user', payload, { responseType: 'text' });
+  }
+
   saveToken(token: string) {
+    if (!token || token === 'undefined' || token === 'null') {
+      return;
+    }
     this.token = token;
     localStorage.setItem('token', token);
   }
 
   getToken() {
-    return this.token || localStorage.getItem('token');
+    const token = this.token || localStorage.getItem('token');
+    if (!token || token === 'undefined' || token === 'null') {
+      return null;
+    }
+    return token;
   }
 
   isLoggedIn() {
-    return this.getToken() !== null;
+    return !!this.getToken();
+  }
+
+  getUserRole(): UserRole | null {
+    const token = this.getToken();
+    if (!token) {
+      return null;
+    }
+
+    try {
+      const payloadPart = token.split('.')[1];
+      if (!payloadPart) {
+        return null;
+      }
+
+      const normalizedBase64 = payloadPart.replace(/-/g, '+').replace(/_/g, '/');
+      const paddedBase64 = normalizedBase64.padEnd(Math.ceil(normalizedBase64.length / 4) * 4, '=');
+      const jsonPayload = JSON.parse(atob(paddedBase64)) as Record<string, unknown>;
+
+      const possibleRoleValues: unknown[] = [];
+      for (const [key, value] of Object.entries(jsonPayload)) {
+        const normalizedKey = key.toLowerCase();
+        if (
+          normalizedKey === 'role' ||
+          normalizedKey === 'roles' ||
+          normalizedKey.endsWith('/role') ||
+          normalizedKey.includes('claims/role')
+        ) {
+          possibleRoleValues.push(value);
+        }
+      }
+
+      const normalizedRoles = possibleRoleValues
+        .flatMap((value) => (Array.isArray(value) ? value : [value]))
+        .filter((value): value is string => typeof value === 'string')
+        .flatMap((value) => value.split(','))
+        .map((value) => value.trim())
+        .filter((value) => value.length > 0);
+
+      if (normalizedRoles.some((role) => role.toLowerCase() === 'admin')) {
+        return 'Admin';
+      }
+      if (normalizedRoles.some((role) => role.toLowerCase() === 'hr')) {
+        return 'HR';
+      }
+      if (normalizedRoles.some((role) => role.toLowerCase() === 'employee')) {
+        return 'Employee';
+      }
+    } catch {
+      return null;
+    }
+
+    return null;
+  }
+
+  hasAnyRole(roles: UserRole[]) {
+    const role = this.getUserRole();
+    return role ? roles.includes(role) : false;
   }
 
   logout() {
