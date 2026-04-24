@@ -96,7 +96,6 @@
           <div class="continue-card">
             <div class="continue-badge">Last Accessed</div>
             <h3>{{ lastCourse.title }}</h3>
-            <p>{{ lastCourse.instructor }}</p>
             <div class="progress-row">
               <div class="progress-bar">
                 <div class="progress-fill" [style.width.%]="lastCourse.progress"></div>
@@ -119,12 +118,11 @@
           <div class="courses-grid">
             @for (course of courses; track course.id) {
               <div class="course-card">
-                <div class="course-icon" [class]="course.color">
+                <div [class]="'course-icon ' + course.color">
                   <span class="material-symbols-outlined">{{ course.icon }}</span>
                 </div>
                 <div class="course-info">
                   <h4>{{ course.title }}</h4>
-                  <p>{{ course.instructor }}</p>
                   <div class="progress-row">
                     <div class="progress-bar">
                       <div class="progress-fill" [style.width.%]="course.progress"></div>
@@ -175,12 +173,12 @@
           </div>
           @for (deadline of deadlines; track deadline.title) {
             <div class="deadline-item">
-              <div class="deadline-dot" [class]="deadline.urgency"></div>
+              <div [class]="'deadline-dot ' + deadline.urgency"></div>
               <div class="deadline-info">
                 <span class="deadline-title">{{ deadline.title }}</span>
                 <span class="deadline-date">{{ deadline.date }}</span>
               </div>
-              <span class="deadline-tag" [class]="deadline.urgency">{{ deadline.tag }}</span>
+              <span [class]="'deadline-tag ' + deadline.urgency">{{ deadline.tag }}</span>
             </div>
           }
         </section>
