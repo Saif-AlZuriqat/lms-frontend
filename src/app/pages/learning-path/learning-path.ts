@@ -1,7 +1,7 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
   LearningPathService,
@@ -12,7 +12,7 @@ import {
 @Component({
   selector: 'app-learning-path',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule],
   templateUrl: './learning-path.html',
   styleUrl: './learning-path.css',
 })
@@ -22,20 +22,51 @@ export class LearningPath implements OnInit {
   isLoading = signal(false);
   error = signal('');
 
-  constructor(private learningPathService: LearningPathService) {}
+  private readonly gradients = [
+    'linear-gradient(135deg, #0f1b3d 0%, #1e3a8a 100%)',
+    'linear-gradient(135deg, #065f56 0%, #0d9488 100%)',
+    'linear-gradient(135deg, #7c2d12 0%, #c2410c 100%)',
+    'linear-gradient(135deg, #581c87 0%, #7c3aed 100%)',
+    'linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%)',
+    'linear-gradient(135deg, #14532d 0%, #16a34a 100%)',
+  ];
+
+  constructor(
+    private learningPathService: LearningPathService,
+    private router: Router,
+  ) {}
 
   ngOnInit() {
     this.loadPaths();
   }
 
   loadPaths() {
+    this.isLoading.set(true);
+    this.error.set('');
     this.learningPathService.getPaths().subscribe({
-      next: (data) => this.paths.set(data),
+      next: (data) => {
+        this.paths.set(data);
+        this.isLoading.set(false);
+      },
       error: (err) => {
         console.error('Error loading learning paths', err);
+        this.error.set('Failed to load learning paths. Please try again.');
         this.paths.set([]);
+        this.isLoading.set(false);
       },
     });
+  }
+
+  getGradient(index: number): string {
+    return this.gradients[index % this.gradients.length];
+  }
+
+  getCourseCount(path: LearningPathResponseDto): number {
+    return path.courses?.length ?? 0;
+  }
+
+  navigateToDetail(id: number): void {
+    this.router.navigate(['/learning-path', id]);
   }
 
   createPath() {
@@ -48,7 +79,7 @@ export class LearningPath implements OnInit {
       description: this.newPath().description,
       courses: [],
     };
-    this.paths.update(list => [...list, optimistic]);
+    this.paths.update((list) => [...list, optimistic]);
 
     const payload = { ...this.newPath() };
     this.newPath.set({ title: '', description: '' });
@@ -59,15 +90,16 @@ export class LearningPath implements OnInit {
       next: (created) => {
         this.isLoading.set(false);
         if (created && created.id) {
-          this.paths.update(list =>
-            list.map(p => p.id === tempId ? { ...created, courses: created.courses ?? [] } : p)
+          this.paths.update((list) =>
+            list.map((p) => (p.id === tempId ? { ...created, courses: created.courses ?? [] } : p)),
           );
         } else {
           this.loadPaths();
         }
       },
+
       error: (err: HttpErrorResponse) => {
-        this.paths.update(list => list.filter(p => p.id !== tempId));
+        this.paths.update((list) => list.filter((p) => p.id !== tempId));
         this.isLoading.set(false);
         if (err.status === 401) {
           this.error.set('Unauthorized (401): You are not logged in or your session expired.');

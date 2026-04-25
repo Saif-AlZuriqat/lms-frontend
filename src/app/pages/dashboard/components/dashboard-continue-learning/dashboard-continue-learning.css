@@ -1,68 +1,107 @@
-.section-card {
-  background: var(--white);
-  border-radius: 14px;
-  padding: 22px 24px;
-  box-shadow: var(--shadow-md);
-  border: 1px solid var(--gray-200);
-}
-
-.section-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 18px;
-  padding-bottom: 14px;
-  border-bottom: 1px solid var(--gray-100);
-}
-
-.section-header h2 {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--gray-900);
-}
-
-.section-header .material-symbols-outlined {
-  font-size: 20px;
-  color: var(--blue);
-}
-
-.highlight-card {
-  border-left: 4px solid var(--blue);
-}
-
+/* ── Continue Card ───────────────────────────────── */
 .continue-card {
   display: flex;
+  align-items: center;
+  gap: 24px;
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+  padding: 24px 28px;
+  box-shadow: var(--shadow-md);
+  transition: box-shadow 0.25s, border-color 0.25s;
+  cursor: pointer;
+}
+
+.continue-card:hover {
+  border-color: var(--blue);
+  box-shadow: var(--shadow-lg);
+}
+
+/* ── Visual / Thumbnail area ─────────────────────── */
+.continue-visual {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.play-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--blue-light), #c7d2fe);
+  opacity: 0.5;
+}
+
+.course-icon-wrap {
+  position: relative;
+  z-index: 1;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--navy), var(--blue));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.35);
+}
+
+.course-icon-wrap .material-symbols-outlined {
+  font-size: 26px;
+  color: #fff;
+}
+
+/* ── Course Info ──────────────────────────────────── */
+.continue-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 .continue-badge {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   background: var(--blue-light);
   color: var(--blue);
-  font-size: 11px;
-  font-weight: 600;
+  font-size: 10px;
+  font-weight: 700;
   padding: 3px 10px;
-  border-radius: 20px;
+  border-radius: 999px;
   width: fit-content;
-  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
-.continue-card h3 {
-  font-size: 16px;
+.continue-info h3 {
+  font-size: 18px;
   font-weight: 700;
   color: var(--gray-900);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
 }
 
+.continue-hint {
+  font-size: 12px;
+  color: var(--gray-400);
+}
+
+/* ── Progress ────────────────────────────────────── */
 .progress-row {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
 .progress-bar {
   flex: 1;
-  height: 6px;
+  height: 7px;
   background: var(--gray-100);
   border-radius: 99px;
   overflow: hidden;
@@ -70,36 +109,56 @@
 
 .progress-fill {
   height: 100%;
-  background: var(--blue);
+  background: linear-gradient(90deg, var(--navy), var(--blue));
   border-radius: 99px;
-  transition: width 0.3s ease;
+  transition: width 0.5s ease;
 }
 
 .progress-pct {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--gray-600);
-  min-width: 32px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--blue);
+  min-width: 36px;
   text-align: right;
 }
 
+/* ── Resume Button ───────────────────────────────── */
 .btn-resume {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 7px;
-  padding: 10px 20px;
-  background: var(--blue);
+  gap: 8px;
+  padding: 12px 26px;
+  background: linear-gradient(135deg, var(--navy), var(--blue));
   color: var(--white);
   border: none;
-  border-radius: 9px;
+  border-radius: 10px;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
   font-family: 'Inter', sans-serif;
   cursor: pointer;
-  width: fit-content;
-  transition: background 0.15s ease;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
+  letter-spacing: 0.01em;
 }
 
-.btn-resume:hover { background: var(--blue-hover); }
+.btn-resume:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.42);
+}
 
-.btn-resume .material-symbols-outlined { font-size: 18px; }
+.btn-resume .material-symbols-outlined {
+  font-size: 20px;
+}
+
+@media (max-width: 640px) {
+  .continue-card {
+    flex-wrap: wrap;
+    padding: 20px;
+  }
+
+  .btn-resume {
+    width: 100%;
+    justify-content: center;
+  }
+}

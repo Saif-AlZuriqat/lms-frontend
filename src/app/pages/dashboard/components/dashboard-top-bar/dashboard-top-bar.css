@@ -1,47 +1,58 @@
-.top-bar {
+/* Transparent — hero gradient comes from parent .hero-section in dashboard.css */
+.hero-content {
+  padding: 48px 40px 24px;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hero-eyebrow {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-}
-
-.welcome-text h1 {
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--gray-900);
-  letter-spacing: -0.3px;
-}
-
-.welcome-text h1 span {
-  color: var(--blue);
-}
-
-.welcome-text p {
-  font-size: 13px;
-  color: var(--gray-500);
-  margin-top: 2px;
-}
-
-.btn-logout-top {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 9px 18px;
-  background: var(--white);
-  border: 1.5px solid var(--gray-200);
-  border-radius: 9px;
-  color: var(--red);
-  font-size: 13px;
+  gap: 6px;
+  font-size: 12px;
   font-weight: 600;
-  font-family: 'Inter', sans-serif;
-  cursor: pointer;
-  transition: all 0.15s ease;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
-.btn-logout-top:hover {
-  background: var(--red-light);
-  border-color: var(--red);
+.hero-eyebrow .material-symbols-outlined {
+  font-size: 15px;
+  color: #fbbf24;
 }
 
-.btn-logout-top .material-symbols-outlined {
-  font-size: 17px;
+.hero-content h1 {
+  font-size: 32px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.5px;
+  line-height: 1.15;
+}
+
+.hero-name {
+  color: #93c5fd;
+}
+
+.hero-sub {
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.6);
+  max-width: 540px;
+  line-height: 1.55;
+}
+
+@media (max-width: 768px) {
+  .hero-content {
+    padding: 32px 20px 20px;
+  }
+
+  .hero-content h1 {
+    font-size: 24px;
+  }
+
+  .hero-sub {
+    display: none;
+  }
 }

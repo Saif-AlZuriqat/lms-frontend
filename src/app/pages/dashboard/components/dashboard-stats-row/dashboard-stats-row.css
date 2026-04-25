@@ -1,51 +1,83 @@
+/* Stats are inside .hero-section — no background needed here */
 .stats-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 16px;
+  padding: 0 40px 40px;
+  position: relative;
+  z-index: 1;
 }
 
+/* ── Glassmorphism card ─────────────────────────── */
 .stat-card {
-  background: var(--white);
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 14px;
-  padding: 20px 24px;
+  padding: 20px 22px;
+  color: #fff;
   display: flex;
-  align-items: center;
-  gap: 16px;
-  box-shadow: var(--shadow-md);
-  border: 1px solid var(--gray-200);
+  flex-direction: column;
+  gap: 4px;
+  transition: background 0.2s, transform 0.2s;
 }
 
+.stat-card:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+/* ── Icon ──────────────────────────────────────── */
 .stat-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.15);
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
+  margin-bottom: 10px;
 }
 
-.stat-icon.blue  { background: var(--blue-light); color: var(--blue); }
-.stat-icon.green { background: var(--green-light); color: var(--green); }
-.stat-icon.amber { background: var(--amber-light); color: var(--amber); }
+.stat-icon .material-symbols-outlined {
+  font-size: 20px;
+  color: #fff;
+}
 
-.stat-icon .material-symbols-outlined { font-size: 22px; }
-
+/* ── Text ──────────────────────────────────────── */
 .stat-info {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
 }
 
 .stat-value {
-  font-size: 26px;
-  font-weight: 700;
-  color: var(--gray-900);
+  font-size: 30px;
+  font-weight: 800;
+  color: #fff;
   line-height: 1;
+  letter-spacing: -0.5px;
 }
 
 .stat-label {
   font-size: 12px;
-  color: var(--gray-500);
+  color: rgba(255, 255, 255, 0.6);
   font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ── Responsive ──────────────────────────────── */
+@media (max-width: 900px) {
+  .stats-row {
+    grid-template-columns: repeat(2, 1fr);
+    padding: 0 20px 32px;
+  }
+}
+
+@media (max-width: 540px) {
+  .stats-row {
+    grid-template-columns: 1fr;
+  }
 }

@@ -1,21 +1,6 @@
 <div class="page-wrapper">
   <div class="auth-card">
-
     <!-- Left: Branding Panel -->
-    <div class="brand-panel">
-      <div class="brand-badge">
-        <span class="material-symbols-outlined">lock</span>
-        SECURE INTERNAL PORTAL
-      </div>
-      <div class="brand-body">
-        <h1>Cultivating the<br />Academic Mind.</h1>
-        <p>Access your personalized learning journey, research archives, and professional development modules in our curated digital sanctuary.</p>
-      </div>
-      <div class="brand-footer">
-        <div class="brand-line"></div>
-        <span>ESTABLISHED MMXXIV</span>
-      </div>
-    </div>
 
     <!-- Right: Form Panel -->
     <div class="form-panel">
@@ -28,7 +13,13 @@
         <label for="email">Work Email</label>
         <div class="input-icon-wrap">
           <span class="material-symbols-outlined input-icon-left">mail</span>
-          <input id="email" type="email" [(ngModel)]="email" name="email" placeholder="name@university.edu" />
+          <input
+            id="email"
+            type="email"
+            [(ngModel)]="email"
+            name="email"
+            placeholder="name@university.edu"
+          />
         </div>
       </div>
 
@@ -39,7 +30,13 @@
         </div>
         <div class="input-icon-wrap">
           <span class="material-symbols-outlined input-icon-left">lock_person</span>
-          <input id="password" type="password" [(ngModel)]="password" name="password" placeholder="••••••••••••" />
+          <input
+            id="password"
+            type="password"
+            [(ngModel)]="password"
+            name="password"
+            placeholder="••••••••••••"
+          />
         </div>
       </div>
 
@@ -51,13 +48,6 @@
         Sign In to Dashboard
         <span class="material-symbols-outlined">arrow_forward</span>
       </button>
-
-      <div class="divider">
-        <span>New Personnel</span>
-      </div>
-
-      <a routerLink="/register" class="btn-secondary">Create Internal Account</a>
     </div>
-
   </div>
 </div>

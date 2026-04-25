@@ -1,30 +1,103 @@
 /* ── Layout ─────────────────────────────────────── */
 .dashboard-layout {
-  display: flex;
   min-height: 100vh;
   background: var(--gray-bg);
 }
 
-/* ── Main Content ─────────────────────────────────── */
+/* ── Main content sits below fixed topnav ──────── */
 .main-content {
-  margin-left: 240px;
-  flex: 1;
-  padding: 28px 32px;
+  padding-top: 64px;
+  min-height: calc(100vh - 64px);
   display: flex;
   flex-direction: column;
-  gap: 24px;
 }
 
-/* ── Content Grid ────────────────────────────────── */
-.content-grid {
+/* ── Hero Section (top-bar + stats share gradient) */
+.hero-section {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 52%, #2456c8 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Decorative orbs */
+.hero-orb {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.orb-1 {
+  width: 500px;
+  height: 500px;
+  top: -55%;
+  right: -6%;
+  background: rgba(37, 99, 235, 0.15);
+}
+
+.orb-2 {
+  width: 320px;
+  height: 320px;
+  bottom: -55%;
+  left: 22%;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* ── Dashboard Content Area ─────────────────────── */
+.dashboard-content {
+  padding: 36px 40px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+}
+
+/* ── Section Header Row ─────────────────────────── */
+.content-section {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.section-row-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.section-row-header h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--gray-900);
+  letter-spacing: -0.2px;
+}
+
+.view-all-link {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--blue);
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.view-all-link:hover {
+  color: var(--blue-hover);
+}
+
+/* ── Bottom Row (2 columns) ─────────────────────── */
+.bottom-row {
   display: grid;
-  grid-template-columns: 1fr 360px;
+  grid-template-columns: 1fr 1fr;
   gap: 20px;
   align-items: start;
 }
 
-.content-left, .content-right {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+/* ── Responsive ─────────────────────────────────── */
+@media (max-width: 900px) {
+  .dashboard-content {
+    padding: 24px 20px 32px;
+  }
+
+  .bottom-row {
+    grid-template-columns: 1fr;
+  }
 }
