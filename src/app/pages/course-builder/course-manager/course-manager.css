@@ -1,0 +1,149 @@
+.manager-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.back-link {
+  color: var(--blue, #007bff);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.back-link:hover {
+  text-decoration: underline;
+}
+
+.loading, .error {
+  padding: 20px;
+  text-align: center;
+  border-radius: 8px;
+}
+
+.loading {
+  background: var(--gray-100, #f8f9fa);
+  color: var(--gray-600, #6c757d);
+}
+
+.error {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.tree-container {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.description {
+  color: var(--gray-600, #6c757d);
+  margin-bottom: 24px;
+}
+
+.course-item, .section-item, .lesson-item {
+  border: 1px solid var(--gray-200, #e9ecef);
+  border-radius: 8px;
+  margin-bottom: 12px;
+  background: #fff;
+}
+
+.section-item {
+  margin-left: 24px;
+  border-left: 3px solid var(--blue, #007bff);
+}
+
+.lesson-item {
+  margin-left: 24px;
+  border-left: 3px solid #28a745;
+}
+
+.item-header {
+  display: flex;
+  padding: 16px;
+  gap: 16px;
+}
+
+.toggle-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  color: var(--gray-600, #6c757d);
+  display: flex;
+  align-items: flex-start;
+  font-size: 14px;
+}
+
+.item-content {
+  flex: 1;
+}
+
+.item-content h3, .item-content h4, .item-content h5 {
+  margin: 0 0 8px 0;
+}
+
+.item-content p {
+  margin: 0 0 12px 0;
+  color: var(--gray-600, #6c757d);
+  font-size: 14px;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+button {
+  padding: 6px 12px;
+  border: 1px solid var(--gray-300, #ced4da);
+  background: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gray-700, #495057);
+  transition: all 0.2s;
+}
+
+button:hover {
+  background: var(--gray-100, #f8f9fa);
+}
+
+button.danger {
+  color: #dc3545;
+  border-color: #dc3545;
+}
+
+button.danger:hover {
+  background: #dc3545;
+  color: white;
+}
+
+.primary-btn {
+  background: var(--blue, #007bff);
+  color: white;
+  border: none;
+}
+
+.primary-btn:hover {
+  background: #0056b3;
+}
+
+.sections-list, .lessons-list {
+  padding: 0 16px 16px 16px;
+}
+
+.add-course-container {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--gray-200, #e9ecef);
+}

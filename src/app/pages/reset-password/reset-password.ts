@@ -28,7 +28,6 @@ export class ResetPassword implements OnInit {
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
       this.email = params['email'] || '';
-      // Sometimes token has spaces replaced with + in URLs, Angular handles decoding but let's be safe
       this.token = params['token'] ? params['token'].replace(/ /g, '+') : '';
     });
   }

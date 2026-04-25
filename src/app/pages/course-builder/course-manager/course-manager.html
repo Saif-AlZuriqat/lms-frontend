@@ -1,0 +1,140 @@
+<div class="manager-container">
+  <div class="header">
+    <h1>Course Builder</h1>
+    <a routerLink="/dashboard" class="back-link">Back to Dashboard</a>
+  </div>
+
+  @if (loading) {
+    <div class="loading">Loading learning path...</div>
+  }
+  
+  @if (error) {
+    <div class="error">{{ error }}</div>
+  }
+
+  @if (!loading && !error && tree) {
+    <div class="tree-container">
+      <h2>{{ tree.title }}</h2>
+      <p class="description">{{ tree.description }}</p>
+
+      <div class="courses-list">
+        @for (course of tree.courses; track course.id) {
+          <div class="course-item">
+            <div class="item-header">
+              <button (click)="toggleCourse(course.id)" class="toggle-btn">
+                {{ expandedCourseIds.has(course.id) ? '▼' : '▶' }}
+              </button>
+              
+              @if (editingKey !== 'course-' + course.id) {
+                <div class="item-content">
+                  <h3>{{ course.title }}</h3>
+                  <p>{{ course.description }}</p>
+                  <div class="actions">
+                    <button (click)="editingKey = 'course-' + course.id">Edit</button>
+                    <button (click)="removeCourse(course.id)" class="danger">Delete</button>
+                    <button (click)="openAddFormKey = 'section-' + course.id">+ Section</button>
+                  </div>
+                </div>
+              } @else {
+                <app-inline-edit 
+                  [title]="course.title"
+                  [description]="course.description || ''"
+                  (confirm)="updateCourse(course.id, $event)"
+                  (cancel)="editingKey = ''">
+                </app-inline-edit>
+              }
+            </div>
+
+            @if (openAddFormKey === 'section-' + course.id) {
+              <app-inline-add-form
+                (submit)="addSection(course.id, $event)"
+                (cancel)="openAddFormKey = ''">
+              </app-inline-add-form>
+            }
+
+            @if (expandedCourseIds.has(course.id)) {
+              <div class="sections-list">
+                @for (section of course.sections; track section.id) {
+                  <div class="section-item">
+                    <div class="item-header">
+                      <button (click)="toggleSection(section.id)" class="toggle-btn">
+                        {{ expandedSectionIds.has(section.id) ? '▼' : '▶' }}
+                      </button>
+
+                      @if (editingKey !== sectionKey(section)) {
+                        <div class="item-content">
+                          <h4>{{ section.title }}</h4>
+                          <p>{{ section.description }}</p>
+                          <div class="actions">
+                            <button (click)="editingKey = sectionKey(section)">Edit</button>
+                            <button (click)="removeSection(section.id)" class="danger">Delete</button>
+                            <button (click)="openAddFormKey = 'lesson-' + section.id">+ Lesson</button>
+                          </div>
+                        </div>
+                      } @else {
+                        <app-inline-edit 
+                          [title]="section.title"
+                          [description]="section.description || ''"
+                          (confirm)="updateSection(section.id, $event)"
+                          (cancel)="editingKey = ''">
+                        </app-inline-edit>
+                      }
+                    </div>
+
+                    @if (openAddFormKey === 'lesson-' + section.id) {
+                      <app-inline-add-form
+                        (submit)="addLesson(section.id, $event)"
+                        (cancel)="openAddFormKey = ''">
+                      </app-inline-add-form>
+                    }
+
+                    @if (expandedSectionIds.has(section.id)) {
+                      <div class="lessons-list">
+                        @for (lesson of section.lessons; track lesson.id) {
+                          <div class="lesson-item">
+                            @if (editingKey !== 'lesson-' + lesson.id) {
+                              <div class="item-content">
+                                <h5>{{ lesson.title }}</h5>
+                                <p>{{ lesson.description }}</p>
+                                <div class="actions">
+                                  <button (click)="editLessonContent(lesson.id)">Edit Content</button>
+                                  <button (click)="editingKey = 'lesson-' + lesson.id">Edit Details</button>
+                                  <button (click)="removeLesson(lesson.id)" class="danger">Delete</button>
+                                </div>
+                              </div>
+                            } @else {
+                              <app-inline-edit 
+                                [title]="lesson.title"
+                                [description]="lesson.description || ''"
+                                (confirm)="updateLesson(lesson, $event)"
+                                (cancel)="editingKey = ''">
+                              </app-inline-edit>
+                            }
+                          </div>
+                        }
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <div class="add-course-container">
+        @if (openAddFormKey !== 'course') {
+          <button (click)="openAddFormKey = 'course'" class="primary-btn">
+            + Add Course
+          </button>
+        } @else {
+          <app-inline-add-form
+            (submit)="addCourse($event)"
+            (cancel)="openAddFormKey = ''">
+          </app-inline-add-form>
+        }
+      </div>
+
+    </div>
+  }
+</div>
