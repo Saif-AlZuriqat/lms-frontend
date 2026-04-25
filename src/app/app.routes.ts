@@ -1,8 +1,12 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './guards/auth-guard';
 import { roleGuard } from './guards/role-guard';
+import { LearningPathsPage } from './pages/course-builder/learning-paths/learning-paths';
+import { CourseManagerPage } from './pages/course-builder/course-manager/course-manager';
+import { LessonEditorPage } from './pages/course-builder/lesson-editor/lesson-editor';
 
 export const routes: Routes = [
+  // ── Auth (lazy) ──────────────────────────────────────────
   {
     path: '',
     loadComponent: () => import('./pages/login/login').then(m => m.Login),
@@ -16,6 +20,8 @@ export const routes: Routes = [
     path: 'reset-password',
     loadComponent: () => import('./pages/reset-password/reset-password').then(m => m.ResetPassword)
   },
+
+  // ── Student pages (lazy) ─────────────────────────────────
   {
     path: 'dashboard',
     loadComponent: () => import('./pages/dashboard/dashboard').then(m => m.Dashboard),
@@ -36,6 +42,25 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/course-details/course-details').then(m => m.CourseDetails),
     canActivate: [authGuard]
   },
+
+  // ── Course Builder (admin/instructor) ────────────────────
+  {
+    path: 'learning-paths',
+    component: LearningPathsPage,
+    canActivate: [authGuard]
+  },
+  {
+    path: 'learning-paths/:learningPathId',
+    component: CourseManagerPage,
+    canActivate: [authGuard]
+  },
+  {
+    path: 'lessons/:lessonId/edit',
+    component: LessonEditorPage,
+    canActivate: [authGuard]
+  },
+
+  // ── HR / Admin ───────────────────────────────────────────
   {
     path: 'hr/create-user',
     loadComponent: () => import('./pages/hr-create-user/hr-create-user').then(m => m.HrCreateUser),

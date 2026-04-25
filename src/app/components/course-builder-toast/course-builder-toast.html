@@ -1,0 +1,7 @@
+<div class="toast-stack">
+  @for (toast of toastService.messages$ | async; track toast.id) {
+    <div class="toast" [class.toast-success]="toast.type === 'success'" [class.toast-error]="toast.type === 'error'">
+      {{ toast.text }}
+    </div>
+  }
+</div>

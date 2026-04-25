@@ -1,0 +1,26 @@
+<div class="page">
+  <div class="header">
+    <h1>Learning Paths</h1>
+    <button (click)="openCreateModal()">Create Learning Path</button>
+  </div>
+
+  @if (loading) {
+    <div class="spinner"></div>
+  } @else if (error) {
+    <div class="error">{{ error }}</div>
+  } @else {
+    <div class="grid">
+      @for (path of paths; track path.id) {
+        <app-learning-path-card [path]="path" (manage)="manageCourses($event)" (edit)="openEditModal($event)" (remove)="deletePath($event)" />
+      }
+    </div>
+  }
+</div>
+
+<app-modal [open]="modalOpen" [title]="editingId ? 'Edit Learning Path' : 'Create Learning Path'" (close)="modalOpen = false">
+  <div class="modal-body">
+    <input [(ngModel)]="title" placeholder="Title" />
+    <textarea [(ngModel)]="description" placeholder="Description"></textarea>
+    <button (click)="submitModal()" [disabled]="!title.trim()">Save</button>
+  </div>
+</app-modal>

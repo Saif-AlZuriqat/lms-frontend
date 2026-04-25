@@ -1,5 +1,6 @@
 <div class="dashboard-layout">
 
+  <!-- Top Navbar (repurposed sidebar component) -->
   <app-dashboard-sidebar
     [canCreateUsers]="canCreateUsers"
     (logoutClick)="logout()">
@@ -7,23 +8,41 @@
 
   <main class="main-content">
 
-    <app-dashboard-top-bar
-      [userName]="userName"
-      (logoutClick)="logout()">
-    </app-dashboard-top-bar>
+    <!-- Hero Section: welcome + stats share one gradient background -->
+    <div class="hero-section">
+      <div class="hero-orb orb-1"></div>
+      <div class="hero-orb orb-2"></div>
+      <app-dashboard-top-bar [userName]="userName"></app-dashboard-top-bar>
+      <app-dashboard-stats-row [stats]="stats"></app-dashboard-stats-row>
+    </div>
 
-    <app-dashboard-stats-row [stats]="stats"></app-dashboard-stats-row>
+    <!-- Dashboard Content -->
+    <div class="dashboard-content">
 
-    <div class="content-grid">
-      <div class="content-left">
+      <!-- Continue Learning -->
+      <div class="content-section">
+        <div class="section-row-header">
+          <h2>Continue Learning</h2>
+          <span class="view-all-link">View All</span>
+        </div>
         <app-dashboard-continue-learning [lastCourse]="lastCourse"></app-dashboard-continue-learning>
+      </div>
+
+      <!-- My Courses -->
+      <div class="content-section">
+        <div class="section-row-header">
+          <h2>My Courses</h2>
+          <span class="view-all-link">Browse More</span>
+        </div>
         <app-dashboard-my-courses [courses]="courses"></app-dashboard-my-courses>
       </div>
-      <div class="content-right">
+
+      <!-- Bottom Row: Path Widget + Deadlines -->
+      <div class="bottom-row">
         <app-dashboard-learning-path-widget [learningPath]="learningPath"></app-dashboard-learning-path-widget>
         <app-dashboard-deadlines [deadlines]="deadlines"></app-dashboard-deadlines>
       </div>
-    </div>
 
+    </div>
   </main>
 </div>
