@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink, Router } from '@angular/router';
 import { PasswordResetService } from '../../services/password-reset.service';
@@ -22,7 +22,8 @@ export class ResetPassword implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private passwordResetService: PasswordResetService
+    private passwordResetService: PasswordResetService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -56,10 +57,12 @@ export class ResetPassword implements OnInit {
       next: (response) => {
         this.isLoading = false;
         this.router.navigate(['/']);
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.isLoading = false;
         this.errorMessage = err.error || 'Failed to reset password. The link might be expired or invalid.';
+        this.cdr.detectChanges();
       }
     });
   }
