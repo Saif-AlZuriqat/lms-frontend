@@ -1,10 +1,25 @@
 import { Component } from '@angular/core';
 import { AuthService } from '../../services/auth';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { Router } from '@angular/router';
+import { DashboardSidebar } from './components/dashboard-sidebar/dashboard-sidebar';
+import { DashboardTopBar } from './components/dashboard-top-bar/dashboard-top-bar';
+import { DashboardStatsRow } from './components/dashboard-stats-row/dashboard-stats-row';
+import { DashboardContinueLearning } from './components/dashboard-continue-learning/dashboard-continue-learning';
+import { DashboardMyCourses } from './components/dashboard-my-courses/dashboard-my-courses';
+import { DashboardLearningPathWidget } from './components/dashboard-learning-path-widget/dashboard-learning-path-widget';
+import { DashboardDeadlines } from './components/dashboard-deadlines/dashboard-deadlines';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [RouterLink, RouterLinkActive],
+  imports: [
+    DashboardSidebar,
+    DashboardTopBar,
+    DashboardStatsRow,
+    DashboardContinueLearning,
+    DashboardMyCourses,
+    DashboardLearningPathWidget,
+    DashboardDeadlines,
+  ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })

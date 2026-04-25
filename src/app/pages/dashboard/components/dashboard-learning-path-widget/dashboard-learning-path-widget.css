@@ -1,0 +1,93 @@
+.section-card {
+  background: var(--white);
+  border-radius: 14px;
+  padding: 22px 24px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--gray-200);
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--gray-100);
+}
+
+.section-header h2 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--gray-900);
+}
+
+.section-header .material-symbols-outlined {
+  font-size: 20px;
+  color: var(--blue);
+}
+
+.path-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.path-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--gray-900);
+}
+
+.path-desc {
+  font-size: 12px;
+  color: var(--gray-500);
+  line-height: 1.5;
+  margin-bottom: 4px;
+}
+
+.path-progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--gray-600);
+}
+
+.progress-bar {
+  flex: 1;
+  height: 6px;
+  background: var(--gray-100);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.progress-bar.large {
+  height: 8px;
+  margin-bottom: 16px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--blue);
+  border-radius: 99px;
+  transition: width 0.3s ease;
+}
+
+.progress-fill.green { background: var(--green); }
+
+.path-step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--gray-500);
+  padding: 4px 0;
+}
+
+.path-step.done {
+  color: var(--gray-800);
+  font-weight: 500;
+}
+
+.path-step.done .material-symbols-outlined { color: var(--green); font-size: 18px; }
+.path-step:not(.done) .material-symbols-outlined { color: var(--gray-300); font-size: 18px; }

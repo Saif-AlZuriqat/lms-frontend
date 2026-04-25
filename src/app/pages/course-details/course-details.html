@@ -1,0 +1,43 @@
+<div class="page-container">
+
+  <div class="header">
+    <div class="header-content">
+      <a [routerLink]="pathId ? ['/learning-path', pathId] : ['/learning-path']" class="back-btn">
+        <span class="material-symbols-outlined">arrow_back</span>
+      </a>
+      <h1>{{ course?.title ?? 'Course Details' }}</h1>
+    </div>
+  </div>
+
+  @if (!course) {
+    <div class="empty-state">
+      <span class="material-symbols-outlined empty-icon">menu_book</span>
+      <p>No course data found. Please navigate here from a learning path.</p>
+      <a routerLink="/learning-path" class="btn-primary">Go to Learning Paths</a>
+    </div>
+  } @else {
+    <div class="course-overview">
+      <div class="overview-card">
+        <div class="course-icon-large">
+          <span class="material-symbols-outlined">menu_book</span>
+        </div>
+        <div class="overview-info">
+          <h2>{{ course.title }}</h2>
+          <p>{{ course.description || 'No description provided.' }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="lessons-section">
+      <div class="section-header">
+        <span class="material-symbols-outlined">list</span>
+        <h2>Lessons</h2>
+      </div>
+      <div class="empty-state">
+        <span class="material-symbols-outlined empty-icon">school</span>
+        <p>No lessons available yet for this course.</p>
+      </div>
+    </div>
+  }
+
+</div>

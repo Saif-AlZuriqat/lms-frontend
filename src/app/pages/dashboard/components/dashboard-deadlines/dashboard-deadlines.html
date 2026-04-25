@@ -1,0 +1,16 @@
+<section class="section-card">
+  <div class="section-header">
+    <span class="material-symbols-outlined">event</span>
+    <h2>Upcoming Deadlines</h2>
+  </div>
+  @for (deadline of deadlines; track deadline.title) {
+    <div class="deadline-item">
+      <div [class]="'deadline-dot ' + deadline.urgency"></div>
+      <div class="deadline-info">
+        <span class="deadline-title">{{ deadline.title }}</span>
+        <span class="deadline-date">{{ deadline.date }}</span>
+      </div>
+      <span [class]="'deadline-tag ' + deadline.urgency">{{ deadline.tag }}</span>
+    </div>
+  }
+</section>

@@ -1,0 +1,47 @@
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.welcome-text h1 {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--gray-900);
+  letter-spacing: -0.3px;
+}
+
+.welcome-text h1 span {
+  color: var(--blue);
+}
+
+.welcome-text p {
+  font-size: 13px;
+  color: var(--gray-500);
+  margin-top: 2px;
+}
+
+.btn-logout-top {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 18px;
+  background: var(--white);
+  border: 1.5px solid var(--gray-200);
+  border-radius: 9px;
+  color: var(--red);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-logout-top:hover {
+  background: var(--red-light);
+  border-color: var(--red);
+}
+
+.btn-logout-top .material-symbols-outlined {
+  font-size: 17px;
+}

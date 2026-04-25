@@ -1,0 +1,36 @@
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <span class="material-symbols-outlined">school</span>
+    <span class="brand-name">LMS Portal</span>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="nav-item active">
+      <span class="material-symbols-outlined">dashboard</span>
+      Dashboard
+    </a>
+    <a class="nav-item">
+      <span class="material-symbols-outlined">menu_book</span>
+      My Courses
+    </a>
+    <a class="nav-item" routerLink="/learning-path" routerLinkActive="active">
+      <span class="material-symbols-outlined">route</span>
+      Learning Path
+    </a>
+    @if (canCreateUsers) {
+      <a class="nav-item" routerLink="/hr/create-user" routerLinkActive="active">
+        <span class="material-symbols-outlined">person_add</span>
+        HR - Create User
+      </a>
+    }
+    <a class="nav-item">
+      <span class="material-symbols-outlined">person</span>
+      Profile
+    </a>
+  </nav>
+
+  <button class="sidebar-logout" (click)="logoutClick.emit()">
+    <span class="material-symbols-outlined">logout</span>
+    Logout
+  </button>
+</aside>

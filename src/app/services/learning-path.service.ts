@@ -37,7 +37,7 @@ export class LearningPathService {
     return this.http.get<LearningPathResponseDto>(`${this.apiUrl}/GetPathById/${id}`);
   }
 
-  addPath(path: LearningPathProcessDto): Observable<any> {
-    return this.http.post(`${this.apiUrl}/AddPath/`, path);
+  addPath(path: LearningPathProcessDto): Observable<LearningPathResponseDto> {
+    return this.http.post<LearningPathResponseDto>(`${this.apiUrl}/AddPath`, path);
   }
 }

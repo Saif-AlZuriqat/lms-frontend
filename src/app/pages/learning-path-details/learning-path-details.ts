@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterLink } from '@angular/router';
-import { LearningPathService, LearningPathResponseDto } from '../../services/learning-path.service';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
+import { LearningPathService, LearningPathResponseDto, CourseResponseDTO } from '../../services/learning-path.service';
 
 @Component({
   selector: 'app-learning-path-details',
@@ -11,39 +12,47 @@ import { LearningPathService, LearningPathResponseDto } from '../../services/lea
   styleUrl: './learning-path-details.css'
 })
 export class LearningPathDetails implements OnInit {
-  pathId: number | null = null;
-  path: LearningPathResponseDto | null = null;
-  isLoading = true;
-  error = '';
+  pathId = signal<number | null>(null);
+  path = signal<LearningPathResponseDto | null>(null);
+  isLoading = signal(true);
+  error = signal('');
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private learningPathService: LearningPathService
   ) {}
 
-  ngOnInit() {
-    this.route.paramMap.subscribe(params => {
-      const idParam = params.get('id');
-      if (idParam) {
-        this.pathId = parseInt(idParam, 10);
-        this.loadPathDetails();
-      }
+  openCourse(course: CourseResponseDTO) {
+    this.router.navigate(['/course', course.id], {
+      state: { course, pathId: this.pathId() }
     });
   }
 
+  ngOnInit() {
+    const idParam = this.route.snapshot.paramMap.get('id');
+    if (idParam) {
+      this.pathId.set(parseInt(idParam, 10));
+      this.loadPathDetails();
+    } else {
+      this.isLoading.set(false);
+      this.error.set('No path ID found in the URL.');
+    }
+  }
+
   loadPathDetails() {
-    if (!this.pathId) return;
-    
-    this.isLoading = true;
-    this.learningPathService.getPathById(this.pathId).subscribe({
+    if (!this.pathId()) return;
+
+    this.isLoading.set(true);
+    this.learningPathService.getPathById(this.pathId()!).subscribe({
       next: (data) => {
-        this.path = data;
-        this.isLoading = false;
+        this.path.set(data);
+        this.isLoading.set(false);
       },
-      error: (err) => {
-        this.error = 'Failed to load learning path details.';
-        this.isLoading = false;
-        console.error(err);
+      error: (err: HttpErrorResponse) => {
+        this.error.set(`Error ${err.status}: ${err.message}`);
+        this.isLoading.set(false);
+        console.error('loadPathDetails failed:', err);
       }
     });
   }

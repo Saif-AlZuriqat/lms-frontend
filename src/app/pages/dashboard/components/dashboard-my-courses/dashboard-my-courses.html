@@ -1,0 +1,25 @@
+<section class="section-card">
+  <div class="section-header">
+    <span class="material-symbols-outlined">menu_book</span>
+    <h2>My Courses</h2>
+  </div>
+  <div class="courses-grid">
+    @for (course of courses; track course.id) {
+      <div class="course-card">
+        <div [class]="'course-icon ' + course.color">
+          <span class="material-symbols-outlined">{{ course.icon }}</span>
+        </div>
+        <div class="course-info">
+          <h4>{{ course.title }}</h4>
+          <div class="progress-row">
+            <div class="progress-bar">
+              <div class="progress-fill" [style.width.%]="course.progress"></div>
+            </div>
+            <span class="progress-pct">{{ course.progress }}%</span>
+          </div>
+        </div>
+        <button class="btn-continue">Continue</button>
+      </div>
+    }
+  </div>
+</section>

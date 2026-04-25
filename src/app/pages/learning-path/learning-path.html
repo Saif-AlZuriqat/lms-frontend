@@ -11,13 +11,13 @@
     <!-- List of Paths -->
     <div class="paths-list">
       <h2>Available Paths</h2>
-      
-      @if (paths.length === 0) {
+
+      @if (paths().length === 0) {
         <div class="empty-state">No learning paths available yet. Create one!</div>
       }
 
       <div class="grid-cards">
-        @for (path of paths; track path.id) {
+        @for (path of paths(); track path.id) {
           <div class="path-card">
             <h3>{{ path.title }}</h3>
             <p>{{ path.description }}</p>
@@ -41,20 +41,20 @@
 
       <div class="form-group">
         <label>Title *</label>
-        <input type="text" [(ngModel)]="newPath.title" placeholder="e.g. Full-Stack Engineering">
+        <input type="text" [ngModel]="newPath().title" (ngModelChange)="newPath.update(p => ({ ...p, title: $event }))" placeholder="e.g. Full-Stack Engineering">
       </div>
 
       <div class="form-group">
         <label>Description</label>
-        <textarea [(ngModel)]="newPath.description" rows="3" placeholder="Briefly describe this path..."></textarea>
+        <textarea [ngModel]="newPath().description" (ngModelChange)="newPath.update(p => ({ ...p, description: $event }))" rows="3" placeholder="Briefly describe this path..."></textarea>
       </div>
 
-      @if (error) {
-        <div class="error-alert">{{ error }}</div>
+      @if (error()) {
+        <div class="error-alert">{{ error() }}</div>
       }
 
-      <button class="btn-primary" (click)="createPath()" [disabled]="isLoading || !newPath.title">
-        {{ isLoading ? 'Creating...' : 'Create Path' }}
+      <button class="btn-primary" (click)="createPath()" [disabled]="isLoading() || !newPath().title">
+        {{ isLoading() ? 'Creating...' : 'Create Path' }}
       </button>
     </div>
   </div>

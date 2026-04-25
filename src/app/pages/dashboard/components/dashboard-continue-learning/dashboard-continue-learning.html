@@ -1,0 +1,20 @@
+<section class="section-card highlight-card">
+  <div class="section-header">
+    <span class="material-symbols-outlined">play_circle</span>
+    <h2>Continue Learning</h2>
+  </div>
+  <div class="continue-card">
+    <div class="continue-badge">Last Accessed</div>
+    <h3>{{ lastCourse.title }}</h3>
+    <div class="progress-row">
+      <div class="progress-bar">
+        <div class="progress-fill" [style.width.%]="lastCourse.progress"></div>
+      </div>
+      <span class="progress-pct">{{ lastCourse.progress }}%</span>
+    </div>
+    <button class="btn-resume">
+      <span class="material-symbols-outlined">play_arrow</span>
+      Resume
+    </button>
+  </div>
+</section>
