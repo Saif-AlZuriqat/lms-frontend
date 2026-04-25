@@ -1,23 +1,5 @@
 <div class="page-wrapper">
   <div class="auth-card">
-
-    <!-- Left: Branding Panel -->
-    <div class="brand-panel">
-      <div class="brand-badge">
-        <span class="material-symbols-outlined">lock</span>
-        SECURE PORTAL
-      </div>
-      <div class="brand-body">
-        <h1>Join the<br />Sanctuary.</h1>
-        <p>Treat your education with the reverence it deserves. Access a world of curated knowledge.</p>
-      </div>
-      <div class="brand-footer">
-        <div class="brand-line"></div>
-        <span>INSTITUTIONAL ACCESS</span>
-      </div>
-    </div>
-
-    <!-- Right: Form Panel -->
     <div class="form-panel">
       <div class="form-header">
         <h2>Create Account</h2>
@@ -25,33 +7,33 @@
       </div>
 
       @if (errorMessage) {
-        <div class="alert alert-error">
-          <span class="material-symbols-outlined">error</span>
-          {{ errorMessage }}
-        </div>
+        <div class="error-alert">{{ errorMessage }}</div>
       }
       @if (successMessage) {
-        <div class="alert alert-success">
-          <span class="material-symbols-outlined">check_circle</span>
-          {{ successMessage }}
-        </div>
+        <div class="success-alert">{{ successMessage }}</div>
       }
 
       <div class="form-grid">
         <div class="form-group">
           <label for="fullName">Full Name</label>
-          <input id="fullName" [(ngModel)]="fullName" name="fullName" placeholder="John Doe" />
+          <div class="input-icon-wrap">
+            <span class="material-symbols-outlined input-icon-left">person</span>
+            <input id="fullName" [(ngModel)]="fullName" name="fullName" placeholder="John Doe" />
+          </div>
         </div>
         <div class="form-group">
           <label for="userName">Username</label>
-          <input id="userName" [(ngModel)]="userName" name="userName" placeholder="john_doe" />
+          <div class="input-icon-wrap">
+            <span class="material-symbols-outlined input-icon-left">badge</span>
+            <input id="userName" [(ngModel)]="userName" name="userName" placeholder="john_doe" />
+          </div>
         </div>
       </div>
 
       <div class="form-group">
         <label for="email">Email</label>
         <div class="input-icon-wrap">
-          <span class="material-symbols-outlined input-icon">alternate_email</span>
+          <span class="material-symbols-outlined input-icon-left">alternate_email</span>
           <input id="email" type="email" [(ngModel)]="email" name="email" placeholder="name@university.edu" />
         </div>
       </div>
@@ -59,11 +41,17 @@
       <div class="form-grid">
         <div class="form-group">
           <label for="password">Password</label>
-          <input id="password" type="password" [(ngModel)]="password" name="password" placeholder="••••••••" />
+          <div class="input-icon-wrap">
+            <span class="material-symbols-outlined input-icon-left">lock</span>
+            <input id="password" type="password" [(ngModel)]="password" name="password" placeholder="••••••••" />
+          </div>
         </div>
         <div class="form-group">
           <label for="confirmPassword">Confirm Password</label>
-          <input id="confirmPassword" type="password" [(ngModel)]="confirmPassword" name="confirmPassword" placeholder="••••••••" />
+          <div class="input-icon-wrap">
+            <span class="material-symbols-outlined input-icon-left">lock_person</span>
+            <input id="confirmPassword" type="password" [(ngModel)]="confirmPassword" name="confirmPassword" placeholder="••••••••" />
+          </div>
         </div>
       </div>
 
@@ -72,22 +60,8 @@
         <span class="material-symbols-outlined">arrow_forward</span>
       </button>
 
-      <div class="form-footer">
-        Already have an account?
-        <a routerLink="/">Log in instead</a>
-      </div>
-
-      <div class="trust-badges">
-        <div class="badge">
-          <span class="material-symbols-outlined">verified_user</span>
-          SSL SECURE
-        </div>
-        <div class="badge">
-          <span class="material-symbols-outlined">encrypted</span>
-          END-TO-END
-        </div>
-      </div>
+      <div class="divider"><span>Already have an account?</span></div>
+      <a routerLink="/" class="btn-secondary">Log in instead</a>
     </div>
-
   </div>
 </div>
