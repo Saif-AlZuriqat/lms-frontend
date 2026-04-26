@@ -1,0 +1,140 @@
+<div class="ed-layout">
+
+  <!-- Top navbar -->
+  <nav class="ed-nav">
+    <div class="ed-nav-brand">
+      <span class="material-symbols-outlined">school</span>
+      LearnPath
+    </div>
+
+    <!-- Search bar -->
+    <div class="ed-search">
+      <span class="material-symbols-outlined ed-search-icon">search</span>
+      <input
+        type="text"
+        class="ed-search-input"
+        placeholder="Search learning paths..."
+        [value]="searchQuery()"
+        (input)="onSearch($event)"
+      />
+      @if (searchQuery()) {
+        <button class="ed-search-clear" (click)="searchQuery.set('')">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      }
+    </div>
+
+    <div class="ed-nav-right">
+      <button class="ed-logout" (click)="logout()">
+        <span class="material-symbols-outlined">logout</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <div class="ed-hero">
+    <div class="ed-hero-orb orb1"></div>
+    <div class="ed-hero-orb orb2"></div>
+    <div class="ed-hero-content">
+      <h1>Welcome back, <span class="ed-hero-name">{{ userName() || 'there' }}</span></h1>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="ed-content">
+
+    @if (isLoading()) {
+      <div class="ed-loading">
+        <div class="ed-spinner"></div>
+      </div>
+    } @else if (error()) {
+      <div class="ed-error">
+        <span class="material-symbols-outlined">error_outline</span>
+        {{ error() }}
+      </div>
+    } @else {
+
+      <!-- Continue Learning widget (only if there are paths) -->
+      @if (lastPath()) {
+        <div class="ed-section">
+          <h2 class="ed-section-title">Continue Learning</h2>
+          <div class="continue-card" (click)="openPath(lastPath()!.id)">
+            <div class="continue-visual">
+              <div class="play-ring"></div>
+              <div class="course-icon-wrap">
+                <span class="material-symbols-outlined">play_circle</span>
+              </div>
+            </div>
+            <div class="continue-info">
+              <span class="continue-badge">Last Accessed</span>
+              <h3>{{ lastPath()!.title }}</h3>
+              <div class="progress-row">
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: 0%"></div>
+                </div>
+                <span class="progress-pct">0%</span>
+              </div>
+              <p class="continue-hint">Pick up where you left off</p>
+            </div>
+            <button class="btn-resume">
+              <span class="material-symbols-outlined">play_arrow</span>
+              Resume
+            </button>
+          </div>
+        </div>
+      }
+
+      <!-- My Courses section -->
+      <div class="ed-section">
+        <h2 class="ed-section-title">
+          My Courses
+          @if (searchQuery()) {
+            <span class="ed-search-count">{{ filteredPaths().length }} result{{ filteredPaths().length !== 1 ? 's' : '' }} for "{{ searchQuery() }}"</span>
+          }
+        </h2>
+
+        @if (filteredPaths().length === 0 && searchQuery()) {
+          <div class="ed-empty">
+            <span class="material-symbols-outlined">search_off</span>
+            <p>No paths match "{{ searchQuery() }}"</p>
+          </div>
+        } @else if (paths().length === 0) {
+          <div class="ed-empty">
+            <span class="material-symbols-outlined">route</span>
+            <p>No learning paths assigned yet.</p>
+            <span>Contact your HR team to get enrolled in a learning path.</span>
+          </div>
+        } @else {
+          <div class="ed-grid">
+            @for (path of filteredPaths(); track path.id; let i = $index) {
+              <div class="ed-card" (click)="openPath(path.id)">
+                <div class="ed-card-banner" [style.background]="getGradient(i)">
+                  <span class="ed-badge">{{ getCourseCount(path) }} COURSES</span>
+                </div>
+                <div class="ed-card-body">
+                  <h3>{{ path.title }}</h3>
+                  <p>{{ path.description || 'No description provided.' }}</p>
+                  <div class="ed-progress-bar">
+                    <div class="ed-progress-fill" style="width: 0%"></div>
+                  </div>
+                  <div class="ed-progress-text">0% complete</div>
+                  <div class="ed-card-footer">
+                    <span class="ed-meta">
+                      <span class="material-symbols-outlined">menu_book</span>
+                      {{ getCourseCount(path) }} courses
+                    </span>
+                    <span class="ed-cta">
+                      Start
+                      <span class="material-symbols-outlined">arrow_forward</span>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+    }
+  </div>
+</div>

@@ -1,5 +1,5 @@
 import { Component, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { LearningPathService, LearningPathResponseDto, CourseResponseDTO } from '../../services/learning-path.service';
@@ -20,8 +20,13 @@ export class LearningPathDetails implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
+    private location: Location,
     private learningPathService: LearningPathService
   ) {}
+
+  goBack() {
+    this.location.back();
+  }
 
   openCourse(course: CourseResponseDTO) {
     this.router.navigate(['/course', course.id], {

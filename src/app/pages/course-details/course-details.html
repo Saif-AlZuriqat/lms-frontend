@@ -2,41 +2,99 @@
 
   <div class="header">
     <div class="header-content">
-      <a [routerLink]="pathId ? ['/learning-path', pathId] : ['/learning-path']" class="back-btn">
+      <a [routerLink]="backLink()" class="back-btn">
         <span class="material-symbols-outlined">arrow_back</span>
       </a>
-      <h1>{{ course?.title ?? 'Course Details' }}</h1>
+      <h1>{{ course()?.title ?? 'Course Details' }}</h1>
     </div>
   </div>
 
-  @if (!course) {
+  @if (!course() && !isLoading()) {
     <div class="empty-state">
       <span class="material-symbols-outlined empty-icon">menu_book</span>
       <p>No course data found. Please navigate here from a learning path.</p>
       <a routerLink="/learning-path" class="btn-primary">Go to Learning Paths</a>
     </div>
   } @else {
-    <div class="course-overview">
-      <div class="overview-card">
-        <div class="course-icon-large">
-          <span class="material-symbols-outlined">menu_book</span>
-        </div>
-        <div class="overview-info">
-          <h2>{{ course.title }}</h2>
-          <p>{{ course.description || 'No description provided.' }}</p>
+
+    <!-- Course overview -->
+    @if (course()) {
+      <div class="course-overview">
+        <div class="overview-card">
+          <div class="course-icon-large">
+            <span class="material-symbols-outlined">menu_book</span>
+          </div>
+          <div class="overview-info">
+            <h2>{{ course()!.title }}</h2>
+            <p>{{ course()!.description || 'No description provided.' }}</p>
+          </div>
         </div>
       </div>
-    </div>
+    }
 
+    <!-- Sections & Lessons -->
     <div class="lessons-section">
       <div class="section-header">
         <span class="material-symbols-outlined">list</span>
-        <h2>Lessons</h2>
+        <h2>Course Content</h2>
       </div>
-      <div class="empty-state">
-        <span class="material-symbols-outlined empty-icon">school</span>
-        <p>No lessons available yet for this course.</p>
-      </div>
+
+      @if (isLoading()) {
+        <div class="empty-state">
+          <div class="spinner"></div>
+        </div>
+      } @else if (error()) {
+        <div class="error-alert">{{ error() }}</div>
+      } @else if (sections().length === 0) {
+        <div class="empty-state">
+          <span class="material-symbols-outlined empty-icon">school</span>
+          <p>No content available yet for this course.</p>
+        </div>
+      } @else {
+        <div class="sections-list">
+          @for (section of sections(); track section.id; let i = $index) {
+            <div class="section-block">
+              <!-- Section header (clickable to expand) -->
+              <div class="section-row" (click)="toggleSection(section.id)">
+                <div class="section-num">{{ i + 1 }}</div>
+                <div class="section-info">
+                  <span class="section-title">{{ section.title }}</span>
+                  @if (section.description) {
+                    <span class="section-desc">{{ section.description }}</span>
+                  }
+                </div>
+                <span class="lesson-count">{{ section.lessons?.length ?? 0 }} lessons</span>
+                <span class="material-symbols-outlined section-chevron"
+                      [class.rotated]="isSectionExpanded(section.id)">
+                  expand_more
+                </span>
+              </div>
+
+              <!-- Lessons list (shown when section expanded) -->
+              @if (isSectionExpanded(section.id)) {
+                <div class="lessons-list">
+                  @if (!section.lessons || section.lessons.length === 0) {
+                    <div class="lesson-empty">No lessons in this section yet.</div>
+                  } @else {
+                    @for (lesson of section.lessons; track lesson.id; let j = $index) {
+                      <div class="lesson-row">
+                        <span class="lesson-num">{{ j + 1 }}</span>
+                        <span class="material-symbols-outlined lesson-icon">play_circle</span>
+                        <div class="lesson-info">
+                          <span class="lesson-title">{{ lesson.title }}</span>
+                          @if (lesson.description) {
+                            <span class="lesson-desc">{{ lesson.description }}</span>
+                          }
+                        </div>
+                      </div>
+                    }
+                  }
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
     </div>
   }
 

@@ -7,10 +7,10 @@
   gap: 24px;
 }
 
+/* ── Header ──────────────────────────────────────── */
 .header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
 }
 
 .header-content {
@@ -44,7 +44,7 @@
   color: var(--gray-900);
 }
 
-/* Overview */
+/* ── Overview ────────────────────────────────────── */
 .course-overview {
   background: var(--white);
   border-radius: 14px;
@@ -71,9 +71,7 @@
   flex-shrink: 0;
 }
 
-.course-icon-large .material-symbols-outlined {
-  font-size: 30px;
-}
+.course-icon-large .material-symbols-outlined { font-size: 30px; }
 
 .overview-info h2 {
   font-size: 18px;
@@ -86,9 +84,10 @@
   font-size: 14px;
   color: var(--gray-500);
   line-height: 1.6;
+  margin: 0;
 }
 
-/* Lessons */
+/* ── Sections card ───────────────────────────────── */
 .lessons-section {
   background: var(--white);
   border-radius: 14px;
@@ -117,7 +116,141 @@
   color: var(--blue);
 }
 
-/* Empty / No data */
+/* ── Section block ───────────────────────────────── */
+.sections-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.section-block {
+  border: 1px solid var(--gray-200);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.section-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  cursor: pointer;
+  background: var(--gray-50);
+  transition: background 0.15s;
+}
+
+.section-row:hover { background: var(--gray-100); }
+
+.section-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.section-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gray-900);
+}
+
+.section-desc {
+  font-size: 12px;
+  color: var(--gray-500);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lesson-count {
+  font-size: 12px;
+  color: var(--gray-400);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.section-chevron {
+  font-size: 20px;
+  color: var(--gray-400);
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+
+.section-chevron.rotated { transform: rotate(180deg); }
+
+/* ── Lessons list ────────────────────────────────── */
+.lessons-list {
+  border-top: 1px solid var(--gray-100);
+  background: var(--white);
+}
+
+.lesson-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px 12px 58px;
+  border-bottom: 1px solid var(--gray-100);
+  transition: background 0.15s;
+}
+
+.lesson-row:last-child { border-bottom: none; }
+.lesson-row:hover { background: var(--gray-50); }
+
+.lesson-num {
+  font-size: 12px;
+  color: var(--gray-400);
+  width: 18px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.lesson-icon {
+  font-size: 18px;
+  color: var(--blue);
+  flex-shrink: 0;
+}
+
+.lesson-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.lesson-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gray-800);
+}
+
+.lesson-desc {
+  font-size: 12px;
+  color: var(--gray-500);
+}
+
+.lesson-empty {
+  padding: 16px 20px;
+  font-size: 13px;
+  color: var(--gray-400);
+  text-align: center;
+}
+
+/* ── States ──────────────────────────────────────── */
 .empty-state {
   display: flex;
   flex-direction: column;
@@ -128,14 +261,33 @@
   text-align: center;
 }
 
-.empty-icon {
-  font-size: 48px;
-}
+.empty-icon { font-size: 48px; }
 
 .empty-state p {
   font-size: 14px;
   color: var(--gray-500);
+  margin: 0;
 }
+
+.error-alert {
+  background: var(--red-light);
+  color: var(--red);
+  padding: 12px 14px;
+  border-radius: 9px;
+  font-size: 13px;
+  border-left: 4px solid var(--red);
+}
+
+.spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--gray-200);
+  border-top-color: var(--navy);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
 
 .btn-primary {
   display: inline-flex;
@@ -153,6 +305,4 @@
   transition: background 0.15s ease;
 }
 
-.btn-primary:hover {
-  background: var(--blue-hover);
-}
+.btn-primary:hover { background: var(--blue-hover); }

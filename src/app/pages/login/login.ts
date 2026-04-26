@@ -35,7 +35,12 @@ export class Login implements OnInit {
           return;
         }
         this.authService.saveToken(token);
-        this.router.navigate(['/dashboard']);
+        const role = this.authService.getUserRole();
+        if (role === 'HR' || role === 'Admin') {
+          this.router.navigate(['/hr/dashboard']);
+        } else {
+          this.router.navigate(['/employee/dashboard']);
+        }
       },
       error: (err) => {
         this.errorMessage = err.error || 'Login failed. Please check your credentials.';

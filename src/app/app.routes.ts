@@ -66,9 +66,23 @@ export const routes: Routes = [
 
   // ── HR / Admin ───────────────────────────────────────────
   {
+    path: 'hr/dashboard',
+    loadComponent: () => import('./pages/hr-dashboard/hr-dashboard').then(m => m.HrDashboard),
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['Admin', 'HR'] }
+  },
+  {
     path: 'hr/create-user',
     loadComponent: () => import('./pages/hr-create-user/hr-create-user').then(m => m.HrCreateUser),
     canActivate: [authGuard, roleGuard],
     data: { roles: ['Admin', 'HR'] }
+  },
+
+  // ── Employee ─────────────────────────────────────────────
+  {
+    path: 'employee/dashboard',
+    loadComponent: () => import('./pages/employee-dashboard/employee-dashboard').then(m => m.EmployeeDashboard),
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['Employee', 'Admin'] }
   },
 ];

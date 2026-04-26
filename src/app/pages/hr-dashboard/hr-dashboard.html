@@ -1,0 +1,100 @@
+<div class="hr-layout">
+
+  <!-- Left Sidebar -->
+  <aside class="hr-sidebar">
+    <div class="hr-sidebar-brand">
+      <span class="brand-lms">LMS</span>
+      <span class="brand-name">Admin</span>
+      <div class="brand-sub">CORPORATE PORTAL</div>
+    </div>
+
+    <nav class="hr-sidebar-nav">
+      <a routerLink="/hr/dashboard" class="hr-sidebar-link active">
+        <span class="material-symbols-outlined">dashboard</span>
+        Dashboard
+      </a>
+      <a routerLink="/hr/create-user" class="hr-sidebar-link">
+        <span class="material-symbols-outlined">group</span>
+        Users
+      </a>
+      <a routerLink="/learning-paths" class="hr-sidebar-link">
+        <span class="material-symbols-outlined">route</span>
+        Learning Paths
+      </a>
+    </nav>
+  </aside>
+
+  <!-- Main -->
+  <div class="hr-main">
+
+    <!-- Top bar -->
+    <header class="hr-topbar">
+      <div class="hr-search">
+        <span class="material-symbols-outlined hr-search-icon">search</span>
+        <input
+          type="text"
+          class="hr-search-input"
+          placeholder="Search learners, courses, or logs..."
+          [(ngModel)]="searchQuery"
+        />
+      </div>
+      <div class="hr-topbar-right">
+        <button class="hr-icon-btn">
+          <span class="material-symbols-outlined">notifications</span>
+        </button>
+        <button class="hr-icon-btn">
+          <span class="material-symbols-outlined">mail</span>
+        </button>
+        <button class="hr-logout-btn" (click)="logout()">
+          <span class="material-symbols-outlined">logout</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Content -->
+    <div class="hr-content">
+
+      <!-- Welcome -->
+      <div class="hr-welcome-row">
+        <div>
+          <h1 class="hr-welcome-title">Welcome back, {{ userName() || 'Admin' }}</h1>
+          <p class="hr-welcome-sub">Your workforce learning engagement is up this month.</p>
+        </div>
+      </div>
+
+      <!-- Learning Path Distribution -->
+      <div class="hr-section-card">
+        <div class="hr-section-header">
+          <h2>Learning Path Distribution</h2>
+          <a routerLink="/learning-paths" class="hr-view-link">
+            View All <span class="material-symbols-outlined">chevron_right</span>
+          </a>
+        </div>
+
+        @if (paths().length === 0) {
+          <div class="hr-empty">No learning paths found.</div>
+        } @else {
+          <div class="hr-path-list">
+            @for (path of paths(); track path.id) {
+              <div class="hr-path-row">
+                <div class="hr-path-info">
+                  <span class="hr-path-name">{{ path.title }}</span>
+                  <span class="hr-path-count">{{ getCourseCount(path) }} Courses</span>
+                </div>
+                <div class="hr-path-bar-wrap">
+                  <div class="hr-path-bar">
+                    <div class="hr-path-bar-fill"
+                         [style.width.%]="getCourseCount(path) > 0 ? (getCourseCount(path) / 10 * 100 < 100 ? getCourseCount(path) / 10 * 100 : 100) : 8">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+    </div>
+  </div>
+
+</div>

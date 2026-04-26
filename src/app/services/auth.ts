@@ -118,6 +118,27 @@ export class AuthService {
     return null;
   }
 
+  getUserName(): string {
+    const token = this.getToken();
+    if (!token) return '';
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))) as Record<string, unknown>;
+      // ASP.NET Core name claims
+      const nameClaim =
+        (payload['name'] as string) ||
+        (payload['unique_name'] as string) ||
+        (payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'] as string) ||
+        (payload['email'] as string) ||
+        '';
+      // If it looks like an email, take the part before @
+      const raw = nameClaim.includes('@') ? nameClaim.split('@')[0] : nameClaim;
+      // Capitalize first letter
+      return raw ? raw.charAt(0).toUpperCase() + raw.slice(1) : '';
+    } catch {
+      return '';
+    }
+  }
+
   hasAnyRole(roles: UserRole[]) {
     const role = this.getUserRole();
     return role ? roles.includes(role) : false;
