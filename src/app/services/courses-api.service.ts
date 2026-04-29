@@ -12,18 +12,80 @@ export class CoursesApiService {
     return fetchJson<CourseResponseDTO>(`${BASE_URL}/api/Course/GetCourseById/${id}`);
   }
 
-  async createCourse(dto: { title: string; description: string | null; learningPathId: number }): Promise<void> {
-    await fetchJson<void>(`${BASE_URL}/api/Course/CreateCourses`, {
+  async createCourse(dto: { title: string; description: string | null; learningPathId: number; picture?: File | null }): Promise<void> {
+    const formData = new FormData();
+    formData.append('Title', dto.title);
+    if (dto.description) {
+      formData.append('Description', dto.description);
+    }
+    formData.append('LearningPathId', String(dto.learningPathId));
+    if (dto.picture) {
+      formData.append('Image', dto.picture);
+    }
+
+    const token = localStorage.getItem('token');
+    const headers: Record<string, string> = {};
+    if (token && token !== 'undefined' && token !== 'null') {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(`${BASE_URL}/api/Course/CreateCourses`, {
       method: 'POST',
-      body: JSON.stringify(dto),
+      headers,
+      body: formData,
     });
+
+    if (!response.ok) {
+      let errorMessage = `HTTP Error ${response.status}: ${response.statusText}`;
+      try {
+        const errorBody = await response.json();
+        errorMessage = errorBody?.message || errorBody?.title || JSON.stringify(errorBody) || errorMessage;
+      } catch {
+        try {
+          const text = await response.text();
+          if (text) errorMessage = text;
+        } catch {}
+      }
+      throw new Error(errorMessage);
+    }
   }
 
-  async updateCourse(id: number, dto: { title: string; description: string | null; learningPathId: number }): Promise<void> {
-    await fetchJson<void>(`${BASE_URL}/api/Course/UpdateCourse/${id}`, {
+  async updateCourse(id: number, dto: { title: string; description: string | null; learningPathId: number; picture?: File | null }): Promise<void> {
+    const formData = new FormData();
+    formData.append('Title', dto.title);
+    if (dto.description) {
+      formData.append('Description', dto.description);
+    }
+    formData.append('LearningPathId', String(dto.learningPathId));
+    if (dto.picture) {
+      formData.append('Image', dto.picture);
+    }
+
+    const token = localStorage.getItem('token');
+    const headers: Record<string, string> = {};
+    if (token && token !== 'undefined' && token !== 'null') {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(`${BASE_URL}/api/Course/UpdateCourse/${id}`, {
       method: 'PUT',
-      body: JSON.stringify(dto),
+      headers,
+      body: formData,
     });
+
+    if (!response.ok) {
+      let errorMessage = `HTTP Error ${response.status}: ${response.statusText}`;
+      try {
+        const errorBody = await response.json();
+        errorMessage = errorBody?.message || errorBody?.title || JSON.stringify(errorBody) || errorMessage;
+      } catch {
+        try {
+          const text = await response.text();
+          if (text) errorMessage = text;
+        } catch {}
+      }
+      throw new Error(errorMessage);
+    }
   }
 
   async deleteCourse(id: number): Promise<void> {

@@ -1,19 +1,25 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { InlineAddFormComponent } from '../../../components/course-builder/inline-add-form.component';
 import { InlineEditComponent } from '../../../components/course-builder/inline-edit.component';
 import { CoursesApiService } from '../../../services/courses-api.service';
 import { LearningPathsApiService } from '../../../services/learning-paths-api.service';
 import { LessonsApiService } from '../../../services/lessons-api.service';
 import { SectionsApiService } from '../../../services/sections-api.service';
 import { ToastService } from '../../../services/toast.service';
-import { LearningPathResponseDto, LessonResponseDTO, SectionResponseDTO } from '../../../types/course-builder.types';
+import {
+  BASE_URL,
+  CourseResponseDTO,
+  LearningPathResponseDto,
+  LessonResponseDTO,
+  SectionResponseDTO,
+} from '../../../types/course-builder.types';
 
 @Component({
   selector: 'app-course-manager-page',
   standalone: true,
-  imports: [CommonModule, RouterLink, InlineEditComponent, InlineAddFormComponent],
+  imports: [CommonModule, FormsModule, RouterLink, InlineEditComponent],
   templateUrl: './course-manager.html',
   styleUrl: './course-manager.css',
 })
@@ -24,8 +30,29 @@ export class CourseManagerPage implements OnInit {
   error = '';
   expandedCourseIds = new Set<number>();
   expandedSectionIds = new Set<number>();
-  openAddFormKey = '';
   editingKey = '';
+
+  // Course modal
+  courseModalOpen = false;
+  editingCourseId: number | null = null;
+  courseTitle = '';
+  courseDescription = '';
+  selectedFile: File | null = null;
+  imagePreview: string | null = null;
+  isDragOver = false;
+  isSaving = false;
+
+  // Section modal
+  sectionModalOpen = false;
+  sectionTargetCourseId: number | null = null;
+  sectionTitle = '';
+  sectionDescription = '';
+
+  // Lesson modal
+  lessonModalOpen = false;
+  lessonTargetSectionId: number | null = null;
+  lessonTitle = '';
+  lessonDescription = '';
 
   constructor(
     private readonly route: ActivatedRoute,
@@ -71,50 +98,183 @@ export class CourseManagerPage implements OnInit {
     this.expandedSectionIds.has(id) ? this.expandedSectionIds.delete(id) : this.expandedSectionIds.add(id);
   }
 
-  async addCourse(event: { title: string; description: string }): Promise<void> {
-    try {
-      await this.coursesApi.createCourse({ title: event.title, description: event.description || null, learningPathId: this.pathId });
-      this.toast.success('Course added');
-      this.openAddFormKey = '';
-      await this.reload();
-    } catch (error) {
-      this.toast.error((error as Error).message || 'Add course failed');
+  // ── Course Image helpers ─────────────────────────
+  getCourseImageUrl(course: CourseResponseDTO): string {
+    if (!course.pictureUrl) return '';
+    if (course.pictureUrl.startsWith('http')) return course.pictureUrl;
+    return `${BASE_URL}/${course.pictureUrl.replace(/^\//, '')}`;
+  }
+
+  getLessonCount(course: CourseResponseDTO): number {
+    return (course.sections ?? []).reduce((sum, s) => sum + (s.lessons?.length ?? 0), 0);
+  }
+
+  getSectionCount(course: CourseResponseDTO): number {
+    return course.sections?.length ?? 0;
+  }
+
+  // ── Course modal ─────────────────────────────────
+  openAddCourseModal(): void {
+    this.editingCourseId = null;
+    this.courseTitle = '';
+    this.courseDescription = '';
+    this.selectedFile = null;
+    this.imagePreview = null;
+    this.courseModalOpen = true;
+  }
+
+  openEditCourseModal(course: CourseResponseDTO): void {
+    this.editingCourseId = course.id;
+    this.courseTitle = course.title;
+    this.courseDescription = course.description ?? '';
+    this.selectedFile = null;
+    this.imagePreview = null;
+    this.courseModalOpen = true;
+  }
+
+  // ── File selection / drag-drop ──────────────────
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.setFile(input.files[0]);
     }
   }
 
-  async addSection(courseId: number, event: { title: string; description: string }): Promise<void> {
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragOver = true;
+  }
+
+  onDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragOver = false;
+  }
+
+  onDrop(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragOver = false;
+    const files = event.dataTransfer?.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      if (file.type.startsWith('image/')) {
+        this.setFile(file);
+      } else {
+        this.toast.error('Please select an image file.');
+      }
+    }
+  }
+
+  removeImage(): void {
+    this.selectedFile = null;
+    this.imagePreview = null;
+  }
+
+  private setFile(file: File): void {
+    if (file.size > 5 * 1024 * 1024) {
+      this.toast.error('Image must be under 5 MB.');
+      return;
+    }
+    this.selectedFile = file;
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.imagePreview = reader.result as string;
+      this.cdr.detectChanges();
+    };
+    reader.readAsDataURL(file);
+  }
+
+  async submitCourseModal(): Promise<void> {
+    if (!this.courseTitle.trim()) return;
+    this.isSaving = true;
     try {
-      await this.sectionsApi.createSection({ title: event.title, description: event.description || null, courseId });
+      if (this.editingCourseId === null) {
+        await this.coursesApi.createCourse({
+          title: this.courseTitle.trim(),
+          description: this.courseDescription.trim() || null,
+          learningPathId: this.pathId,
+          picture: this.selectedFile,
+        });
+        this.toast.success('Course created');
+      } else {
+        await this.coursesApi.updateCourse(this.editingCourseId, {
+          title: this.courseTitle.trim(),
+          description: this.courseDescription.trim() || null,
+          learningPathId: this.pathId,
+          picture: this.selectedFile,
+        });
+        this.toast.success('Course updated');
+      }
+      this.courseModalOpen = false;
+      await this.reload();
+    } catch (error) {
+      this.toast.error((error as Error).message || 'Unable to save course');
+    } finally {
+      this.isSaving = false;
+      this.cdr.detectChanges();
+    }
+  }
+
+  // ── Section modal ────────────────────────────────
+  openAddSectionModal(courseId: number): void {
+    this.sectionTargetCourseId = courseId;
+    this.sectionTitle = '';
+    this.sectionDescription = '';
+    this.sectionModalOpen = true;
+  }
+
+  async submitSectionModal(): Promise<void> {
+    if (!this.sectionTitle.trim() || this.sectionTargetCourseId === null) return;
+    this.isSaving = true;
+    try {
+      await this.sectionsApi.createSection({
+        title: this.sectionTitle.trim(),
+        description: this.sectionDescription.trim() || null,
+        courseId: this.sectionTargetCourseId,
+      });
       this.toast.success('Section added');
-      this.openAddFormKey = '';
+      this.sectionModalOpen = false;
       await this.reload();
     } catch (error) {
       this.toast.error((error as Error).message || 'Add section failed');
+    } finally {
+      this.isSaving = false;
+      this.cdr.detectChanges();
     }
   }
 
-  async addLesson(sectionId: number, event: { title: string; description: string }): Promise<void> {
+  // ── Lesson modal ─────────────────────────────────
+  openAddLessonModal(sectionId: number): void {
+    this.lessonTargetSectionId = sectionId;
+    this.lessonTitle = '';
+    this.lessonDescription = '';
+    this.lessonModalOpen = true;
+  }
+
+  async submitLessonModal(): Promise<void> {
+    if (!this.lessonTitle.trim() || this.lessonTargetSectionId === null) return;
+    this.isSaving = true;
     try {
-      await this.lessonsApi.createLesson({ title: event.title, description: event.description || null, content: '', sectionId });
+      await this.lessonsApi.createLesson({
+        title: this.lessonTitle.trim(),
+        description: this.lessonDescription.trim() || null,
+        content: '',
+        sectionId: this.lessonTargetSectionId,
+      });
       this.toast.success('Lesson added');
-      this.openAddFormKey = '';
+      this.lessonModalOpen = false;
       await this.reload();
     } catch (error) {
       this.toast.error((error as Error).message || 'Add lesson failed');
+    } finally {
+      this.isSaving = false;
+      this.cdr.detectChanges();
     }
   }
 
-  async updateCourse(courseId: number, event: { title: string; description: string }): Promise<void> {
-    try {
-      await this.coursesApi.updateCourse(courseId, { title: event.title, description: event.description || null, learningPathId: this.pathId });
-      this.editingKey = '';
-      this.toast.success('Course updated');
-      await this.reload();
-    } catch (error) {
-      this.toast.error((error as Error).message || 'Update course failed');
-    }
-  }
-
+  // ── Inline editing (sections/lessons) ────────────
   async updateSection(sectionId: number, event: { title: string; description: string }): Promise<void> {
     try {
       await this.sectionsApi.updateSection(sectionId, { title: event.title, description: event.description || null });
@@ -137,6 +297,7 @@ export class CourseManagerPage implements OnInit {
     }
   }
 
+  // ── Deletes ──────────────────────────────────────
   async removeCourse(id: number): Promise<void> {
     if (!confirm('Delete this course?')) return;
     await this.safeDelete(async () => this.coursesApi.deleteCourse(id), 'Course deleted');

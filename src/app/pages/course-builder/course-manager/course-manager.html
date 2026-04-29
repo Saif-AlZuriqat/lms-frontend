@@ -1,116 +1,203 @@
-<div class="manager-container">
-  <div class="header">
-    <h1>Course Builder</h1>
-    <a routerLink="/dashboard" class="back-link">Back to Dashboard</a>
+<div class="cm-page">
+
+  <!-- Header -->
+  <div class="cm-header">
+    <div class="cm-header-left">
+      <a routerLink="/dashboard" class="cm-back-btn">
+        <span class="material-symbols-outlined">arrow_back</span>
+      </a>
+      <div class="cm-header-text">
+        <h1>
+          <span class="material-symbols-outlined cm-header-icon">menu_book</span>
+          Course Builder
+        </h1>
+        @if (tree) {
+          <p class="cm-header-sub">{{ tree.title }}</p>
+        }
+      </div>
+    </div>
+    <button class="btn-create" (click)="openAddCourseModal()">
+      <span class="material-symbols-outlined">add</span>
+      Add Course
+    </button>
   </div>
 
+  <!-- Content -->
   @if (loading) {
-    <div class="loading">Loading learning path...</div>
-  }
-  
-  @if (error) {
-    <div class="error">{{ error }}</div>
-  }
+    <div class="cm-loading">
+      <div class="cm-spinner"></div>
+      <span>Loading courses…</span>
+    </div>
+  } @else if (error) {
+    <div class="cm-error">
+      <span class="material-symbols-outlined">error_outline</span>
+      {{ error }}
+    </div>
+  } @else if (tree) {
+    <!-- Courses in This Path -->
+    <div class="cm-section-header">
+      <h2>Courses in This Path</h2>
+      <span class="cm-count-badge">{{ tree.courses.length }} course{{ tree.courses.length !== 1 ? 's' : '' }}</span>
+    </div>
 
-  @if (!loading && !error && tree) {
-    <div class="tree-container">
-      <h2>{{ tree.title }}</h2>
-      <p class="description">{{ tree.description }}</p>
+    @if (tree.courses.length === 0) {
+      <div class="cm-empty">
+        <span class="material-symbols-outlined cm-empty-icon">school</span>
+        <h2>No courses yet</h2>
+        <p>Add your first course to this learning path.</p>
+        <button class="btn-create-alt" (click)="openAddCourseModal()">
+          <span class="material-symbols-outlined">add</span>
+          Add Your First Course
+        </button>
+      </div>
+    } @else {
+      <div class="cm-courses-list">
+        @for (course of tree.courses; track course.id; let i = $index) {
+          <div class="cm-course-card" [class.expanded]="expandedCourseIds.has(course.id)">
+            <!-- Course Card Header -->
+            <div class="cm-course-row">
+              <div class="cm-course-order">{{ i + 1 }}</div>
 
-      <div class="courses-list">
-        @for (course of tree.courses; track course.id) {
-          <div class="course-item">
-            <div class="item-header">
-              <button (click)="toggleCourse(course.id)" class="toggle-btn">
-                {{ expandedCourseIds.has(course.id) ? '▼' : '▶' }}
-              </button>
-              
-              @if (editingKey !== 'course-' + course.id) {
-                <div class="item-content">
-                  <h3>{{ course.title }}</h3>
-                  <p>{{ course.description }}</p>
-                  <div class="actions">
-                    <button (click)="editingKey = 'course-' + course.id">Edit</button>
-                    <button (click)="removeCourse(course.id)" class="danger">Delete</button>
-                    <button (click)="openAddFormKey = 'section-' + course.id">+ Section</button>
+              <!-- Course Image -->
+              <div class="cm-course-thumb">
+                @if (course.pictureUrl) {
+                  <img [src]="getCourseImageUrl(course)" alt="" class="cm-thumb-img" />
+                } @else {
+                  <div class="cm-thumb-placeholder">
+                    <span class="material-symbols-outlined">image</span>
                   </div>
+                }
+              </div>
+
+              <!-- Course Info -->
+              <div class="cm-course-info">
+                <h3>{{ course.title }}</h3>
+                <p class="cm-course-desc">{{ course.description || 'No description provided.' }}</p>
+                <div class="cm-course-stats">
+                  <span class="cm-stat">
+                    <span class="material-symbols-outlined">folder</span>
+                    {{ getSectionCount(course) }} sections
+                  </span>
+                  <span class="cm-stat">
+                    <span class="material-symbols-outlined">play_circle</span>
+                    {{ getLessonCount(course) }} lessons
+                  </span>
                 </div>
-              } @else {
-                <app-inline-edit 
-                  [title]="course.title"
-                  [description]="course.description || ''"
-                  (confirm)="updateCourse(course.id, $event)"
-                  (cancel)="editingKey = ''">
-                </app-inline-edit>
-              }
+              </div>
+
+              <!-- Course Actions -->
+              <div class="cm-course-actions">
+                <button class="cm-action-btn" title="Edit" (click)="openEditCourseModal(course); $event.stopPropagation()">
+                  <span class="material-symbols-outlined">edit</span>
+                </button>
+                <button class="cm-action-btn cm-action-danger" title="Delete" (click)="removeCourse(course.id); $event.stopPropagation()">
+                  <span class="material-symbols-outlined">delete</span>
+                </button>
+                <button class="cm-expand-btn" (click)="toggleCourse(course.id)">
+                  <span class="material-symbols-outlined" [class.rotated]="expandedCourseIds.has(course.id)">expand_more</span>
+                </button>
+              </div>
             </div>
 
-            @if (openAddFormKey === 'section-' + course.id) {
-              <app-inline-add-form
-                (submit)="addSection(course.id, $event)"
-                (cancel)="openAddFormKey = ''">
-              </app-inline-add-form>
-            }
-
+            <!-- Expanded: Sections & Lessons -->
             @if (expandedCourseIds.has(course.id)) {
-              <div class="sections-list">
-                @for (section of course.sections; track section.id) {
-                  <div class="section-item">
-                    <div class="item-header">
-                      <button (click)="toggleSection(section.id)" class="toggle-btn">
-                        {{ expandedSectionIds.has(section.id) ? '▼' : '▶' }}
-                      </button>
+              <div class="cm-course-body">
+                <div class="cm-sections-header">
+                  <h4>
+                    <span class="material-symbols-outlined">list</span>
+                    Sections
+                  </h4>
+                  <button class="cm-add-inline" (click)="openAddSectionModal(course.id)">
+                    <span class="material-symbols-outlined">add</span>
+                    Add Section
+                  </button>
+                </div>
+
+                @if (course.sections.length === 0) {
+                  <div class="cm-nested-empty">No sections yet. Add one to get started.</div>
+                }
+
+                @for (section of course.sections; track section.id; let si = $index) {
+                  <div class="cm-section-block">
+                    <div class="cm-section-row" (click)="toggleSection(section.id)">
+                      <div class="cm-section-num">{{ si + 1 }}</div>
 
                       @if (editingKey !== sectionKey(section)) {
-                        <div class="item-content">
-                          <h4>{{ section.title }}</h4>
-                          <p>{{ section.description }}</p>
-                          <div class="actions">
-                            <button (click)="editingKey = sectionKey(section)">Edit</button>
-                            <button (click)="removeSection(section.id)" class="danger">Delete</button>
-                            <button (click)="openAddFormKey = 'lesson-' + section.id">+ Lesson</button>
-                          </div>
+                        <div class="cm-section-info">
+                          <span class="cm-section-title">{{ section.title }}</span>
+                          @if (section.description) {
+                            <span class="cm-section-desc">{{ section.description }}</span>
+                          }
                         </div>
+                        <span class="cm-section-lesson-count">{{ section.lessons?.length ?? 0 }} lessons</span>
+                        <div class="cm-section-actions">
+                          <button class="cm-action-btn-sm" (click)="editingKey = sectionKey(section); $event.stopPropagation()">
+                            <span class="material-symbols-outlined">edit</span>
+                          </button>
+                          <button class="cm-action-btn-sm cm-action-danger" (click)="removeSection(section.id); $event.stopPropagation()">
+                            <span class="material-symbols-outlined">delete</span>
+                          </button>
+                        </div>
+                        <span class="material-symbols-outlined cm-chevron" [class.rotated]="expandedSectionIds.has(section.id)">expand_more</span>
                       } @else {
-                        <app-inline-edit 
-                          [title]="section.title"
-                          [description]="section.description || ''"
-                          (confirm)="updateSection(section.id, $event)"
-                          (cancel)="editingKey = ''">
-                        </app-inline-edit>
+                        <div class="cm-inline-edit-wrap" (click)="$event.stopPropagation()">
+                          <app-inline-edit
+                            [title]="section.title"
+                            [description]="section.description || ''"
+                            (confirm)="updateSection(section.id, $event)"
+                            (cancel)="editingKey = ''">
+                          </app-inline-edit>
+                        </div>
                       }
                     </div>
 
-                    @if (openAddFormKey === 'lesson-' + section.id) {
-                      <app-inline-add-form
-                        (submit)="addLesson(section.id, $event)"
-                        (cancel)="openAddFormKey = ''">
-                      </app-inline-add-form>
-                    }
-
                     @if (expandedSectionIds.has(section.id)) {
-                      <div class="lessons-list">
-                        @for (lesson of section.lessons; track lesson.id) {
-                          <div class="lesson-item">
-                            @if (editingKey !== 'lesson-' + lesson.id) {
-                              <div class="item-content">
-                                <h5>{{ lesson.title }}</h5>
-                                <p>{{ lesson.description }}</p>
-                                <div class="actions">
-                                  <button (click)="editLessonContent(lesson.id)">Edit Content</button>
-                                  <button (click)="editingKey = 'lesson-' + lesson.id">Edit Details</button>
-                                  <button (click)="removeLesson(lesson.id)" class="danger">Delete</button>
+                      <div class="cm-lessons-list">
+                        <div class="cm-lessons-header">
+                          <span>Lessons</span>
+                          <button class="cm-add-inline-sm" (click)="openAddLessonModal(section.id)">
+                            <span class="material-symbols-outlined">add</span>
+                            Add Lesson
+                          </button>
+                        </div>
+
+                        @if (!section.lessons || section.lessons.length === 0) {
+                          <div class="cm-nested-empty">No lessons in this section yet.</div>
+                        } @else {
+                          @for (lesson of section.lessons; track lesson.id; let li = $index) {
+                            <div class="cm-lesson-row">
+                              @if (editingKey !== 'lesson-' + lesson.id) {
+                                <span class="cm-lesson-num">{{ li + 1 }}</span>
+                                <span class="material-symbols-outlined cm-lesson-icon">play_circle</span>
+                                <div class="cm-lesson-info">
+                                  <span class="cm-lesson-title">{{ lesson.title }}</span>
+                                  @if (lesson.description) {
+                                    <span class="cm-lesson-desc">{{ lesson.description }}</span>
+                                  }
                                 </div>
-                              </div>
-                            } @else {
-                              <app-inline-edit 
-                                [title]="lesson.title"
-                                [description]="lesson.description || ''"
-                                (confirm)="updateLesson(lesson, $event)"
-                                (cancel)="editingKey = ''">
-                              </app-inline-edit>
-                            }
-                          </div>
+                                <div class="cm-lesson-actions">
+                                  <button class="cm-action-btn-sm" (click)="editLessonContent(lesson.id)" title="Edit Content">
+                                    <span class="material-symbols-outlined">description</span>
+                                  </button>
+                                  <button class="cm-action-btn-sm" (click)="editingKey = 'lesson-' + lesson.id" title="Edit Details">
+                                    <span class="material-symbols-outlined">edit</span>
+                                  </button>
+                                  <button class="cm-action-btn-sm cm-action-danger" (click)="removeLesson(lesson.id)" title="Delete">
+                                    <span class="material-symbols-outlined">delete</span>
+                                  </button>
+                                </div>
+                              } @else {
+                                <div class="cm-inline-edit-wrap">
+                                  <app-inline-edit
+                                    [title]="lesson.title"
+                                    [description]="lesson.description || ''"
+                                    (confirm)="updateLesson(lesson, $event)"
+                                    (cancel)="editingKey = ''">
+                                  </app-inline-edit>
+                                </div>
+                              }
+                            </div>
+                          }
                         }
                       </div>
                     }
@@ -121,20 +208,145 @@
           </div>
         }
       </div>
-
-      <div class="add-course-container">
-        @if (openAddFormKey !== 'course') {
-          <button (click)="openAddFormKey = 'course'" class="primary-btn">
-            + Add Course
-          </button>
-        } @else {
-          <app-inline-add-form
-            (submit)="addCourse($event)"
-            (cancel)="openAddFormKey = ''">
-          </app-inline-add-form>
-        }
-      </div>
-
-    </div>
+    }
   }
 </div>
+
+<!-- ── Course Create / Edit Modal ────────────────── -->
+@if (courseModalOpen) {
+  <div class="modal-overlay" (click)="courseModalOpen = false">
+    <div class="modal-panel" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>{{ editingCourseId ? 'Edit Course' : 'Add Course' }}</h2>
+        <button class="modal-close" (click)="courseModalOpen = false">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <div class="modal-content">
+        <!-- Image Upload -->
+        <div class="upload-area" (click)="fileInput.click()"
+             (dragover)="onDragOver($event)"
+             (dragleave)="onDragLeave($event)"
+             (drop)="onDrop($event)"
+             [class.has-preview]="imagePreview"
+             [class.drag-over]="isDragOver">
+          @if (imagePreview) {
+            <img [src]="imagePreview" alt="Preview" class="upload-preview" />
+            <div class="upload-preview-overlay">
+              <span class="material-symbols-outlined">edit</span>
+              <span>Change Image</span>
+            </div>
+          } @else {
+            <div class="upload-placeholder">
+              <div class="upload-icon-ring">
+                <span class="material-symbols-outlined">cloud_upload</span>
+              </div>
+              <span class="upload-text">Drop an image here or click to browse</span>
+              <span class="upload-hint">PNG, JPG, WebP up to 5 MB</span>
+            </div>
+          }
+          <input #fileInput type="file" accept="image/*" (change)="onFileSelected($event)" class="file-input-hidden" />
+        </div>
+
+        @if (imagePreview) {
+          <button class="btn-remove-img" (click)="removeImage()">
+            <span class="material-symbols-outlined">delete</span>
+            Remove Image
+          </button>
+        }
+
+        <div class="form-group">
+          <label for="course-title">Title <span class="required">*</span></label>
+          <input id="course-title" type="text" [(ngModel)]="courseTitle" placeholder="e.g. HTML & CSS Fundamentals" class="form-input" autofocus />
+        </div>
+
+        <div class="form-group">
+          <label for="course-desc">Description</label>
+          <textarea id="course-desc" [(ngModel)]="courseDescription" placeholder="Describe what learners will achieve…" class="form-textarea" rows="4"></textarea>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="courseModalOpen = false">Cancel</button>
+        <button class="btn-save" (click)="submitCourseModal()" [disabled]="!courseTitle.trim() || isSaving">
+          @if (isSaving) {
+            <div class="btn-spinner"></div>
+            Saving…
+          } @else {
+            <span class="material-symbols-outlined">check</span>
+            {{ editingCourseId ? 'Update Course' : 'Create Course' }}
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ── Section Modal ─────────────────────────────── -->
+@if (sectionModalOpen) {
+  <div class="modal-overlay" (click)="sectionModalOpen = false">
+    <div class="modal-panel modal-sm" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Add Section</h2>
+        <button class="modal-close" (click)="sectionModalOpen = false">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <div class="modal-content">
+        <div class="form-group">
+          <label for="section-title">Title <span class="required">*</span></label>
+          <input id="section-title" type="text" [(ngModel)]="sectionTitle" placeholder="e.g. Getting Started" class="form-input" autofocus />
+        </div>
+        <div class="form-group">
+          <label for="section-desc">Description</label>
+          <textarea id="section-desc" [(ngModel)]="sectionDescription" placeholder="Optional description…" class="form-textarea" rows="3"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="sectionModalOpen = false">Cancel</button>
+        <button class="btn-save" (click)="submitSectionModal()" [disabled]="!sectionTitle.trim() || isSaving">
+          @if (isSaving) {
+            <div class="btn-spinner"></div> Saving…
+          } @else {
+            <span class="material-symbols-outlined">check</span> Add Section
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ── Lesson Modal ──────────────────────────────── -->
+@if (lessonModalOpen) {
+  <div class="modal-overlay" (click)="lessonModalOpen = false">
+    <div class="modal-panel modal-sm" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Add Lesson</h2>
+        <button class="modal-close" (click)="lessonModalOpen = false">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <div class="modal-content">
+        <div class="form-group">
+          <label for="lesson-title">Title <span class="required">*</span></label>
+          <input id="lesson-title" type="text" [(ngModel)]="lessonTitle" placeholder="e.g. Introduction to Variables" class="form-input" autofocus />
+        </div>
+        <div class="form-group">
+          <label for="lesson-desc">Description</label>
+          <textarea id="lesson-desc" [(ngModel)]="lessonDescription" placeholder="Optional description…" class="form-textarea" rows="3"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="lessonModalOpen = false">Cancel</button>
+        <button class="btn-save" (click)="submitLessonModal()" [disabled]="!lessonTitle.trim() || isSaving">
+          @if (isSaving) {
+            <div class="btn-spinner"></div> Saving…
+          } @else {
+            <span class="material-symbols-outlined">check</span> Add Lesson
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+}

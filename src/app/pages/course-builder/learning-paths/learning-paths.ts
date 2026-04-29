@@ -141,6 +141,7 @@ export class LearningPathsPage implements OnInit {
         await this.api.updatePath(this.editingId, {
           title: this.title.trim(),
           description: this.description.trim() || null,
+          picture: this.selectedFile,
         });
         this.toast.success('Learning path updated');
       }

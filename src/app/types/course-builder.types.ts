@@ -24,6 +24,7 @@ export interface CourseResponseDTO {
   description: string | null;
   order: number;
   learningPathId: number;
+  pictureUrl: string | null;
   sections: SectionResponseDTO[];
 }
 

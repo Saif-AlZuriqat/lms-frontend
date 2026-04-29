@@ -11,7 +11,8 @@ export interface CourseResponseDTO {
   id: number;
   title: string;
   description?: string;
-  // Add other properties if known, or just keep basic
+  image?: string | null;
+  sections?: { id: number; title: string; lessons?: unknown[] }[];
 }
 
 export interface LearningPathResponseDto {

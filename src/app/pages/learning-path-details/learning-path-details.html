@@ -13,36 +13,72 @@
   </div>
 
   @if (isLoading()) {
-    <div class="loading-state">Loading learning path details...</div>
+    <div class="loading-state">
+      <div class="loading-spinner"></div>
+      <span>Loading learning path details...</span>
+    </div>
   } @else if (error()) {
     <div class="error-alert">{{ error() }}</div>
   } @else if (path()) {
-    <div class="path-overview">
-      <h2>Description</h2>
-      <p>{{ path()!.description }}</p>
-    </div>
+    @if (path()!.description) {
+      <div class="path-overview">
+        <h2>Description</h2>
+        <p>{{ path()!.description }}</p>
+      </div>
+    }
 
     <div class="courses-section">
       <div class="section-header">
-        <h2>Courses in this Path ({{ path()!.courses.length || 0 }})</h2>
+        <h2>Courses in This Path</h2>
+        <span class="course-count-badge">{{ path()!.courses?.length || 0 }}</span>
       </div>
 
       @if (!path()!.courses || path()!.courses.length === 0) {
         <div class="empty-state">
-          No courses have been added to this learning path yet.
+          <span class="material-symbols-outlined empty-icon">school</span>
+          <p>No courses have been added to this learning path yet.</p>
         </div>
       } @else {
         <div class="courses-list">
-          @for (course of path()!.courses; track course.id) {
-            <div class="course-card">
-              <div class="course-icon">
-                <span class="material-symbols-outlined">menu_book</span>
+          @for (course of path()!.courses; track course.id; let i = $index) {
+            <div class="course-card" (click)="openCourse(course)">
+              <!-- Order number -->
+              <div class="course-order">{{ i + 1 }}</div>
+
+              <!-- Course Thumbnail -->
+              <div class="course-thumb">
+                @if (course.image) {
+                  <img [src]="getCourseImageUrl(course)" alt="" class="thumb-img" />
+                } @else {
+                  <div class="thumb-placeholder">
+                    <span class="material-symbols-outlined">menu_book</span>
+                  </div>
+                }
               </div>
+
+              <!-- Course Info -->
               <div class="course-info">
                 <h3>{{ course.title }}</h3>
-                <p>{{ course.description || 'No description provided.' }}</p>
+                <p class="course-desc">{{ course.description || 'No description provided.' }}</p>
+                <div class="course-meta">
+                  <span class="meta-item">
+                    <span class="material-symbols-outlined">folder</span>
+                    {{ getSectionCount(course) }} sections
+                  </span>
+                  <span class="meta-item">
+                    <span class="material-symbols-outlined">play_circle</span>
+                    {{ getLessonCount(course) }} lessons
+                  </span>
+                </div>
               </div>
-              <button class="btn-secondary" (click)="openCourse(course)">View Course</button>
+
+              <!-- Action -->
+              <div class="course-action">
+                <button class="btn-view">
+                  View Course
+                  <span class="material-symbols-outlined">arrow_forward</span>
+                </button>
+              </div>
             </div>
           }
         </div>

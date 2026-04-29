@@ -1,13 +1,13 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { LearningPathService, LearningPathResponseDto, CourseResponseDTO } from '../../services/learning-path.service';
 
 @Component({
   selector: 'app-learning-path-details',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule],
   templateUrl: './learning-path-details.html',
   styleUrl: './learning-path-details.css'
 })
@@ -16,6 +16,8 @@ export class LearningPathDetails implements OnInit {
   path = signal<LearningPathResponseDto | null>(null);
   isLoading = signal(true);
   error = signal('');
+
+  private readonly baseUrl = 'http://localhost:5232';
 
   constructor(
     private route: ActivatedRoute,
@@ -32,6 +34,21 @@ export class LearningPathDetails implements OnInit {
     this.router.navigate(['/course', course.id], {
       state: { course, pathId: this.pathId() }
     });
+  }
+
+  getCourseImageUrl(course: CourseResponseDTO): string {
+    if (!course.image) return '';
+    if (course.image.startsWith('http')) return course.image;
+    return `${this.baseUrl}/${course.image.replace(/^\//, '')}`;
+  }
+
+  getLessonCount(course: CourseResponseDTO): number {
+    if (!course.sections) return 0;
+    return course.sections.reduce((sum, s) => sum + (s.lessons?.length ?? 0), 0);
+  }
+
+  getSectionCount(course: CourseResponseDTO): number {
+    return course.sections?.length ?? 0;
   }
 
   ngOnInit() {

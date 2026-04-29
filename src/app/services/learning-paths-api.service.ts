@@ -61,11 +61,41 @@ export class LearningPathsApiService {
     }
   }
 
-  async updatePath(id: number, dto: { title: string; description: string | null }): Promise<void> {
-    await fetchJson<void>(`${BASE_URL}/api/LearningPath/UpdatePath/${id}`, {
+  async updatePath(id: number, dto: { title: string; description: string | null; picture?: File | null }): Promise<void> {
+    const formData = new FormData();
+    formData.append('Title', dto.title);
+    if (dto.description) {
+      formData.append('Description', dto.description);
+    }
+    if (dto.picture) {
+      formData.append('Image', dto.picture);
+    }
+
+    const token = localStorage.getItem('token');
+    const headers: Record<string, string> = {};
+    if (token && token !== 'undefined' && token !== 'null') {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(`${BASE_URL}/api/LearningPath/UpdatePath/${id}`, {
       method: 'PUT',
-      body: JSON.stringify(dto),
+      headers,
+      body: formData,
     });
+
+    if (!response.ok) {
+      let errorMessage = `HTTP Error ${response.status}: ${response.statusText}`;
+      try {
+        const errorBody = await response.json();
+        errorMessage = errorBody?.message || errorBody?.title || JSON.stringify(errorBody) || errorMessage;
+      } catch {
+        try {
+          const text = await response.text();
+          if (text) errorMessage = text;
+        } catch {}
+      }
+      throw new Error(errorMessage);
+    }
   }
 
   async deletePath(id: number): Promise<void> {
@@ -91,6 +121,7 @@ export class LearningPathsApiService {
       description: toNullableString(node['description'] ?? node['Description']),
       order: toNumber(node['order'] ?? node['Order']),
       learningPathId: toNumber(node['learningPathId'] ?? node['LearningPathId']),
+      pictureUrl: toNullableString(node['image'] ?? node['Image']),
       sections: readArray(node['sections'] ?? node['Sections']).map((section) => this.normalizeSection(section)),
     };
   }
