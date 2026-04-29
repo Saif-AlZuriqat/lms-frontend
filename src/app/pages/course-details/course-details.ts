@@ -83,6 +83,6 @@ export class CourseDetails implements OnInit {
   }
 
   backLink(): string[] {
-    return this.pathId ? ['/learning-path', String(this.pathId)] : ['/learning-path'];
+    return this.pathId ? ['/learning-path', String(this.pathId)] : ['/employee/dashboard'];
   }
 }

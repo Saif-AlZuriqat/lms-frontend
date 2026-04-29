@@ -32,11 +32,6 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   {
-    path: 'learning-path',
-    loadComponent: () => import('./pages/learning-path/learning-path').then(m => m.LearningPath),
-    canActivate: [authGuard]
-  },
-  {
     path: 'learning-path/:id',
     loadComponent: () => import('./pages/learning-path-details/learning-path-details').then(m => m.LearningPathDetails),
     canActivate: [authGuard]

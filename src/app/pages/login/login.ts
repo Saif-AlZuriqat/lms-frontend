@@ -21,7 +21,12 @@ export class Login implements OnInit {
 
   ngOnInit(): void {
     if (this.authService.isLoggedIn()) {
-      this.router.navigate(['/dashboard']);
+      const role = this.authService.getUserRole();
+      if (role === 'HR' || role === 'Admin') {
+        this.router.navigate(['/hr/dashboard']);
+      } else {
+        this.router.navigate(['/employee/dashboard']);
+      }
     }
   }
 
