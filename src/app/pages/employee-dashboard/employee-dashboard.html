@@ -108,7 +108,11 @@
           <div class="ed-grid">
             @for (path of filteredPaths(); track path.id; let i = $index) {
               <div class="ed-card" (click)="openPath(path.id)">
-                <div class="ed-card-banner" [style.background]="getGradient(i)">
+                <div class="ed-card-banner" [style.background]="path.image ? 'transparent' : getGradient(i)">
+                  @if (path.image) {
+                    <img [src]="getPictureUrl(path)" alt="" class="ed-card-banner-img" />
+                    <div class="ed-card-banner-overlay"></div>
+                  }
                   <span class="ed-badge">{{ getCourseCount(path) }} COURSES</span>
                 </div>
                 <div class="ed-card-body">

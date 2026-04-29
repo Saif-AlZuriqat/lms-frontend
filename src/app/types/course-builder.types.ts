@@ -31,5 +31,6 @@ export interface LearningPathResponseDto {
   id: number;
   title: string;
   description: string | null;
+  pictureUrl: string | null;
   courses: CourseResponseDTO[];
 }

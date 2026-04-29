@@ -27,11 +27,6 @@ export const routes: Routes = [
 
   // ── Student pages (lazy) ─────────────────────────────────
   {
-    path: 'dashboard',
-    loadComponent: () => import('./pages/dashboard/dashboard').then(m => m.Dashboard),
-    canActivate: [authGuard]
-  },
-  {
     path: 'learning-path/:id',
     loadComponent: () => import('./pages/learning-path-details/learning-path-details').then(m => m.LearningPathDetails),
     canActivate: [authGuard]

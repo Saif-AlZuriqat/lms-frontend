@@ -3,7 +3,6 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { LearningPathCardComponent } from '../../../components/course-builder/learning-path-card.component';
-import { ModalComponent } from '../../../components/course-builder/modal.component';
 import { LearningPathsApiService } from '../../../services/learning-paths-api.service';
 import { ToastService } from '../../../services/toast.service';
 import { LearningPathResponseDto } from '../../../types/course-builder.types';
@@ -11,7 +10,7 @@ import { LearningPathResponseDto } from '../../../types/course-builder.types';
 @Component({
   selector: 'app-learning-paths-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, LearningPathCardComponent, ModalComponent],
+  imports: [CommonModule, FormsModule, LearningPathCardComponent],
   templateUrl: './learning-paths.html',
   styleUrl: './learning-paths.css',
 })
@@ -23,6 +22,12 @@ export class LearningPathsPage implements OnInit {
   editingId: number | null = null;
   title = '';
   description = '';
+  isSaving = false;
+
+  // Image upload
+  selectedFile: File | null = null;
+  imagePreview: string | null = null;
+  isDragOver = false;
 
   constructor(
     private readonly api: LearningPathsApiService,
@@ -52,6 +57,8 @@ export class LearningPathsPage implements OnInit {
     this.editingId = null;
     this.title = '';
     this.description = '';
+    this.selectedFile = null;
+    this.imagePreview = null;
     this.modalOpen = true;
   }
 
@@ -59,23 +66,91 @@ export class LearningPathsPage implements OnInit {
     this.editingId = path.id;
     this.title = path.title;
     this.description = path.description ?? '';
+    this.selectedFile = null;
+    this.imagePreview = null;
     this.modalOpen = true;
   }
 
+  // ── File selection / drag-drop ──────────────────────
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.setFile(input.files[0]);
+    }
+  }
+
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragOver = true;
+  }
+
+  onDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragOver = false;
+  }
+
+  onDrop(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragOver = false;
+    const files = event.dataTransfer?.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      if (file.type.startsWith('image/')) {
+        this.setFile(file);
+      } else {
+        this.toast.error('Please select an image file.');
+      }
+    }
+  }
+
+  removeImage(): void {
+    this.selectedFile = null;
+    this.imagePreview = null;
+  }
+
+  private setFile(file: File): void {
+    if (file.size > 5 * 1024 * 1024) {
+      this.toast.error('Image must be under 5 MB.');
+      return;
+    }
+    this.selectedFile = file;
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.imagePreview = reader.result as string;
+      this.cdr.detectChanges();
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // ── Submit ──────────────────────────────────────────
   async submitModal(): Promise<void> {
     if (!this.title.trim()) return;
+    this.isSaving = true;
     try {
       if (this.editingId === null) {
-        await this.api.addPath({ title: this.title.trim(), description: this.description.trim() || null });
+        await this.api.addPath({
+          title: this.title.trim(),
+          description: this.description.trim() || null,
+          picture: this.selectedFile,
+        });
         this.toast.success('Learning path created');
       } else {
-        await this.api.updatePath(this.editingId, { title: this.title.trim(), description: this.description.trim() || null });
+        await this.api.updatePath(this.editingId, {
+          title: this.title.trim(),
+          description: this.description.trim() || null,
+        });
         this.toast.success('Learning path updated');
       }
       this.modalOpen = false;
       await this.loadPaths();
     } catch (error) {
       this.toast.error((error as Error).message || 'Unable to save learning path');
+    } finally {
+      this.isSaving = false;
+      this.cdr.detectChanges();
     }
   }
 

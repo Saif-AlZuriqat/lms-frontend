@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth';
 import { LearningPathService, LearningPathResponseDto } from '../../services/learning-path.service';
+import { BASE_URL } from '../../types/course-builder.types';
 
 @Component({
   selector: 'app-employee-dashboard',
@@ -75,6 +76,12 @@ export class EmployeeDashboard implements OnInit {
 
   openPath(id: number) {
     this.router.navigate(['/learning-path', id]);
+  }
+
+  getPictureUrl(path: LearningPathResponseDto): string {
+    if (!path.image) return '';
+    if (path.image.startsWith('http')) return path.image;
+    return `${BASE_URL}/${path.image.replace(/^\//, '')}`;
   }
 
   onSearch(event: Event) {
