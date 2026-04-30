@@ -32,16 +32,18 @@ export class Register {
       return;
     }
 
-    this.authService.register(this.userName, this.email, this.password,this.confirmPassword, this.fullName).subscribe({
-      next: (response) => {
-        this.successMessage = 'Account created! Redirecting to login...';
-        setTimeout(() => {
-          this.router.navigate(['/']);
-        }, 2000);
-      },
-      error: (err) => {
-        this.errorMessage = err.error || 'Registration failed. Please try again.';
-      },
-    });
+    this.authService
+      .register(this.userName, this.email, this.password, this.confirmPassword, this.fullName)
+      .subscribe({
+        next: (response) => {
+          this.successMessage = 'Account created! Redirecting to login...';
+          setTimeout(() => {
+            this.router.navigate(['/']);
+          }, 2000);
+        },
+        error: (err) => {
+          this.errorMessage = err.error || 'Registration failed. Please try again.';
+        },
+      });
   }
 }

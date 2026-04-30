@@ -58,27 +58,41 @@
       @if (lastPath()) {
         <div class="ed-section">
           <h2 class="ed-section-title">Continue Learning</h2>
-          <div class="continue-card" (click)="openPath(lastPath()!.id)">
+          <div class="continue-card" (click)="resume()">
             <div class="continue-visual">
               <div class="play-ring"></div>
               <div class="course-icon-wrap">
-                <span class="material-symbols-outlined">play_circle</span>
+                <span class="material-symbols-outlined">
+                  {{ continueState()?.isCompleted ? 'emoji_events' : 'play_circle' }}
+                </span>
               </div>
             </div>
             <div class="continue-info">
-              <span class="continue-badge">Last Accessed</span>
+              <span class="continue-badge">
+                {{ continueState()?.isCompleted ? 'Completed' : 'In Progress' }}
+              </span>
               <h3>{{ lastPath()!.title }}</h3>
               <div class="progress-row">
                 <div class="progress-bar">
-                  <div class="progress-fill" style="width: 0%"></div>
+                  <div class="progress-fill" [style.width.%]="lastPathProgress()"></div>
                 </div>
-                <span class="progress-pct">0%</span>
+                <span class="progress-pct">{{ lastPathProgress() }}%</span>
               </div>
-              <p class="continue-hint">Pick up where you left off</p>
+              <p class="continue-hint">
+                @if (continueState()?.isCompleted) {
+                  {{ continueState()!.message }}
+                } @else if (continueState()?.lessonId) {
+                  Resume from where you left off
+                } @else {
+                  Pick up where you left off
+                }
+              </p>
             </div>
             <button class="btn-resume">
-              <span class="material-symbols-outlined">play_arrow</span>
-              Resume
+              <span class="material-symbols-outlined">
+                {{ continueState()?.isCompleted ? 'replay' : 'play_arrow' }}
+              </span>
+              {{ continueState()?.isCompleted ? 'Review' : 'Resume' }}
             </button>
           </div>
         </div>
@@ -119,9 +133,9 @@
                   <h3>{{ path.title }}</h3>
                   <p>{{ path.description || 'No description provided.' }}</p>
                   <div class="ed-progress-bar">
-                    <div class="ed-progress-fill" style="width: 0%"></div>
+                    <div class="ed-progress-fill" [style.width.%]="getProgress(path.id)"></div>
                   </div>
-                  <div class="ed-progress-text">0% complete</div>
+                  <div class="ed-progress-text">{{ getProgress(path.id) }}% complete</div>
                   <div class="ed-card-footer">
                     <span class="ed-meta">
                       <span class="material-symbols-outlined">menu_book</span>

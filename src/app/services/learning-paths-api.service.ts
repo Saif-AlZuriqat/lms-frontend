@@ -40,7 +40,7 @@ export class LearningPathsApiService {
       headers['Authorization'] = `Bearer ${token}`;
     }
 
-    const response = await fetch(`${BASE_URL}/api/LearningPath/AddPath`, {
+    const response = await fetch(`${BASE_URL}/api/LearningPath/AddPathAsync/`, {
       method: 'POST',
       headers,
       body: formData,

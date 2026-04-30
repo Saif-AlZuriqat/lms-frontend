@@ -1,16 +1,28 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { finalize, timeout } from 'rxjs';
+import { finalize, timeout, debounceTime, distinctUntilChanged, Subject, switchMap, catchError, of } from 'rxjs';
 import { AuthService, UserRole } from '../../services/auth';
+import { EnrollmentService, UserSearchResult } from '../../services/enrollment.service';
+import { ActivityService } from '../../services/activity.service';
 
 @Component({
   selector: 'app-hr-create-user',
-  imports: [FormsModule, RouterLink],
+  standalone: true,
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './hr-create-user.html',
   styleUrl: './hr-create-user.css',
 })
-export class HrCreateUser {
+export class HrCreateUser implements OnInit {
+
+  // ── Employee list ────────────────────────────────────────
+  users = signal<UserSearchResult[]>([]);
+  isLoadingUsers = signal(false);
+  userSearch = '';
+  private userSearch$ = new Subject<string>();
+
+  // ── Create user form (original logic preserved) ──────────
   userName = '';
   email = '';
   password = '';
@@ -28,6 +40,8 @@ export class HrCreateUser {
   constructor(
     private authService: AuthService,
     private router: Router,
+    private enrollmentService: EnrollmentService,
+    private activityService: ActivityService,
   ) {
     this.currentUserRole = this.authService.getUserRole();
 
@@ -43,13 +57,52 @@ export class HrCreateUser {
       return;
     }
 
-    this.router.navigate(['/dashboard']);
+    this.router.navigate(['/hr/dashboard']);
   }
 
-  onCreateUser() {
-    if (this.isSubmitting) {
-      return;
+  ngOnInit() {
+    this.loadUsers('');
+
+    this.userSearch$.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap(q => {
+        this.isLoadingUsers.set(true);
+        return this.enrollmentService.searchUsers(q).pipe(catchError(() => of([])));
+      })
+    ).subscribe(results => {
+      this.users.set(results);
+      this.isLoadingUsers.set(false);
+    });
+  }
+
+  private loadUsers(q: string) {
+    this.isLoadingUsers.set(true);
+    this.enrollmentService.searchUsers(q).pipe(
+      catchError(() => of([]))
+    ).subscribe(results => {
+      this.users.set(results);
+      this.isLoadingUsers.set(false);
+    });
+  }
+
+  onUserSearch(event: Event) {
+    const q = (event.target as HTMLInputElement).value;
+    this.userSearch = q;
+    this.userSearch$.next(q);
+  }
+
+  getRoleBadgeClass(role?: string): string {
+    switch ((role ?? '').toLowerCase()) {
+      case 'admin':    return 'badge-admin';
+      case 'hr':       return 'badge-hr';
+      default:         return 'badge-employee';
     }
+  }
+
+  // ── Original create user logic ────────────────────────────
+  onCreateUser() {
+    if (this.isSubmitting) return;
 
     this.errorMessage = '';
     this.successMessage = '';
@@ -59,7 +112,7 @@ export class HrCreateUser {
       return;
     }
 
-    if (this.password !== this.confirmPassword) {   
+    if (this.password !== this.confirmPassword) {
       this.errorMessage = 'Passwords do not match.';
       return;
     }
@@ -96,9 +149,16 @@ export class HrCreateUser {
       )
       .subscribe({
         next: () => {
+          const createdName = this.userName.trim();
+          this.activityService.log(
+            'person_add',
+            `<strong>${this.authService.getUserName() || 'Admin'}</strong> created a new user account for <strong>${createdName}</strong>.`,
+            'User Management'
+          );
           this.resetForm();
           this.successMessage = 'User created successfully.';
-          this.router.navigateByUrl('/dashboard', { skipLocationChange: true }).then(() => {
+          // Original pattern: navigate away and back to re-initialise the component
+          this.router.navigateByUrl('/hr/dashboard', { skipLocationChange: true }).then(() => {
             this.router.navigate(['/hr/create-user']);
           });
         },

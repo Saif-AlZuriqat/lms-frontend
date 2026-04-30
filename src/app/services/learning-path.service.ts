@@ -40,6 +40,24 @@ export class LearningPathService {
   }
 
   addPath(path: LearningPathProcessDto): Observable<LearningPathResponseDto> {
-    return this.http.post<LearningPathResponseDto>(`${this.apiUrl}/AddPath`, path);
+    return this.http.post<LearningPathResponseDto>(`${this.apiUrl}/AddPathAsync/`, path);
+  }
+
+  getMyProgress(learningPathId: number): Observable<{ learningPathId: number; progress: number }> {
+    return this.http.get<{ learningPathId: number; progress: number }>(
+      `${this.apiUrl}/MyProgress/${learningPathId}`
+    );
+  }
+
+  getContinueLearning(learningPathId: number): Observable<{
+    isCompleted: boolean;
+    data?: { courseId: number; lessonId: number; sectionId: number };
+    message?: string;
+  }> {
+    return this.http.get<{
+      isCompleted: boolean;
+      data?: { courseId: number; lessonId: number; sectionId: number };
+      message?: string;
+    }>(`${this.apiUrl}/ContinueLearning/${learningPathId}`);
   }
 }

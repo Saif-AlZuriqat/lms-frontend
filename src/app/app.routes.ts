@@ -36,6 +36,11 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/course-details/course-details').then(m => m.CourseDetails),
     canActivate: [authGuard]
   },
+  {
+    path: 'lesson/:id',
+    loadComponent: () => import('./pages/lesson-viewer/lesson-viewer').then(m => m.LessonViewer),
+    canActivate: [authGuard]
+  },
 
   // ── Course Builder (admin/instructor) ────────────────────
   {
@@ -64,6 +69,13 @@ export const routes: Routes = [
   {
     path: 'hr/create-user',
     loadComponent: () => import('./pages/hr-create-user/hr-create-user').then(m => m.HrCreateUser),
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['Admin', 'HR'] }
+  },
+
+  {
+    path: 'hr/assign-path',
+    loadComponent: () => import('./pages/hr-assign-path/hr-assign-path').then(m => m.HrAssignPath),
     canActivate: [authGuard, roleGuard],
     data: { roles: ['Admin', 'HR'] }
   },

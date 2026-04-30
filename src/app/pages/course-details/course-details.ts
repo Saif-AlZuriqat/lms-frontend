@@ -82,6 +82,10 @@ export class CourseDetails implements OnInit {
     return this.expandedSections().has(sectionId);
   }
 
+  openLesson(lessonId: number) {
+    this.router.navigate(['/lesson', lessonId]);
+  }
+
   backLink(): string[] {
     return this.pathId ? ['/learning-path', String(this.pathId)] : ['/employee/dashboard'];
   }

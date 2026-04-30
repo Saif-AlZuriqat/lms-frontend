@@ -77,7 +77,7 @@
                     <div class="lesson-empty">No lessons in this section yet.</div>
                   } @else {
                     @for (lesson of section.lessons; track lesson.id; let j = $index) {
-                      <div class="lesson-row">
+                      <div class="lesson-row" (click)="openLesson(lesson.id)" style="cursor:pointer">
                         <span class="lesson-num">{{ j + 1 }}</span>
                         <span class="material-symbols-outlined lesson-icon">play_circle</span>
                         <div class="lesson-info">

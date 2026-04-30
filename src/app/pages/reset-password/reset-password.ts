@@ -14,7 +14,7 @@ export class ResetPassword implements OnInit {
   token = '';
   newPassword = '';
   confirmPassword = '';
-  
+
   errorMessage = '';
   successMessage = '';
   isLoading = false;
@@ -23,11 +23,11 @@ export class ResetPassword implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private passwordResetService: PasswordResetService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
-    this.route.queryParams.subscribe(params => {
+    this.route.queryParams.subscribe((params) => {
       this.email = params['email'] || '';
       this.token = params['token'] ? params['token'].replace(/ /g, '+') : '';
     });
@@ -61,9 +61,10 @@ export class ResetPassword implements OnInit {
       },
       error: (err) => {
         this.isLoading = false;
-        this.errorMessage = err.error || 'Failed to reset password. The link might be expired or invalid.';
+        this.errorMessage =
+          err.error || 'Failed to reset password. The link might be expired or invalid.';
         this.cdr.detectChanges();
-      }
+      },
     });
   }
 }

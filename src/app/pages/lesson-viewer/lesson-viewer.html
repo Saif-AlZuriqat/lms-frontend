@@ -1,0 +1,77 @@
+<div class="lv-container">
+
+  <!-- Header -->
+  <div class="lv-header">
+    <button class="lv-back" (click)="goBack()">
+      <span class="material-symbols-outlined">arrow_back</span>
+    </button>
+    <div class="lv-header-text">
+      <span class="lv-eyebrow">Lesson</span>
+      <h1>{{ lesson()?.title ?? '...' }}</h1>
+    </div>
+  </div>
+
+  @if (isLoading()) {
+    <div class="lv-loading">
+      <div class="lv-spinner"></div>
+    </div>
+  } @else if (!lesson() && error()) {
+    <div class="lv-error-state">
+      <span class="material-symbols-outlined">error_outline</span>
+      <p>{{ error() }}</p>
+      <button class="lv-back-btn" (click)="goBack()">Go Back</button>
+    </div>
+  } @else if (lesson()) {
+
+    <!-- Content card -->
+    <div class="lv-card">
+      <div class="lv-card-header">
+        <div class="lv-lesson-icon">
+          <span class="material-symbols-outlined">menu_book</span>
+        </div>
+        <div>
+          <h2>{{ lesson()!.title }}</h2>
+          @if (lesson()!.description) {
+            <p class="lv-desc">{{ lesson()!.description }}</p>
+          }
+        </div>
+      </div>
+
+      <div class="lv-divider"></div>
+
+      @if (lesson()!.content) {
+        <div class="lv-content" [innerHTML]="lesson()!.content"></div>
+      } @else {
+        <div class="lv-no-content">
+          <span class="material-symbols-outlined">hourglass_empty</span>
+          <p>No content available for this lesson yet.</p>
+        </div>
+      }
+    </div>
+
+    <!-- Error inline -->
+    @if (error()) {
+      <div class="lv-error-alert">{{ error() }}</div>
+    }
+
+    <!-- Footer action -->
+    <div class="lv-footer">
+      @if (isCompleted()) {
+        <div class="lv-completed">
+          <span class="material-symbols-outlined">check_circle</span>
+          Lesson completed! Great work.
+        </div>
+        <button class="lv-back-btn" (click)="goBack()">
+          <span class="material-symbols-outlined">arrow_back</span>
+          Back to Course
+        </button>
+      } @else {
+        <button class="lv-complete-btn" (click)="markComplete()" [disabled]="isCompleting()">
+          <span class="material-symbols-outlined">{{ isCompleting() ? 'hourglass_empty' : 'check_circle' }}</span>
+          {{ isCompleting() ? 'Saving...' : 'Mark as Complete' }}
+        </button>
+      }
+    </div>
+
+  }
+</div>

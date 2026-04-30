@@ -34,4 +34,8 @@ export class LessonsApiService {
   async deleteLesson(id: number): Promise<void> {
     await fetchJson<void>(`${BASE_URL}/api/Lessons/${id}`, { method: 'DELETE' });
   }
+
+  async completeLesson(lessonId: number): Promise<void> {
+    await fetchJson<void>(`${BASE_URL}/api/Lessons/CompleteLesson/${lessonId}`, { method: 'POST' });
+  }
 }
