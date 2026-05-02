@@ -102,73 +102,73 @@
         </div>
       </div>
 
-      <!-- ── Create user card ── -->
-      <div class="cu-card">
-        <div class="cu-form-header">
+      <!-- ── Create user form (same structure as register page) ── -->
+      <div class="form-panel">
+        <div class="form-header">
           <h2>Create User</h2>
           <p>Required fields are marked with an asterisk.</p>
         </div>
 
         @if (errorMessage) {
-          <div class="cu-alert cu-alert-error">
-            <span class="material-symbols-outlined">error</span>
-            {{ errorMessage }}
-          </div>
+          <div class="error-alert">{{ errorMessage }}</div>
         }
-
         @if (successMessage) {
-          <div class="cu-alert cu-alert-success">
-            <span class="material-symbols-outlined">check_circle</span>
-            {{ successMessage }}
-          </div>
+          <div class="success-alert">{{ successMessage }}</div>
         }
 
-        <div class="cu-form-grid">
-          <div class="cu-form-group">
+        <div class="form-grid">
+          <div class="form-group">
             <label for="fullName">Full Name</label>
-            <input id="fullName" [(ngModel)]="fullName" name="fullName" placeholder="Jane Miller" />
+            <div class="input-icon-wrap">
+              <span class="material-symbols-outlined input-icon-left">person</span>
+              <input id="fullName" [(ngModel)]="fullName" name="fullName" placeholder="Jane Miller" />
+            </div>
           </div>
-
-          <div class="cu-form-group">
+          <div class="form-group">
             <label for="userName">Username *</label>
-            <input id="userName" [(ngModel)]="userName" name="userName" placeholder="jane.miller" />
+            <div class="input-icon-wrap">
+              <span class="material-symbols-outlined input-icon-left">badge</span>
+              <input id="userName" [(ngModel)]="userName" name="userName" placeholder="jane.miller" />
+            </div>
           </div>
+        </div>
 
-          <div class="cu-form-group">
+        <div class="form-grid">
+          <div class="form-group">
             <label for="email">Email *</label>
-            <div class="cu-input-icon-wrap">
-              <span class="material-symbols-outlined cu-input-icon">alternate_email</span>
+            <div class="input-icon-wrap">
+              <span class="material-symbols-outlined input-icon-left">alternate_email</span>
               <input id="email" type="email" [(ngModel)]="email" name="email" placeholder="jane@company.com" />
             </div>
           </div>
-
-          <div class="cu-form-group">
+          <div class="form-group">
             <label for="role">Role</label>
-            <select id="role" [(ngModel)]="role" name="role">
+            <select id="role" [(ngModel)]="role" name="role" class="role-select">
               @for (roleOption of availableRoles; track roleOption) {
                 <option [value]="roleOption">{{ roleOption }}</option>
               }
             </select>
           </div>
+        </div>
 
-          <div class="cu-form-group">
+        <div class="form-grid">
+          <div class="form-group">
             <label for="password">Password *</label>
-            <input id="password" type="password" [(ngModel)]="password" name="password" placeholder="••••••••" />
+            <div class="input-icon-wrap">
+              <span class="material-symbols-outlined input-icon-left">lock</span>
+              <input id="password" type="password" [(ngModel)]="password" name="password" placeholder="••••••••" />
+            </div>
           </div>
-
-          <div class="cu-form-group">
+          <div class="form-group">
             <label for="confirmPassword">Confirm Password *</label>
-            <input
-              id="confirmPassword"
-              type="password"
-              [(ngModel)]="confirmPassword"
-              name="confirmPassword"
-              placeholder="••••••••"
-            />
+            <div class="input-icon-wrap">
+              <span class="material-symbols-outlined input-icon-left">lock_person</span>
+              <input id="confirmPassword" type="password" [(ngModel)]="confirmPassword" name="confirmPassword" placeholder="••••••••" />
+            </div>
           </div>
         </div>
 
-        <button class="cu-btn-primary" (click)="onCreateUser()" [disabled]="isSubmitting">
+        <button class="btn-primary" (click)="onCreateUser()" [disabled]="isSubmitting">
           {{ isSubmitting ? 'Creating User...' : 'Create User' }}
           <span class="material-symbols-outlined">person_add</span>
         </button>

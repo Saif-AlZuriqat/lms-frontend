@@ -155,12 +155,9 @@ export class HrCreateUser implements OnInit {
             `<strong>${this.authService.getUserName() || 'Admin'}</strong> created a new user account for <strong>${createdName}</strong>.`,
             'User Management'
           );
-          this.resetForm();
           this.successMessage = 'User created successfully.';
-          // Original pattern: navigate away and back to re-initialise the component
-          this.router.navigateByUrl('/hr/dashboard', { skipLocationChange: true }).then(() => {
-            this.router.navigate(['/hr/create-user']);
-          });
+          this.resetForm();
+          this.loadUsers(this.userSearch);
         },
         error: (err) => {
           this.errorMessage =
