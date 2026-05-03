@@ -54,6 +54,8 @@ export class CourseManagerPage implements OnInit {
   lessonTitle = '';
   lessonDescription = '';
   lessonVideoFile: File | null = null;
+  lessonLinkUrl = '';
+  lessonMaterialType = 0; // default to Video (0)
   lessonOrder = 1;
 
   constructor(
@@ -253,6 +255,8 @@ export class CourseManagerPage implements OnInit {
     this.lessonTitle = '';
     this.lessonDescription = '';
     this.lessonVideoFile = null;
+    this.lessonLinkUrl = '';
+    this.lessonMaterialType = 0; // Default to Video
     // Auto-compute order: count existing lessons in this section + 1
     const section = this.tree?.courses
       .flatMap(c => c.sections)
@@ -270,17 +274,29 @@ export class CourseManagerPage implements OnInit {
 
   async submitLessonModal(): Promise<void> {
     if (!this.lessonTitle.trim() || this.lessonTargetSectionId === null) return;
-    if (!this.lessonVideoFile) {
-      this.toast.error('Please select a video file.');
-      return;
+    
+    // Validate based on material type
+    if (this.lessonMaterialType === 3) {
+      if (!this.lessonLinkUrl.trim()) {
+        this.toast.error('Please provide a valid link URL.');
+        return;
+      }
+    } else {
+      if (!this.lessonVideoFile) {
+        this.toast.error('Please select a file to upload.');
+        return;
+      }
     }
+
     this.isSaving = true;
     try {
       await this.lessonsApi.createLesson({
         title: this.lessonTitle.trim(),
         description: this.lessonDescription.trim() || null,
         content: '',
-        videoUrl: this.lessonVideoFile,
+        videoUrl: this.lessonMaterialType !== 3 ? (this.lessonVideoFile || undefined) : undefined,
+        linkUrl: this.lessonMaterialType === 3 ? this.lessonLinkUrl.trim() : undefined,
+        materialType: Number(this.lessonMaterialType),
         sectionId: this.lessonTargetSectionId,
         order: this.lessonOrder,
       });

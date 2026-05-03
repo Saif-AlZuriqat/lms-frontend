@@ -16,7 +16,9 @@ export class LessonsApiService {
     title: string;
     description: string | null;
     content: string | null;
-    videoUrl: File;
+    videoUrl?: File;
+    linkUrl?: string;
+    materialType: number;
     sectionId: number;
     order: number;
   }): Promise<void> {
@@ -24,7 +26,9 @@ export class LessonsApiService {
     formData.append('title', dto.title);
     if (dto.description) formData.append('description', dto.description);
     if (dto.content) formData.append('content', dto.content);
-    formData.append('videoUrl', dto.videoUrl);
+    if (dto.videoUrl) formData.append('videoUrl', dto.videoUrl);
+    if (dto.linkUrl) formData.append('linkUrl', dto.linkUrl);
+    formData.append('materialType', String(dto.materialType));
     formData.append('sectionId', String(dto.sectionId));
     formData.append('order', String(dto.order));
 

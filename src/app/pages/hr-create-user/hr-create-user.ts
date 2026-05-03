@@ -9,6 +9,8 @@ import { EnrollmentService, UserInfo } from '../../services/enrollment.service';
 import { ActivityService } from '../../services/activity.service';
 import { NotificationBellComponent } from '../../components/notification-bell/notification-bell';
 
+import { UserRole } from '../../services/auth';
+
 @Component({
   selector: 'app-hr-create-user',
   standalone: true,
@@ -39,6 +41,8 @@ export class HrCreateUser implements OnInit {
   password = '';
   confirmPassword = '';
   fullName = '';
+  role: UserRole = 'Employee';
+  currentUserRole = signal<UserRole | null>(null);
   errorMessage = signal('');
   successMessage = signal('');
   isSubmitting = signal(false);
@@ -53,6 +57,7 @@ export class HrCreateUser implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.currentUserRole.set(this.authService.getUserRole());
     this.loadAllUsers();
   }
 
@@ -126,7 +131,7 @@ export class HrCreateUser implements OnInit {
         password: this.password,
         confirmPassword: this.confirmPassword,
         fullName: this.fullName.trim(),
-        role: 'Employee',
+        role: this.role,
       })
       .pipe(
         timeout(15000),
@@ -179,5 +184,48 @@ export class HrCreateUser implements OnInit {
     this.password = '';
     this.confirmPassword = '';
     this.fullName = '';
+  }
+
+  // ── Delete User Modal ──────────────────────────────────────
+  userToDelete = signal<UserInfo | null>(null);
+  deleteConfirmationText = signal('');
+  isDeleting = signal(false);
+
+  openDeleteModal(user: UserInfo) {
+    this.userToDelete.set(user);
+    this.deleteConfirmationText.set('');
+  }
+
+  closeDeleteModal() {
+    this.userToDelete.set(null);
+    this.deleteConfirmationText.set('');
+    this.isDeleting.set(false);
+  }
+
+  confirmDeleteUser() {
+    const user = this.userToDelete();
+    if (!user || this.deleteConfirmationText().trim().toLowerCase() !== 'delete') return;
+
+    this.isDeleting.set(true);
+    this.authService.deleteUser(user.id).subscribe({
+      next: () => {
+        this.activityService.log(
+          'person_remove',
+          `<strong>${this.authService.getUserName() || 'Admin'}</strong> deleted user account <strong>${user.userName}</strong>.`,
+          'User Management'
+        );
+        this.allUsers.update(users => users.filter(u => u.id !== user.id));
+        this.closeDeleteModal();
+      },
+      error: (err: HttpErrorResponse) => {
+        this.isDeleting.set(false);
+        if (err.status === 401) {
+          this.sessionExpired();
+          return;
+        }
+        this.listError.set('Failed to delete user.');
+        this.closeDeleteModal();
+      }
+    });
   }
 }

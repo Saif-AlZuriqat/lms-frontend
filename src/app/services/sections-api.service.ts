@@ -33,6 +33,7 @@ function normalizeLesson(raw: unknown): LessonResponseDTO {
     videoUrl: toNullable(node['videoUrl'] ?? node['VideoUrl']),
     order: Number(node['order'] ?? node['Order'] ?? 0),
     sectionId: Number(node['sectionId'] ?? node['SectionId'] ?? 0),
+    type: Number(node['type'] ?? node['Type'] ?? 0),
   };
 }
 

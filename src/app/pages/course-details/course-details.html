@@ -80,7 +80,7 @@
                     <span class="section-desc">{{ section.description }}</span>
                   }
                 </div>
-                <span class="lesson-count">{{ section.lessons?.length ?? 0 }} lessons</span>
+                <span class="lesson-count">{{ section.lessons.length }} lessons</span>
                 <span class="material-symbols-outlined section-chevron"
                       [class.rotated]="isSectionExpanded(section.id)">
                   expand_more

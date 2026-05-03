@@ -1,5 +1,12 @@
 export const BASE_URL = 'http://localhost:5232';
 
+export enum MaterialType {
+  Video = 0,
+  PDF = 1,
+  Presentation = 2,
+  Link = 3
+}
+
 export interface LessonResponseDTO {
   id: number;
   title: string;
@@ -8,6 +15,7 @@ export interface LessonResponseDTO {
   videoUrl: string | null;
   order: number;
   sectionId: number;
+  type: MaterialType;
 }
 
 export interface SectionResponseDTO {

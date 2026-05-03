@@ -55,6 +55,10 @@ export class AuthService {
     });
   }
 
+  deleteUser(id: string) {
+    return this.http.delete(`${this.baseUrl}/DeleteUser/${id}`);
+  }
+
   saveToken(token: string | undefined | null) {
     if (!this.isValidToken(token)) return;
 
@@ -70,8 +74,23 @@ export class AuthService {
     return token;
   }
 
+  isTokenExpired(): boolean {
+    const payload = this.getTokenPayload();
+    if (!payload || !payload['exp']) return true;
+
+    const expirationTime = Number(payload['exp']) * 1000;
+    return Date.now() > expirationTime;
+  }
+
   isLoggedIn(): boolean {
-    return this.getToken() !== null;
+    if (!this.getToken()) return false;
+
+    if (this.isTokenExpired()) {
+      this.logout();
+      return false;
+    }
+
+    return true;
   }
 
   logout() {

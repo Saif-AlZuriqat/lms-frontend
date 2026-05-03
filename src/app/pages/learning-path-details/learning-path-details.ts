@@ -31,6 +31,20 @@ export class LearningPathDetails implements OnInit {
   }
 
   openCourse(course: CourseResponseDTO) {
+    // Navigate directly to the first lesson of the first section
+    if (course.sections && course.sections.length > 0) {
+      for (const section of course.sections) {
+        if (section.lessons && section.lessons.length > 0) {
+          const firstLesson = section.lessons[0] as any;
+          if (firstLesson && firstLesson.id) {
+            this.router.navigate(['/lesson', firstLesson.id]);
+            return;
+          }
+        }
+      }
+    }
+    
+    // Fallback if no lessons exist (or sections not loaded)
     this.router.navigate(['/course', course.id], {
       state: { course, pathId: this.pathId() }
     });

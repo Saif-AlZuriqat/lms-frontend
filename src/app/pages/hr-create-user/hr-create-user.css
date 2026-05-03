@@ -464,7 +464,8 @@
   position: relative;
 }
 
-.input-icon-wrap input {
+.input-icon-wrap input,
+.input-icon-wrap select {
   width: 100%;
   padding: 13px 16px 13px 46px;
   background: var(--gray-50);
@@ -476,9 +477,11 @@
   transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
   font-family: inherit;
   outline: none;
+  appearance: none;
 }
 
-.input-icon-wrap input:focus {
+.input-icon-wrap input:focus,
+.input-icon-wrap select:focus {
   border-color: var(--navy);
   background: var(--white);
   box-shadow: 0 0 0 3px rgba(15,27,61,0.08);
@@ -572,6 +575,159 @@
   border-left: 4px solid var(--green);
   line-height: 1.5;
 }
+
+/* ── Icon Button ───────────────────────────────────── */
+.cu-icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s;
+}
+
+.cu-icon-btn:hover { background: #f3f4f6; }
+.cu-text-red { color: #dc2626 !important; }
+.cu-bg-red-light { background: #fef2f2 !important; }
+
+/* ── Modal ───────────────────────────────────────── */
+.cu-modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(17, 24, 39, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: cu-fade-in 0.2s ease-out;
+}
+
+.cu-modal-content {
+  background: #fff;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 460px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+  overflow: hidden;
+  animation: cu-slide-up 0.2s ease-out;
+}
+
+.cu-modal-header {
+  padding: 24px 24px 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.cu-modal-icon-wrap {
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cu-modal-title { flex: 1; display: flex; align-items: flex-start; justify-content: space-between; }
+.cu-modal-title h3 { margin: 0; font-size: 18px; font-weight: 700; color: #111827; margin-top: 8px; }
+
+.cu-modal-close {
+  background: none;
+  border: none;
+  color: #9ca3af;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  display: flex;
+  transition: background 0.15s, color 0.15s;
+}
+.cu-modal-close:hover { background: #f3f4f6; color: #4b5563; }
+
+.cu-modal-body {
+  padding: 0 24px 24px;
+}
+
+.cu-modal-body p {
+  margin: 0 0 20px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #4b5563;
+}
+
+.cu-delete-confirm-box {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.cu-delete-confirm-box label {
+  display: block;
+  font-size: 13px;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+.cu-confirm-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+.cu-confirm-input:focus { border-color: #dc2626; box-shadow: 0 0 0 3px rgba(220,38,38,0.1); }
+
+.cu-modal-footer {
+  padding: 16px 24px;
+  background: #f9fafb;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.cu-btn {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: inherit;
+  border: 1.5px solid transparent;
+  transition: all 0.15s;
+}
+
+.cu-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.cu-btn-outline {
+  background: #fff;
+  border-color: #d1d5db;
+  color: #374151;
+}
+.cu-btn-outline:hover:not(:disabled) { background: #f9fafb; }
+
+.cu-btn-danger-filled {
+  background: #dc2626;
+  color: #fff;
+}
+.cu-btn-danger-filled:hover:not(:disabled) { background: #b91c1c; }
+
+.cu-spin-icon { animation: cu-spin 1s linear infinite; font-size: 18px; }
+
+@keyframes cu-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes cu-slide-up { from { opacity: 0; transform: translateY(10px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
 
 /* ── Responsive ──────────────────────────────────── */
 @media (max-width: 900px) {

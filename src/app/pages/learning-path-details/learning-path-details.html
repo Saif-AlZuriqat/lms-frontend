@@ -1,88 +1,90 @@
-<div class="page-container">
-  <div class="header">
-    <div class="header-content">
-      <a class="back-btn" (click)="goBack()" style="cursor:pointer">
-        <span class="material-symbols-outlined">arrow_back</span>
-      </a>
-      @if (path()) {
-        <h1>{{ path()!.title }}</h1>
-      } @else {
-        <h1>Loading...</h1>
-      }
+<div class="page-wrapper">
+  <!-- Top Banner -->
+  <div class="lp-banner">
+    <div class="lp-banner-content">
+      <div class="breadcrumb">
+        <a (click)="goBack()" class="breadcrumb-link">Home</a>
+        <span class="breadcrumb-sep">&gt;</span>
+        <span class="breadcrumb-current">{{ path()?.title || 'Loading...' }}</span>
+      </div>
+      
+      <h1>{{ path()?.title || 'Loading...' }}</h1>
+      <p class="banner-desc">{{ path()?.description || 'A comprehensive learning path.' }}</p>
+      
+      <div class="banner-meta">
+        <div class="meta-item">
+          <span class="material-symbols-outlined">menu_book</span>
+          {{ path()?.courses?.length || 0 }} Courses
+        </div>
+        <div class="meta-item">
+          <span class="material-symbols-outlined">signal_cellular_alt</span>
+          All Levels
+        </div>
+      </div>
     </div>
   </div>
 
-  @if (isLoading()) {
-    <div class="loading-state">
-      <div class="loading-spinner"></div>
-      <span>Loading learning path details...</span>
-    </div>
-  } @else if (error()) {
-    <div class="error-alert">{{ error() }}</div>
-  } @else if (path()) {
-    @if (path()!.description) {
-      <div class="path-overview">
-        <h2>Description</h2>
-        <p>{{ path()!.description }}</p>
+  <div class="page-container">
+    @if (isLoading()) {
+      <div class="loading-state">
+        <div class="loading-spinner"></div>
+        <span>Loading learning path details...</span>
       </div>
-    }
+    } @else if (error()) {
+      <div class="error-alert">{{ error() }}</div>
+    } @else if (path()) {
+      
+      <div class="courses-section">
+        <h2 class="section-title">Courses in This Path</h2>
 
-    <div class="courses-section">
-      <div class="section-header">
-        <h2>Courses in This Path</h2>
-        <span class="course-count-badge">{{ path()!.courses?.length || 0 }}</span>
-      </div>
+        @if (!path()!.courses || path()!.courses.length === 0) {
+          <div class="empty-state">
+            <span class="material-symbols-outlined empty-icon">school</span>
+            <p>No courses have been added to this learning path yet.</p>
+          </div>
+        } @else {
+          <div class="courses-list">
+            @for (course of path()!.courses; track course.id; let i = $index) {
+              <div class="course-card" (click)="openCourse(course)">
+                <div class="course-order-wrap">
+                  <div class="course-order">{{ i + 1 }}</div>
+                </div>
 
-      @if (!path()!.courses || path()!.courses.length === 0) {
-        <div class="empty-state">
-          <span class="material-symbols-outlined empty-icon">school</span>
-          <p>No courses have been added to this learning path yet.</p>
-        </div>
-      } @else {
-        <div class="courses-list">
-          @for (course of path()!.courses; track course.id; let i = $index) {
-            <div class="course-card" (click)="openCourse(course)">
-              <!-- Order number -->
-              <div class="course-order">{{ i + 1 }}</div>
+                <div class="course-thumb">
+                  @if (course.image) {
+                    <img [src]="getCourseImageUrl(course)" alt="" class="thumb-img" />
+                  } @else {
+                    <div class="thumb-placeholder">
+                      <span class="material-symbols-outlined">image</span>
+                    </div>
+                  }
+                </div>
 
-              <!-- Course Thumbnail -->
-              <div class="course-thumb">
-                @if (course.image) {
-                  <img [src]="getCourseImageUrl(course)" alt="" class="thumb-img" />
-                } @else {
-                  <div class="thumb-placeholder">
-                    <span class="material-symbols-outlined">menu_book</span>
+                <div class="course-info">
+                  <h3>{{ course.title }}</h3>
+                  <p class="course-desc">{{ course.description || 'Learn the foundational topics for this subject.' }}</p>
+                  <div class="course-meta">
+                    <span class="meta-item">
+                      <span class="material-symbols-outlined">play_circle</span>
+                      {{ getLessonCount(course) }} lessons
+                    </span>
+                    <span class="meta-item">
+                      <span class="material-symbols-outlined">folder</span>
+                      {{ getSectionCount(course) }} sections
+                    </span>
                   </div>
-                }
-              </div>
+                </div>
 
-              <!-- Course Info -->
-              <div class="course-info">
-                <h3>{{ course.title }}</h3>
-                <p class="course-desc">{{ course.description || 'No description provided.' }}</p>
-                <div class="course-meta">
-                  <span class="meta-item">
-                    <span class="material-symbols-outlined">folder</span>
-                    {{ getSectionCount(course) }} sections
-                  </span>
-                  <span class="meta-item">
-                    <span class="material-symbols-outlined">play_circle</span>
-                    {{ getLessonCount(course) }} lessons
-                  </span>
+                <div class="course-status">
+                  <span class="status-pill">Available</span>
+                  <!-- If progress is available, show it here -->
+                  <div class="progress-text">0%</div>
                 </div>
               </div>
-
-              <!-- Action -->
-              <div class="course-action">
-                <button class="btn-view">
-                  View Course
-                  <span class="material-symbols-outlined">arrow_forward</span>
-                </button>
-              </div>
-            </div>
-          }
-        </div>
-      }
-    </div>
-  }
+            }
+          </div>
+        }
+      </div>
+    }
+  </div>
 </div>

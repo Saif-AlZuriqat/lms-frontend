@@ -114,6 +114,7 @@ export class LearningPathsApiService {
       videoUrl: toNullableString(node['videoUrl'] ?? node['VideoUrl']),
       order: toNumber(node['order'] ?? node['Order']),
       sectionId: toNumber(node['sectionId'] ?? node['SectionId']),
+      type: toNumber(node['type'] ?? node['Type']),
     };
   }
 }

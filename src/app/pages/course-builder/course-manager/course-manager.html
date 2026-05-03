@@ -129,7 +129,7 @@
                             <span class="cm-section-desc">{{ section.description }}</span>
                           }
                         </div>
-                        <span class="cm-section-lesson-count">{{ section.lessons?.length ?? 0 }} lessons</span>
+                        <span class="cm-section-lesson-count">{{ section.lessons.length }} lessons</span>
                         <div class="cm-section-actions">
                           <button class="cm-action-btn-sm" (click)="editingKey = sectionKey(section); $event.stopPropagation()">
                             <span class="material-symbols-outlined">edit</span>
@@ -337,16 +337,36 @@
           <textarea id="lesson-desc" [(ngModel)]="lessonDescription" placeholder="Optional description…" class="form-textarea" rows="3"></textarea>
         </div>
         <div class="form-group">
-          <label for="lesson-video">Video <span class="required">*</span></label>
-          <input id="lesson-video" type="file" accept="video/*" (change)="onLessonVideoSelected($event)" class="form-input" />
-          @if (lessonVideoFile) {
-            <span class="upload-hint">{{ lessonVideoFile.name }}</span>
-          }
+          <label for="lesson-material-type">Material Type <span class="required">*</span></label>
+          <select id="lesson-material-type" [(ngModel)]="lessonMaterialType" class="form-input">
+            <option [value]="0">Video</option>
+            <option [value]="1">PDF</option>
+            <option [value]="2">Presentation</option>
+            <option [value]="3">Link</option>
+          </select>
         </div>
+
+        @if (lessonMaterialType == 3) {
+          <div class="form-group">
+            <label for="lesson-link">Link URL <span class="required">*</span></label>
+            <input id="lesson-link" type="url" [(ngModel)]="lessonLinkUrl" placeholder="https://..." class="form-input" />
+          </div>
+        } @else {
+          <div class="form-group">
+            <label for="lesson-file">File Upload <span class="required">*</span></label>
+            <input id="lesson-file" type="file" 
+                   [accept]="lessonMaterialType == 0 ? 'video/*' : (lessonMaterialType == 1 ? 'application/pdf' : '.ppt,.pptx,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation')" 
+                   (change)="onLessonVideoSelected($event)" class="form-input" />
+            @if (lessonVideoFile) {
+              <span class="upload-hint">{{ lessonVideoFile.name }}</span>
+            }
+          </div>
+        }
       </div>
       <div class="modal-footer">
         <button class="btn-cancel" (click)="lessonModalOpen = false">Cancel</button>
-        <button class="btn-save" (click)="submitLessonModal()" [disabled]="!lessonTitle.trim() || !lessonVideoFile || isSaving">
+        <button class="btn-save" (click)="submitLessonModal()" 
+                [disabled]="!lessonTitle.trim() || (lessonMaterialType == 3 ? !lessonLinkUrl.trim() : !lessonVideoFile) || isSaving">
           @if (isSaving) {
             <div class="btn-spinner"></div> Saving…
           } @else {

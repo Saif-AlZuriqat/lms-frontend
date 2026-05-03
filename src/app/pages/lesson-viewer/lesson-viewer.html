@@ -1,87 +1,114 @@
-<div class="lv-container">
-
-  <!-- Header -->
-  <div class="lv-header">
-    <button class="lv-back" (click)="goBack()">
-      <span class="material-symbols-outlined">arrow_back</span>
-    </button>
-    <div class="lv-header-text">
-      <span class="lv-eyebrow">Lesson</span>
-      <h1>{{ lesson()?.title ?? '...' }}</h1>
+<div class="viewer-wrapper">
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="left-nav">
+      <button class="back-btn" (click)="goBack()">
+        <span class="material-symbols-outlined">arrow_back</span>
+        Back to Dashboard
+      </button>
     </div>
-  </div>
+  </header>
 
-  @if (isLoading()) {
-    <div class="lv-loading">
-      <div class="lv-spinner"></div>
-    </div>
-  } @else if (!lesson() && error()) {
-    <div class="lv-error-state">
-      <span class="material-symbols-outlined">error_outline</span>
-      <p>{{ error() }}</p>
-      <button class="lv-back-btn" (click)="goBack()">Go Back</button>
-    </div>
-  } @else if (lesson()) {
-
-    <!-- Content card -->
-    <div class="lv-card">
-      <div class="lv-card-header">
-        <div class="lv-lesson-icon">
-          <span class="material-symbols-outlined">menu_book</span>
-        </div>
-        <div>
-          <h2>{{ lesson()!.title }}</h2>
-          @if (lesson()!.description) {
-            <p class="lv-desc">{{ lesson()!.description }}</p>
+  <main class="layout">
+    <section class="main">
+      <div class="video-area">
+        @if (isLoading()) {
+          <div class="lv-spinner"></div>
+        } @else if (error() && !lesson()) {
+          <div class="error-msg">{{ error() }}</div>
+        } @else if (lesson()?.videoUrl) {
+          @if (lesson()!.type === 0) {
+            <video class="lesson-video" [src]="getMediaUrl(lesson())" controls controlsList="nodownload"></video>
+          } @else {
+            <div class="external-material" style="text-align: center;">
+              <span class="material-symbols-outlined material-icon" style="font-size: 48px; margin-bottom: 16px; color: var(--blue);">
+                {{ lesson()!.type === 1 ? 'picture_as_pdf' : (lesson()!.type === 2 ? 'slideshow' : 'link') }}
+              </span>
+              <h3 style="margin-bottom: 8px;">{{ lesson()!.type === 1 ? 'PDF Document' : (lesson()!.type === 2 ? 'Presentation' : 'External Link') }}</h3>
+              <p style="margin-bottom: 24px; color: #6b7280;">This lesson contains external material that opens in a new tab.</p>
+              <a [href]="getMediaUrl(lesson())" target="_blank" class="btn-save" style="text-decoration: none; display: inline-block;">
+                Open Material
+              </a>
+            </div>
           }
-        </div>
+        } @else {
+          <div class="no-video">
+            <span class="material-symbols-outlined">menu_book</span>
+            <p>No material available for this lesson.</p>
+          </div>
+        }
       </div>
 
-      <div class="lv-divider"></div>
+      @if (lesson()) {
+        <div class="course-info">
+          <div class="breadcrumb">
+            <span>Home</span>
+            <span class="material-symbols-outlined">chevron_right</span>
+            <span>Course</span>
+            <span class="material-symbols-outlined">chevron_right</span>
+            <span>{{ course()?.title || 'Loading...' }}</span>
+          </div>
 
-      @if (lesson()!.videoUrl) {
-        <video
-          class="lv-video"
-          [src]="lesson()!.videoUrl!"
-          controls
-          controlsList="nodownload"
-          style="width:100%;border-radius:8px;margin-bottom:1rem;background:#000;">
-        </video>
-      }
+          <h1>{{ lesson()!.title }}</h1>
 
-      @if (lesson()!.content) {
-        <div class="lv-content" [innerHTML]="lesson()!.content"></div>
-      } @else if (!lesson()!.videoUrl) {
-        <div class="lv-no-content">
-          <span class="material-symbols-outlined">hourglass_empty</span>
-          <p>No content available for this lesson yet.</p>
+          <div class="tabs">
+            <span class="active">Overview</span>
+            <span>Notes</span>
+            <span>Resources</span>
+            <span>Discussion</span>
+          </div>
+          
+          <div class="lesson-content">
+            @if (lesson()!.description) {
+              <p class="desc">{{ lesson()!.description }}</p>
+            }
+            @if (lesson()!.content) {
+              <div class="html-content" [innerHTML]="lesson()!.content"></div>
+            }
+          </div>
         </div>
       }
-    </div>
+    </section>
 
-    <!-- Error inline -->
-    @if (error()) {
-      <div class="lv-error-alert">{{ error() }}</div>
-    }
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h2>{{ course()?.title || 'Course Content' }}</h2>
+        <p>{{ sections().length }} sections • {{ countTotalLessons() }} lessons</p>
+      </div>
 
-    <!-- Footer action -->
-    <div class="lv-footer">
-      @if (isCompleted()) {
-        <div class="lv-completed">
-          <span class="material-symbols-outlined">check_circle</span>
-          Lesson completed! Great work.
+      @for (section of sections(); track section.id; let i = $index) {
+        <div class="section">
+          <div class="section-title" (click)="toggleSection(section.id)">
+            <div>
+              <span class="material-symbols-outlined">{{ isSectionExpanded(section.id) ? 'expand_more' : 'chevron_right' }}</span> 
+              {{ section.title }}
+            </div>
+            <small>0/{{ section.lessons.length }}</small>
+          </div>
+
+          @if (isSectionExpanded(section.id)) {
+            <div class="lessons-list">
+              @for (l of section.lessons; track l.id; let j = $index) {
+                <div class="lesson" [class.active-lesson]="l.id === lesson()?.id" (click)="openLesson(l.id)">
+                  <span class="check" [class.checked]="isLessonCompleted(l.id)" (click)="toggleCompletion(l.id, $event)">
+                    @if (isLessonCompleted(l.id)) {
+                      <span class="material-symbols-outlined" style="font-size: 14px;">check</span>
+                    }
+                  </span>
+                  <span class="lesson-name">{{ j + 1 }}. {{ l.title }}</span>
+                  <span class="lesson-time">5:00</span>
+                </div>
+              }
+            </div>
+          }
         </div>
-        <button class="lv-back-btn" (click)="goBack()">
-          <span class="material-symbols-outlined">arrow_back</span>
-          Back to Course
-        </button>
-      } @else {
-        <button class="lv-complete-btn" (click)="markComplete()" [disabled]="isCompleting()">
-          <span class="material-symbols-outlined">{{ isCompleting() ? 'hourglass_empty' : 'check_circle' }}</span>
-          {{ isCompleting() ? 'Saving...' : 'Mark as Complete' }}
-        </button>
       }
-    </div>
 
-  }
+      <div class="bottom-btn">
+        <button (click)="goBack()">
+          <span class="material-symbols-outlined">arrow_upward</span> Back to Top
+        </button>
+      </div>
+    </aside>
+  </main>
 </div>
