@@ -5,6 +5,7 @@ export interface LessonResponseDTO {
   title: string;
   description: string | null;
   content: string | null;
+  videoUrl: string | null;
   order: number;
   sectionId: number;
 }

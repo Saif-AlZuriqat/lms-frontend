@@ -7,11 +7,12 @@ import { Router } from '@angular/router';
 import { LearningPathService, LearningPathResponseDto } from '../../services/learning-path.service';
 import { ActivityService, AdminActivity } from '../../services/activity.service';
 import { EnrollmentService } from '../../services/enrollment.service';
+import { NotificationBellComponent } from '../../components/notification-bell/notification-bell';
 
 @Component({
   selector: 'app-hr-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, NotificationBellComponent],
   templateUrl: './hr-dashboard.html',
   styleUrl: './hr-dashboard.css',
 })

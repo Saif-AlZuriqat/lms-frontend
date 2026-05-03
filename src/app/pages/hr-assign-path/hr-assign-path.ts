@@ -6,11 +6,12 @@ import { debounceTime, distinctUntilChanged, Subject, switchMap, catchError, of 
 import { LearningPathService, LearningPathResponseDto } from '../../services/learning-path.service';
 import { EnrollmentService, UserSearchResult } from '../../services/enrollment.service';
 import { ActivityService } from '../../services/activity.service';
+import { NotificationBellComponent } from '../../components/notification-bell/notification-bell';
 
 @Component({
   selector: 'app-hr-assign-path',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, NotificationBellComponent],
   templateUrl: './hr-assign-path.html',
   styleUrl: './hr-assign-path.css',
 })

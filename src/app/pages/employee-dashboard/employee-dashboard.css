@@ -523,6 +523,126 @@
 .ed-cta .material-symbols-outlined { font-size: 16px; transition: transform 0.2s; }
 .ed-card:hover .ed-cta .material-symbols-outlined { transform: translateX(3px); }
 
+/* ── Section count badge ─────────────────────────── */
+.ed-section-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 11px;
+  background: var(--navy);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  margin-left: 8px;
+}
+.ed-section-count--gray {
+  background: #e5e7eb;
+  color: #6b7280;
+}
+
+/* ── Available (not enrolled) card ───────────────── */
+.ed-card--available {
+  opacity: 0.88;
+}
+.ed-card--available:hover {
+  opacity: 1;
+  transform: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  cursor: default;
+}
+
+/* ── Enroll button ───────────────────────────────── */
+.ed-card--locked {
+  cursor: default;
+}
+.ed-card--locked:hover {
+  transform: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.ed-card-footer--enroll {
+  margin-top: 4px;
+}
+
+.ed-enroll-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px;
+  background: var(--navy);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  white-space: nowrap;
+}
+.ed-enroll-btn:hover:not(:disabled) { opacity: 0.88; }
+.ed-enroll-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.ed-enroll-btn .material-symbols-outlined { font-size: 17px; }
+
+.ed-enroll-spinner {
+  width: 15px;
+  height: 15px;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+/* ── Enrolled badge on card banner ───────────────── */
+.ed-enrolled-badge {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(22, 163, 74, 0.9);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 9px;
+  border-radius: 20px;
+  backdrop-filter: blur(4px);
+}
+.ed-enrolled-badge .material-symbols-outlined { font-size: 13px; }
+
+/* ── Toast feedback ──────────────────────────────── */
+.ed-toast {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 4px;
+  animation: fade-in 0.2s ease;
+}
+.ed-toast--success {
+  background: #dcfce7;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+.ed-toast--error {
+  background: #fee2e2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+.ed-toast .material-symbols-outlined { font-size: 20px; }
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 /* ── States ──────────────────────────────────────── */
 .ed-loading {
   display: flex;

@@ -250,6 +250,19 @@
 
 .cu-email-cell { color: #6b7280 !important; font-size: 13px; }
 
+.cu-enroll-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #2563eb;
+}
+
+.cu-enroll-count .material-symbols-outlined { font-size: 15px; }
+
+.cu-date-cell { font-size: 13px; color: #6b7280 !important; white-space: nowrap; }
+
 .cu-empty-row {
   text-align: center;
   padding: 36px !important;

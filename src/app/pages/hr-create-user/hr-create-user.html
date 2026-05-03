@@ -14,7 +14,7 @@
       </a>
       <a routerLink="/hr/create-user" class="cu-sidebar-link active">
         <span class="material-symbols-outlined">group</span>
-        Users
+        Employees
       </a>
       <a routerLink="/learning-paths" class="cu-sidebar-link">
         <span class="material-symbols-outlined">route</span>
@@ -33,9 +33,10 @@
     <!-- Topbar -->
     <header class="cu-topbar">
       <div>
-        <h1 class="cu-page-title">User Management</h1>
-        <p class="cu-page-sub">HR Admin / <strong>Users</strong></p>
+        <h1 class="cu-page-title">Employee Management</h1>
+        <p class="cu-page-sub">HR Admin / <strong>Employees</strong></p>
       </div>
+      <app-notification-bell></app-notification-bell>
     </header>
 
     <div class="cu-content">
@@ -46,8 +47,8 @@
         <div class="cu-list-header">
           <div class="cu-list-header-left">
             <h2>All Employees</h2>
-            @if (users().length > 0) {
-              <span class="cu-count">{{ users().length }} total</span>
+            @if (!isLoadingUsers()) {
+              <span class="cu-count">{{ users().length }} employee{{ users().length !== 1 ? 's' : '' }}</span>
             }
           </div>
           <div class="cu-search-wrap">
@@ -71,13 +72,21 @@
               <tr>
                 <th>Name</th>
                 <th>Email</th>
-                <th>Role</th>
+                <th>Enrolled Paths</th>
+                <th>Joined</th>
               </tr>
             </thead>
             <tbody>
-              @if (users().length === 0 && !isLoadingUsers()) {
+              @if (isLoadingUsers()) {
                 <tr>
-                  <td colspan="3" class="cu-empty-row">
+                  <td colspan="4" class="cu-empty-row">
+                    <div class="cu-spinner"></div>
+                    Loading employees…
+                  </td>
+                </tr>
+              } @else if (users().length === 0) {
+                <tr>
+                  <td colspan="4" class="cu-empty-row">
                     <span class="material-symbols-outlined">person_search</span>
                     No employees found
                   </td>
@@ -91,10 +100,12 @@
                   </td>
                   <td class="cu-email-cell">{{ user.email }}</td>
                   <td>
-                    <span class="cu-badge" [ngClass]="getRoleBadgeClass(user.role)">
-                      {{ user.role || 'Employee' }}
+                    <span class="cu-enroll-count">
+                      <span class="material-symbols-outlined">route</span>
+                      {{ user.enrollments.filter(e => e.learningPathId && e.learningPathId > 0).length }}
                     </span>
                   </td>
+                  <td class="cu-date-cell">{{ formatDate(user.createdAt) }}</td>
                 </tr>
               }
             </tbody>
@@ -105,15 +116,15 @@
       <!-- ── Create user form (same structure as register page) ── -->
       <div class="form-panel">
         <div class="form-header">
-          <h2>Create User</h2>
+          <h2>Create Employee</h2>
           <p>Required fields are marked with an asterisk.</p>
         </div>
 
-        @if (errorMessage) {
-          <div class="error-alert">{{ errorMessage }}</div>
+        @if (errorMessage()) {
+          <div class="error-alert">{{ errorMessage() }}</div>
         }
-        @if (successMessage) {
-          <div class="success-alert">{{ successMessage }}</div>
+        @if (successMessage()) {
+          <div class="success-alert">{{ successMessage() }}</div>
         }
 
         <div class="form-grid">
@@ -133,21 +144,11 @@
           </div>
         </div>
 
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="email">Email *</label>
-            <div class="input-icon-wrap">
-              <span class="material-symbols-outlined input-icon-left">alternate_email</span>
-              <input id="email" type="email" [(ngModel)]="email" name="email" placeholder="jane@company.com" />
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="role">Role</label>
-            <select id="role" [(ngModel)]="role" name="role" class="role-select">
-              @for (roleOption of availableRoles; track roleOption) {
-                <option [value]="roleOption">{{ roleOption }}</option>
-              }
-            </select>
+        <div class="form-group">
+          <label for="email">Email *</label>
+          <div class="input-icon-wrap">
+            <span class="material-symbols-outlined input-icon-left">alternate_email</span>
+            <input id="email" type="email" [(ngModel)]="email" name="email" placeholder="jane@company.com" />
           </div>
         </div>
 
@@ -168,8 +169,8 @@
           </div>
         </div>
 
-        <button class="btn-primary" (click)="onCreateUser()" [disabled]="isSubmitting">
-          {{ isSubmitting ? 'Creating User...' : 'Create User' }}
+        <button class="btn-primary" (click)="onCreateUser()" [disabled]="isSubmitting()">
+          {{ isSubmitting() ? 'Creating Employee...' : 'Create Employee' }}
           <span class="material-symbols-outlined">person_add</span>
         </button>
       </div>

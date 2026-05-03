@@ -1,131 +1,122 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { finalize, timeout, debounceTime, distinctUntilChanged, Subject, switchMap, catchError, of } from 'rxjs';
-import { AuthService, UserRole } from '../../services/auth';
-import { EnrollmentService, UserSearchResult } from '../../services/enrollment.service';
+import { HttpErrorResponse } from '@angular/common/http';
+import { finalize, timeout, switchMap, catchError, of, forkJoin } from 'rxjs';
+import { AuthService } from '../../services/auth';
+import { EnrollmentService, UserInfo } from '../../services/enrollment.service';
 import { ActivityService } from '../../services/activity.service';
+import { NotificationBellComponent } from '../../components/notification-bell/notification-bell';
 
 @Component({
   selector: 'app-hr-create-user',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, NotificationBellComponent],
   templateUrl: './hr-create-user.html',
   styleUrl: './hr-create-user.css',
 })
 export class HrCreateUser implements OnInit {
 
   // ── Employee list ────────────────────────────────────────
-  users = signal<UserSearchResult[]>([]);
+  private allUsers = signal<UserInfo[]>([]);
   isLoadingUsers = signal(false);
+  listError = signal('');
   userSearch = '';
-  private userSearch$ = new Subject<string>();
 
-  // ── Create user form (original logic preserved) ──────────
+  users = computed(() => {
+    const q = this.userSearch.trim().toLowerCase();
+    if (!q) return this.allUsers();
+    return this.allUsers().filter(u =>
+      u.userName.toLowerCase().includes(q) ||
+      u.email.toLowerCase().includes(q)
+    );
+  });
+
+  // ── Create user form ─────────────────────────────────────
   userName = '';
   email = '';
   password = '';
   confirmPassword = '';
   fullName = '';
-  role: UserRole = 'Employee';
-  errorMessage = '';
-  successMessage = '';
-  isSubmitting = false;
+  errorMessage = signal('');
+  successMessage = signal('');
+  isSubmitting = signal(false);
 
-  availableRoles: UserRole[] = ['Employee'];
-  currentUserRole: UserRole | null = null;
   private submitFallbackTimer: ReturnType<typeof setTimeout> | null = null;
 
   constructor(
     private authService: AuthService,
-    private router: Router,
     private enrollmentService: EnrollmentService,
     private activityService: ActivityService,
-  ) {
-    this.currentUserRole = this.authService.getUserRole();
-
-    if (this.currentUserRole === 'Admin') {
-      this.availableRoles = ['HR', 'Employee'];
-      this.role = 'Employee';
-      return;
-    }
-
-    if (this.currentUserRole === 'HR') {
-      this.availableRoles = ['Employee'];
-      this.role = 'Employee';
-      return;
-    }
-
-    this.router.navigate(['/hr/dashboard']);
-  }
+    private router: Router,
+  ) {}
 
   ngOnInit() {
-    this.loadUsers('');
-
-    this.userSearch$.pipe(
-      debounceTime(300),
-      distinctUntilChanged(),
-      switchMap(q => {
-        this.isLoadingUsers.set(true);
-        return this.enrollmentService.searchUsers(q).pipe(catchError(() => of([])));
-      })
-    ).subscribe(results => {
-      this.users.set(results);
-      this.isLoadingUsers.set(false);
-    });
+    this.loadAllUsers();
   }
 
-  private loadUsers(q: string) {
+  loadAllUsers() {
     this.isLoadingUsers.set(true);
-    this.enrollmentService.searchUsers(q).pipe(
-      catchError(() => of([]))
+    this.listError.set('');
+
+    this.enrollmentService.searchUsers('@').pipe(
+      catchError((err: HttpErrorResponse) => {
+        if (err.status === 401) {
+          this.sessionExpired();
+          return of(null);
+        }
+        this.listError.set('Failed to load employees.');
+        return of([]);
+      }),
+      switchMap(searchResults => {
+        if (searchResults === null) return of([] as UserInfo[]);
+        if (!searchResults || searchResults.length === 0) return of([] as UserInfo[]);
+        return forkJoin(
+          searchResults.map(u =>
+            this.enrollmentService.getUserInfo(u.id).pipe(catchError(() => of(null)))
+          )
+        ).pipe(
+          switchMap(infos =>
+            of((infos as (UserInfo | null)[]).filter((u): u is UserInfo => u !== null))
+          )
+        );
+      })
     ).subscribe(results => {
-      this.users.set(results);
+      this.allUsers.set(results);
       this.isLoadingUsers.set(false);
     });
   }
 
   onUserSearch(event: Event) {
-    const q = (event.target as HTMLInputElement).value;
-    this.userSearch = q;
-    this.userSearch$.next(q);
+    this.userSearch = (event.target as HTMLInputElement).value;
   }
 
-  getRoleBadgeClass(role?: string): string {
-    switch ((role ?? '').toLowerCase()) {
-      case 'admin':    return 'badge-admin';
-      case 'hr':       return 'badge-hr';
-      default:         return 'badge-employee';
-    }
+  formatDate(iso: string): string {
+    if (!iso) return '—';
+    return new Date(iso).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
   }
 
-  // ── Original create user logic ────────────────────────────
   onCreateUser() {
-    if (this.isSubmitting) return;
+    if (this.isSubmitting()) return;
 
-    this.errorMessage = '';
-    this.successMessage = '';
+    this.errorMessage.set('');
+    this.successMessage.set('');
 
     if (!this.userName || !this.email || !this.password || !this.confirmPassword) {
-      this.errorMessage = 'Please fill in all required fields.';
+      this.errorMessage.set('Please fill in all required fields.');
       return;
     }
 
     if (this.password !== this.confirmPassword) {
-      this.errorMessage = 'Passwords do not match.';
+      this.errorMessage.set('Passwords do not match.');
       return;
     }
 
-    if (!this.availableRoles.includes(this.role)) {
-      this.errorMessage = 'You are not allowed to create this role.';
-      return;
-    }
-
-    this.isSubmitting = true;
+    this.isSubmitting.set(true);
     this.submitFallbackTimer = setTimeout(() => {
-      this.isSubmitting = false;
-      this.errorMessage = 'Request is taking too long. Please try again.';
+      this.isSubmitting.set(false);
+      this.errorMessage.set('Request is taking too long. Please try again.');
     }, 20000);
 
     this.authService
@@ -134,8 +125,8 @@ export class HrCreateUser implements OnInit {
         email: this.email.trim(),
         password: this.password,
         confirmPassword: this.confirmPassword,
-        fullName: this.fullName.trim() || undefined,
-        role: this.role,
+        fullName: this.fullName.trim(),
+        role: 'Employee',
       })
       .pipe(
         timeout(15000),
@@ -144,7 +135,7 @@ export class HrCreateUser implements OnInit {
             clearTimeout(this.submitFallbackTimer);
             this.submitFallbackTimer = null;
           }
-          this.isSubmitting = false;
+          this.isSubmitting.set(false);
         }),
       )
       .subscribe({
@@ -155,17 +146,31 @@ export class HrCreateUser implements OnInit {
             `<strong>${this.authService.getUserName() || 'Admin'}</strong> created a new user account for <strong>${createdName}</strong>.`,
             'User Management'
           );
-          this.successMessage = 'User created successfully.';
+          this.successMessage.set('Employee created successfully.');
           this.resetForm();
-          this.loadUsers(this.userSearch);
+          this.loadAllUsers();
         },
-        error: (err) => {
-          this.errorMessage =
-            err?.name === 'TimeoutError'
-              ? 'Request timed out while creating user. Please try again.'
-              : (err?.error || 'Failed to create user. Please try again.');
+        error: (err: unknown) => {
+          const httpErr = err as HttpErrorResponse;
+          if (httpErr?.status === 401) {
+            this.sessionExpired();
+            return;
+          }
+          const asAny = err as Record<string, unknown>;
+          const msg =
+            asAny?.['name'] === 'TimeoutError'
+              ? 'Request timed out. Please try again.'
+              : (typeof httpErr?.error === 'string' && httpErr.error
+                  ? httpErr.error
+                  : httpErr?.message || 'Failed to create employee. Please try again.');
+          this.errorMessage.set(msg);
         },
       });
+  }
+
+  private sessionExpired() {
+    this.authService.logout();
+    void this.router.navigate(['/']);
   }
 
   private resetForm() {
@@ -174,6 +179,5 @@ export class HrCreateUser implements OnInit {
     this.password = '';
     this.confirmPassword = '';
     this.fullName = '';
-    this.role = this.availableRoles.includes('Employee') ? 'Employee' : this.availableRoles[0];
   }
 }

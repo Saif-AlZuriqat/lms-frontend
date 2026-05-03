@@ -9,7 +9,24 @@
     </div>
   </div>
 
-  @if (!course() && !isLoading()) {
+  @if (isLocked()) {
+    <!-- ── Locked state ──────────────────────────────────────── -->
+    <div class="locked-state">
+      <div class="locked-icon-wrap">
+        <span class="material-symbols-outlined locked-icon">lock</span>
+      </div>
+      <h2 class="locked-title">Course Locked</h2>
+      <p class="locked-reason">{{ lockReason() }}</p>
+      <div class="locked-progress-hint">
+        <span class="material-symbols-outlined">info</span>
+        You need to reach <strong>85%</strong> completion on the previous course to unlock this one.
+      </div>
+      <a [routerLink]="backLink()" class="btn-back-locked">
+        <span class="material-symbols-outlined">arrow_back</span>
+        Go Back
+      </a>
+    </div>
+  } @else if (!course() && !isLoading()) {
     <div class="empty-state">
       <span class="material-symbols-outlined empty-icon">menu_book</span>
       <p>No course data found. Please navigate here from a learning path.</p>

@@ -55,9 +55,9 @@
         </div>
       </div>
 
-      <button class="btn-primary" (click)="onRegister()">
-        Create Account
-        <span class="material-symbols-outlined">arrow_forward</span>
+      <button class="btn-primary" (click)="onRegister()" [disabled]="isLoading">
+        {{ isLoading ? 'Creating account...' : 'Create Account' }}
+        <span class="material-symbols-outlined">{{ isLoading ? 'hourglass_empty' : 'arrow_forward' }}</span>
       </button>
 
       <div class="divider"><span>Already have an account?</span></div>

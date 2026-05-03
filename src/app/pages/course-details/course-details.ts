@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CoursesApiService } from '../../services/courses-api.service';
 import { SectionsApiService } from '../../services/sections-api.service';
+import { ProgressService } from '../../services/progress.service';
 import { CourseResponseDTO, SectionResponseDTO } from '../../types/course-builder.types';
 
 @Component({
@@ -16,6 +17,8 @@ export class CourseDetails implements OnInit {
   course = signal<CourseResponseDTO | null>(null);
   sections = signal<SectionResponseDTO[]>([]);
   isLoading = signal(true);
+  isLocked = signal(false);
+  lockReason = signal('Complete the previous course to at least 85% to unlock this one.');
   error = signal('');
   expandedSections = signal<Set<number>>(new Set());
   pathId: number | null = null;
@@ -25,15 +28,17 @@ export class CourseDetails implements OnInit {
     private router: Router,
     private coursesApi: CoursesApiService,
     private sectionsApi: SectionsApiService,
+    private progressService: ProgressService,
   ) {}
 
   ngOnInit() {
     const state = history.state as Record<string, unknown>;
 
     if (state?.['course']) {
-      this.course.set(state['course'] as CourseResponseDTO);
+      const course = state['course'] as CourseResponseDTO;
+      this.course.set(course);
       this.pathId = (state['pathId'] as number) ?? null;
-      void this.loadSections((state['course'] as CourseResponseDTO).id);
+      void this.checkAccessThenLoad(course.id);
     } else {
       const id = Number(this.route.snapshot.paramMap.get('id'));
       if (id) {
@@ -49,11 +54,22 @@ export class CourseDetails implements OnInit {
     try {
       const course = await this.coursesApi.getCourseById(id);
       this.course.set(course);
-      await this.loadSections(id);
+      await this.checkAccessThenLoad(id);
     } catch {
       this.error.set('Failed to load course.');
       this.isLoading.set(false);
     }
+  }
+
+  async checkAccessThenLoad(courseId: number) {
+    const result = await this.progressService.canAccess(courseId);
+    if (!result.canAccess) {
+      this.isLocked.set(true);
+      if (result.reason) this.lockReason.set(this.cleanReason(result.reason));
+      this.isLoading.set(false);
+      return;
+    }
+    await this.loadSections(courseId);
   }
 
   async loadSections(courseId: number) {
@@ -66,6 +82,17 @@ export class CourseDetails implements OnInit {
     } finally {
       this.isLoading.set(false);
     }
+  }
+
+  /** Strip surrounding HTTP error prefix that fetchJson adds */
+  private cleanReason(raw: string): string {
+    // fetchJson wraps 403 as "HTTP Error 403: Forbidden" or passes the body message
+    const match = raw.match(/Complete previous course.*$/i);
+    if (match) return match[0];
+    if (raw.toLowerCase().includes('403')) {
+      return 'Complete the previous course to at least 85% to unlock this one.';
+    }
+    return raw;
   }
 
   toggleSection(sectionId: number) {

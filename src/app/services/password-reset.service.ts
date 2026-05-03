@@ -19,6 +19,6 @@ export class PasswordResetService {
   }
 
   forgotPassword(email: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/ForgotPassword`, { email });
+    return this.http.post(`${this.apiUrl}/forgot-password`, { email });
   }
 }

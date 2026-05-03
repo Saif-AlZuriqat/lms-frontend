@@ -14,7 +14,7 @@
       </a>
       <a routerLink="/hr/create-user" class="ap-sidebar-link">
         <span class="material-symbols-outlined">group</span>
-        Users
+        Employees
       </a>
       <a routerLink="/learning-paths" class="ap-sidebar-link">
         <span class="material-symbols-outlined">route</span>
@@ -39,6 +39,7 @@
         <h1 class="ap-title">Assign Learning Path</h1>
         <p class="ap-subtitle">Search for an employee and assign them a learning path.</p>
       </div>
+      <app-notification-bell></app-notification-bell>
     </header>
 
     <div class="ap-content">
@@ -100,7 +101,6 @@
                     <div class="ap-user-avatar">{{ user.userName.charAt(0).toUpperCase() }}</div>
                     <div class="ap-user-info">
                       <span class="ap-user-name">{{ user.userName }}</span>
-                      <span class="ap-user-email">{{ user.email }}</span>
                     </div>
                   </div>
                 }
@@ -114,7 +114,6 @@
               <div class="ap-user-avatar large">{{ selectedUser()!.userName.charAt(0).toUpperCase() }}</div>
               <div class="ap-user-info">
                 <span class="ap-user-name">{{ selectedUser()!.userName }}</span>
-                <span class="ap-user-email">{{ selectedUser()!.email }}</span>
               </div>
               <span class="material-symbols-outlined ap-check">check_circle</span>
             </div>
@@ -154,7 +153,7 @@
                       <span class="ap-path-desc">{{ path.description }}</span>
                     }
                   </div>
-                  <span class="ap-path-courses">{{ path.courses?.length ?? 0 }} courses</span>
+                  <span class="ap-path-courses">{{ path.courses ? path.courses.length : 0 }} courses</span>
                 </div>
               }
             </div>

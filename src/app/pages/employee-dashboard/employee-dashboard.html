@@ -7,7 +7,6 @@
       LearnPath
     </div>
 
-    <!-- Search bar -->
     <div class="ed-search">
       <span class="material-symbols-outlined ed-search-icon">search</span>
       <input
@@ -25,6 +24,7 @@
     </div>
 
     <div class="ed-nav-right">
+      <app-notification-bell></app-notification-bell>
       <button class="ed-logout" (click)="logout()">
         <span class="material-symbols-outlined">logout</span>
       </button>
@@ -54,8 +54,22 @@
       </div>
     } @else {
 
-      <!-- Continue Learning widget (only if there are paths) -->
-      @if (lastPath()) {
+      <!-- Feedback toasts -->
+      @if (enrollSuccess()) {
+        <div class="ed-toast ed-toast--success">
+          <span class="material-symbols-outlined">check_circle</span>
+          {{ enrollSuccess() }}
+        </div>
+      }
+      @if (enrollError()) {
+        <div class="ed-toast ed-toast--error">
+          <span class="material-symbols-outlined">error_outline</span>
+          {{ enrollError() }}
+        </div>
+      }
+
+      <!-- Continue Learning (only when enrolled in at least one path) -->
+      @if (firstEnrolledPath()) {
         <div class="ed-section">
           <h2 class="ed-section-title">Continue Learning</h2>
           <div class="continue-card" (click)="resume()">
@@ -71,7 +85,7 @@
               <span class="continue-badge">
                 {{ continueState()?.isCompleted ? 'Completed' : 'In Progress' }}
               </span>
-              <h3>{{ lastPath()!.title }}</h3>
+              <h3>{{ firstEnrolledPath()!.title }}</h3>
               <div class="progress-row">
                 <div class="progress-bar">
                   <div class="progress-fill" [style.width.%]="lastPathProgress()"></div>
@@ -98,60 +112,121 @@
         </div>
       }
 
-      <!-- My Courses section -->
-      <div class="ed-section">
-        <h2 class="ed-section-title">
-          My Courses
-          @if (searchQuery()) {
-            <span class="ed-search-count">{{ filteredPaths().length }} result{{ filteredPaths().length !== 1 ? 's' : '' }} for "{{ searchQuery() }}"</span>
-          }
-        </h2>
+      <!-- ── My Learning Paths (enrolled) ────────────────── -->
+      @if (filteredEnrolled().length > 0 || (enrolledPaths().length > 0 && searchQuery())) {
+        <div class="ed-section">
+          <h2 class="ed-section-title">
+            My Learning Paths
+            <span class="ed-section-count">{{ enrolledPaths().length }}</span>
+          </h2>
 
-        @if (filteredPaths().length === 0 && searchQuery()) {
-          <div class="ed-empty">
-            <span class="material-symbols-outlined">search_off</span>
-            <p>No paths match "{{ searchQuery() }}"</p>
-          </div>
-        } @else if (paths().length === 0) {
-          <div class="ed-empty">
-            <span class="material-symbols-outlined">route</span>
-            <p>No learning paths assigned yet.</p>
-            <span>Contact your HR team to get enrolled in a learning path.</span>
-          </div>
-        } @else {
-          <div class="ed-grid">
-            @for (path of filteredPaths(); track path.id; let i = $index) {
-              <div class="ed-card" (click)="openPath(path.id)">
-                <div class="ed-card-banner" [style.background]="path.image ? 'transparent' : getGradient(i)">
-                  @if (path.image) {
-                    <img [src]="getPictureUrl(path)" alt="" class="ed-card-banner-img" />
-                    <div class="ed-card-banner-overlay"></div>
-                  }
-                  <span class="ed-badge">{{ getCourseCount(path) }} COURSES</span>
-                </div>
-                <div class="ed-card-body">
-                  <h3>{{ path.title }}</h3>
-                  <p>{{ path.description || 'No description provided.' }}</p>
-                  <div class="ed-progress-bar">
-                    <div class="ed-progress-fill" [style.width.%]="getProgress(path.id)"></div>
-                  </div>
-                  <div class="ed-progress-text">{{ getProgress(path.id) }}% complete</div>
-                  <div class="ed-card-footer">
-                    <span class="ed-meta">
-                      <span class="material-symbols-outlined">menu_book</span>
-                      {{ getCourseCount(path) }} courses
-                    </span>
-                    <span class="ed-cta">
-                      Start
-                      <span class="material-symbols-outlined">arrow_forward</span>
+          @if (filteredEnrolled().length === 0) {
+            <div class="ed-empty">
+              <span class="material-symbols-outlined">search_off</span>
+              <p>No enrolled paths match "{{ searchQuery() }}"</p>
+            </div>
+          } @else {
+            <div class="ed-grid">
+              @for (path of filteredEnrolled(); track path.id; let i = $index) {
+                <div class="ed-card" (click)="openPath(path.id)">
+                  <div class="ed-card-banner" [style.background]="path.image ? 'transparent' : getGradient(i)">
+                    @if (path.image) {
+                      <img [src]="getPictureUrl(path)" alt="" class="ed-card-banner-img" />
+                      <div class="ed-card-banner-overlay"></div>
+                    }
+                    <span class="ed-badge">{{ getCourseCount(path) }} COURSES</span>
+                    <span class="ed-enrolled-badge">
+                      <span class="material-symbols-outlined">check_circle</span>
+                      Enrolled
                     </span>
                   </div>
+                  <div class="ed-card-body">
+                    <h3>{{ path.title }}</h3>
+                    <p>{{ path.description || 'No description provided.' }}</p>
+                    <div class="ed-progress-bar">
+                      <div class="ed-progress-fill" [style.width.%]="getProgress(path.id)"></div>
+                    </div>
+                    <div class="ed-progress-text">{{ getProgress(path.id) }}% complete</div>
+                    <div class="ed-card-footer">
+                      <span class="ed-meta">
+                        <span class="material-symbols-outlined">menu_book</span>
+                        {{ getCourseCount(path) }} courses
+                      </span>
+                      <span class="ed-cta">
+                        {{ getProgress(path.id) > 0 ? 'Continue' : 'Start' }}
+                        <span class="material-symbols-outlined">arrow_forward</span>
+                      </span>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            }
-          </div>
-        }
-      </div>
+              }
+            </div>
+          }
+        </div>
+      }
+
+      <!-- ── Available Learning Paths (not enrolled) ──────── -->
+      @if (filteredAvailable().length > 0 || (availablePaths().length > 0 && searchQuery())) {
+        <div class="ed-section">
+          <h2 class="ed-section-title">
+            Available Paths
+            <span class="ed-section-count ed-section-count--gray">{{ availablePaths().length }}</span>
+          </h2>
+
+          @if (filteredAvailable().length === 0) {
+            <div class="ed-empty">
+              <span class="material-symbols-outlined">search_off</span>
+              <p>No available paths match "{{ searchQuery() }}"</p>
+            </div>
+          } @else {
+            <div class="ed-grid">
+              @for (path of filteredAvailable(); track path.id; let i = $index) {
+                <div class="ed-card ed-card--available">
+                  <div class="ed-card-banner" [style.background]="path.image ? 'transparent' : getGradient(i + enrolledPaths().length)">
+                    @if (path.image) {
+                      <img [src]="getPictureUrl(path)" alt="" class="ed-card-banner-img" />
+                      <div class="ed-card-banner-overlay"></div>
+                    }
+                    <span class="ed-badge">{{ getCourseCount(path) }} COURSES</span>
+                  </div>
+                  <div class="ed-card-body">
+                    <h3>{{ path.title }}</h3>
+                    <p>{{ path.description || 'No description provided.' }}</p>
+                    <div class="ed-card-footer ed-card-footer--enroll">
+                      <span class="ed-meta">
+                        <span class="material-symbols-outlined">menu_book</span>
+                        {{ getCourseCount(path) }} courses
+                      </span>
+                      <button
+                        class="ed-enroll-btn"
+                        (click)="enroll(path, $event)"
+                        [disabled]="isEnrolling(path.id)"
+                      >
+                        @if (isEnrolling(path.id)) {
+                          <div class="ed-enroll-spinner"></div>
+                          Enrolling...
+                        } @else {
+                          <span class="material-symbols-outlined">add_circle</span>
+                          Enroll
+                        }
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+
+      <!-- Empty state: no paths in the system at all -->
+      @if (allPaths().length === 0) {
+        <div class="ed-empty">
+          <span class="material-symbols-outlined">route</span>
+          <p>No learning paths available yet.</p>
+          <span>Check back later or contact your HR team.</span>
+        </div>
+      }
 
     }
   </div>

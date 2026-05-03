@@ -6,9 +6,11 @@ import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { AuthService } from '../../services/auth';
 import { LearningPathService, LearningPathResponseDto } from '../../services/learning-path.service';
+import { EnrollmentService } from '../../services/enrollment.service';
 import { BASE_URL } from '../../types/course-builder.types';
+import { NotificationBellComponent } from '../../components/notification-bell/notification-bell';
 
-interface ContinueLearningSate {
+interface ContinueLearningState {
   isCompleted: boolean;
   lessonId: number | null;
   courseId: number | null;
@@ -18,30 +20,59 @@ interface ContinueLearningSate {
 @Component({
   selector: 'app-employee-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, NotificationBellComponent],
   templateUrl: './employee-dashboard.html',
   styleUrl: './employee-dashboard.css',
 })
 export class EmployeeDashboard implements OnInit {
-  paths = signal<LearningPathResponseDto[]>([]);
+  /** All paths available in the system */
+  allPaths = signal<LearningPathResponseDto[]>([]);
+  /** IDs of paths this employee is enrolled in */
+  enrolledPathIds = signal<Set<number>>(new Set());
   progressMap = signal<Map<number, number>>(new Map());
-  continueState = signal<ContinueLearningSate | null>(null);
+  continueState = signal<ContinueLearningState | null>(null);
+
+  enrollingPathId = signal<number | null>(null);
+  enrollError = signal('');
+  enrollSuccess = signal('');
+
   isLoading = signal(true);
   error = signal('');
   userName = signal('');
   searchQuery = signal('');
 
-  filteredPaths = computed(() => {
+  /** Paths the employee is enrolled in */
+  enrolledPaths = computed(() =>
+    this.allPaths().filter(p => this.enrolledPathIds().has(p.id))
+  );
+
+  /** Paths the employee is NOT enrolled in */
+  availablePaths = computed(() =>
+    this.allPaths().filter(p => !this.enrolledPathIds().has(p.id))
+  );
+
+  /** Enrolled paths filtered by search */
+  filteredEnrolled = computed(() => {
     const q = this.searchQuery().toLowerCase().trim();
-    if (!q) return this.paths();
-    return this.paths().filter(p =>
+    if (!q) return this.enrolledPaths();
+    return this.enrolledPaths().filter(p =>
       p.title.toLowerCase().includes(q) ||
       (p.description ?? '').toLowerCase().includes(q)
     );
   });
 
-  lastPath = computed(() => this.paths()[0] ?? null);
-  lastPathProgress = computed(() => this.getProgress(this.lastPath()?.id ?? 0));
+  /** Available paths filtered by search */
+  filteredAvailable = computed(() => {
+    const q = this.searchQuery().toLowerCase().trim();
+    if (!q) return this.availablePaths();
+    return this.availablePaths().filter(p =>
+      p.title.toLowerCase().includes(q) ||
+      (p.description ?? '').toLowerCase().includes(q)
+    );
+  });
+
+  firstEnrolledPath = computed(() => this.enrolledPaths()[0] ?? null);
+  lastPathProgress = computed(() => this.getProgress(this.firstEnrolledPath()?.id ?? 0));
 
   private readonly gradients = [
     'linear-gradient(135deg, #0f1b3d 0%, #1e3a8a 100%)',
@@ -54,44 +85,52 @@ export class EmployeeDashboard implements OnInit {
 
   constructor(
     private learningPathService: LearningPathService,
+    private enrollmentService: EnrollmentService,
     private authService: AuthService,
     private router: Router,
   ) {}
 
   ngOnInit() {
     this.userName.set(this.authService.getUserName());
-    this.loadPaths();
+    this.loadData();
   }
 
-  loadPaths() {
+  loadData() {
     this.isLoading.set(true);
     this.error.set('');
-    this.learningPathService.getPaths().subscribe({
-      next: (data) => {
-        this.paths.set(data);
+
+    // Load all paths + enrolled paths in parallel
+    forkJoin({
+      all: this.learningPathService.getPaths().pipe(catchError(() => of([]))),
+      mine: this.learningPathService.getMyPaths().pipe(catchError(() => of([]))),
+    }).subscribe({
+      next: ({ all, mine }) => {
+        this.allPaths.set(all);
+        this.enrolledPathIds.set(new Set(mine.map(p => p.id)));
         this.isLoading.set(false);
-        if (data.length > 0) {
-          this.loadAllProgress(data);
-          this.loadContinueLearning(data[0].id);
+
+        if (mine.length > 0) {
+          this.loadProgress(mine);
+          this.loadContinueLearning(mine[0].id);
         }
       },
       error: () => {
-        this.error.set('Failed to load your learning paths. Please try again.');
+        this.error.set('Failed to load learning paths. Please try again.');
         this.isLoading.set(false);
       },
     });
   }
 
-  loadAllProgress(paths: LearningPathResponseDto[]) {
-    const requests = paths.map(p =>
+  loadProgress(enrolledPaths: LearningPathResponseDto[]) {
+    const requests = enrolledPaths.map(p =>
       this.learningPathService.getMyProgress(p.id).pipe(
         catchError(() => of({ learningPathId: p.id, progress: 0 }))
       )
     );
     forkJoin(requests).subscribe(results => {
-      const map = new Map<number, number>();
-      results.forEach(r => map.set(r.learningPathId, Math.round(r.progress)));
-      this.progressMap.set(map);
+      const pMap = new Map<number, number>();
+      results.forEach(r => pMap.set(r.learningPathId, Math.round(r.progress)));
+      this.progressMap.set(pMap);
     });
   }
 
@@ -102,9 +141,7 @@ export class EmployeeDashboard implements OnInit {
       if (!result) return;
       if (result.isCompleted) {
         this.continueState.set({
-          isCompleted: true,
-          lessonId: null,
-          courseId: null,
+          isCompleted: true, lessonId: null, courseId: null,
           message: result.message ?? 'You have completed this learning path!',
         });
       } else if (result.data) {
@@ -118,11 +155,57 @@ export class EmployeeDashboard implements OnInit {
     });
   }
 
+  enroll(path: LearningPathResponseDto, event: Event) {
+    event.stopPropagation();
+    const userId = this.authService.getUserId();
+    if (!userId) {
+      this.enrollError.set('Could not identify your account. Please log in again.');
+      return;
+    }
+
+    this.enrollingPathId.set(path.id);
+    this.enrollError.set('');
+    this.enrollSuccess.set('');
+
+    this.enrollmentService.enroll(userId, path.id).subscribe({
+      next: () => {
+        // Add to enrolled set immediately (optimistic UI)
+        const updated = new Set(this.enrolledPathIds());
+        updated.add(path.id);
+        this.enrolledPathIds.set(updated);
+        this.enrollingPathId.set(null);
+        this.enrollSuccess.set(`You are now enrolled in "${path.title}"!`);
+        setTimeout(() => this.enrollSuccess.set(''), 4000);
+        // Start continue-learning for this newly enrolled path
+        this.loadContinueLearning(path.id);
+      },
+      error: (err) => {
+        this.enrollingPathId.set(null);
+        const msg: unknown = err?.error ?? err?.message ?? '';
+        if (typeof msg === 'string' && msg.toLowerCase().includes('already')) {
+          // Already enrolled — sync the UI
+          const updated = new Set(this.enrolledPathIds());
+          updated.add(path.id);
+          this.enrolledPathIds.set(updated);
+          this.enrollSuccess.set(`You are already enrolled in "${path.title}".`);
+          setTimeout(() => this.enrollSuccess.set(''), 4000);
+        } else {
+          this.enrollError.set(
+            typeof msg === 'string' && msg
+              ? msg
+              : 'Enrollment failed. Please contact your HR team.'
+          );
+          setTimeout(() => this.enrollError.set(''), 5000);
+        }
+      },
+    });
+  }
+
   resume() {
     const state = this.continueState();
+    const path = this.firstEnrolledPath();
     if (!state || state.isCompleted) {
-      // Path completed — open the path overview
-      if (this.lastPath()) this.openPath(this.lastPath()!.id);
+      if (path) this.openPath(path.id);
       return;
     }
     if (state.lessonId) {
@@ -130,8 +213,12 @@ export class EmployeeDashboard implements OnInit {
     } else if (state.courseId) {
       this.router.navigate(['/course', state.courseId]);
     } else {
-      if (this.lastPath()) this.openPath(this.lastPath()!.id);
+      if (path) this.openPath(path.id);
     }
+  }
+
+  isEnrolling(pathId: number): boolean {
+    return this.enrollingPathId() === pathId;
   }
 
   getProgress(pathId: number): number {

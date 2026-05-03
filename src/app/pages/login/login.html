@@ -44,9 +44,9 @@
         <div class="error-alert">{{ errorMessage }}</div>
       }
 
-      <button class="btn-primary" (click)="onLogin()">
-        Sign In to Dashboard
-        <span class="material-symbols-outlined">arrow_forward</span>
+      <button class="btn-primary" (click)="onLogin()" [disabled]="isLoading">
+        {{ isLoading ? 'Signing in...' : 'Sign In to Dashboard' }}
+        <span class="material-symbols-outlined">{{ isLoading ? 'hourglass_empty' : 'arrow_forward' }}</span>
       </button>
     </div>
   </div>

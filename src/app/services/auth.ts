@@ -118,6 +118,23 @@ export class AuthService {
     return null;
   }
 
+  getUserId(): string {
+    const token = this.getToken();
+    if (!token) return '';
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))) as Record<string, unknown>;
+      // ASP.NET Core Identity puts user ID in sub or nameidentifier
+      return String(
+        payload['sub'] ??
+        payload['nameid'] ??
+        payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'] ??
+        ''
+      );
+    } catch {
+      return '';
+    }
+  }
+
   getUserName(): string {
     const token = this.getToken();
     if (!token) return '';

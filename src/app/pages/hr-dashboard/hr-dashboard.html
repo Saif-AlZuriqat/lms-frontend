@@ -15,7 +15,7 @@
       </a>
       <a routerLink="/hr/create-user" class="hr-sidebar-link">
         <span class="material-symbols-outlined">group</span>
-        Users
+        Employees
       </a>
       <a routerLink="/learning-paths" class="hr-sidebar-link">
         <span class="material-symbols-outlined">route</span>
@@ -34,9 +34,7 @@
     <!-- Top bar -->
     <header class="hr-topbar">
       <div class="hr-topbar-right">
-        <button class="hr-icon-btn">
-          <span class="material-symbols-outlined">notifications</span>
-        </button>
+        <app-notification-bell></app-notification-bell>
         <button class="hr-logout-btn" (click)="logout()">
           <span class="material-symbols-outlined">logout</span>
         </button>
@@ -125,7 +123,7 @@
                 <span class="material-symbols-outlined">person_add</span>
               </div>
               <div class="hr-quick-info">
-                <span class="hr-quick-label">Create New User</span>
+                <span class="hr-quick-label">Create New Employee</span>
                 <span class="hr-quick-sub">Onboard new hires</span>
               </div>
               <span class="material-symbols-outlined hr-quick-arrow">arrow_forward</span>

@@ -1,15 +1,34 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 export interface UserSearchResult {
   id: string;
   userName: string;
+  email?: string;
+}
+
+export interface UserInfo {
+  id: string;
+  userName: string;
   email: string;
-  role?: string;
+  createdAt: string;
+  enrollments: { id?: number; learningPathId?: number; courseId?: number }[];
+  progresses: unknown[];
 }
 
 const ENROLL_COUNTS_KEY = 'lms_enrollment_counts';
+
+function readArray(value: unknown): unknown[] {
+  if (Array.isArray(value)) return value;
+  if (value && typeof value === 'object') {
+    const wrapped = value as Record<string, unknown>;
+    const values = wrapped['$values'] ?? wrapped['values'] ?? wrapped['Items'] ?? wrapped['items'];
+    if (Array.isArray(values)) return values;
+  }
+  return [];
+}
 
 @Injectable({ providedIn: 'root' })
 export class EnrollmentService {
@@ -21,6 +40,33 @@ export class EnrollmentService {
     return this.http.get<UserSearchResult[]>(
       `${this.baseUrl}/api/User/SearchUsers?value=${encodeURIComponent(value)}`
     );
+  }
+
+  getUserInfo(id: string): Observable<UserInfo> {
+    return this.http.get<unknown>(
+      `${this.baseUrl}/api/User/GetUserInfo/${id}`
+    ).pipe(
+      map((raw) => this.normalizeUserInfo(raw))
+    );
+  }
+
+  private normalizeUserInfo(raw: unknown): UserInfo {
+    const node = raw as Record<string, unknown>;
+    return {
+      id: String(node['id'] ?? node['Id'] ?? ''),
+      userName: String(node['userName'] ?? node['UserName'] ?? ''),
+      email: String(node['email'] ?? node['Email'] ?? ''),
+      createdAt: String(node['createdAt'] ?? node['CreatedAt'] ?? ''),
+      enrollments: readArray(node['enrollments'] ?? node['Enrollments']).map(e => {
+        const en = e as Record<string, unknown>;
+        return {
+          id: en['id'] as number | undefined,
+          learningPathId: en['learningPathId'] as number | undefined,
+          courseId: en['courseId'] as number | undefined,
+        };
+      }),
+      progresses: readArray(node['progresses'] ?? node['Progresses']),
+    };
   }
 
   enroll(userId: string, learningPathId: number): Observable<string> {

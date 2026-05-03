@@ -53,6 +53,8 @@ export class CourseManagerPage implements OnInit {
   lessonTargetSectionId: number | null = null;
   lessonTitle = '';
   lessonDescription = '';
+  lessonVideoFile: File | null = null;
+  lessonOrder = 1;
 
   constructor(
     private readonly route: ActivatedRoute,
@@ -250,18 +252,37 @@ export class CourseManagerPage implements OnInit {
     this.lessonTargetSectionId = sectionId;
     this.lessonTitle = '';
     this.lessonDescription = '';
+    this.lessonVideoFile = null;
+    // Auto-compute order: count existing lessons in this section + 1
+    const section = this.tree?.courses
+      .flatMap(c => c.sections)
+      .find(s => s.id === sectionId);
+    this.lessonOrder = (section?.lessons?.length ?? 0) + 1;
     this.lessonModalOpen = true;
+  }
+
+  onLessonVideoSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.lessonVideoFile = input.files[0];
+    }
   }
 
   async submitLessonModal(): Promise<void> {
     if (!this.lessonTitle.trim() || this.lessonTargetSectionId === null) return;
+    if (!this.lessonVideoFile) {
+      this.toast.error('Please select a video file.');
+      return;
+    }
     this.isSaving = true;
     try {
       await this.lessonsApi.createLesson({
         title: this.lessonTitle.trim(),
         description: this.lessonDescription.trim() || null,
         content: '',
+        videoUrl: this.lessonVideoFile,
         sectionId: this.lessonTargetSectionId,
+        order: this.lessonOrder,
       });
       this.toast.success('Lesson added');
       this.lessonModalOpen = false;

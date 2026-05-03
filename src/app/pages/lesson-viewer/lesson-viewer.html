@@ -39,9 +39,19 @@
 
       <div class="lv-divider"></div>
 
+      @if (lesson()!.videoUrl) {
+        <video
+          class="lv-video"
+          [src]="lesson()!.videoUrl!"
+          controls
+          controlsList="nodownload"
+          style="width:100%;border-radius:8px;margin-bottom:1rem;background:#000;">
+        </video>
+      }
+
       @if (lesson()!.content) {
         <div class="lv-content" [innerHTML]="lesson()!.content"></div>
-      } @else {
+      } @else if (!lesson()!.videoUrl) {
         <div class="lv-no-content">
           <span class="material-symbols-outlined">hourglass_empty</span>
           <p>No content available for this lesson yet.</p>

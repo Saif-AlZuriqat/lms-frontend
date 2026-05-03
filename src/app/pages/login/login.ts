@@ -13,6 +13,7 @@ export class Login implements OnInit {
   email = '';
   password = '';
   errorMessage = '';
+  isLoading = false;
 
   constructor(
     private authService: AuthService,
@@ -31,12 +32,15 @@ export class Login implements OnInit {
   }
 
   onLogin() {
+    if (this.isLoading) return;
     this.errorMessage = '';
+    this.isLoading = true;
     this.authService.login(this.email, this.password).subscribe({
       next: (response) => {
         const token = response.Token ?? response.token;
         if (!token) {
           this.errorMessage = 'Login response did not include a token.';
+          this.isLoading = false;
           return;
         }
         this.authService.saveToken(token);
@@ -49,6 +53,7 @@ export class Login implements OnInit {
       },
       error: (err) => {
         this.errorMessage = err.error || 'Login failed. Please check your credentials.';
+        this.isLoading = false;
       },
     });
   }

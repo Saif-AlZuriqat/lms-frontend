@@ -16,12 +16,40 @@ export class LessonsApiService {
     title: string;
     description: string | null;
     content: string | null;
+    videoUrl: File;
     sectionId: number;
+    order: number;
   }): Promise<void> {
-    await fetchJson<void>(`${BASE_URL}/api/Lessons`, {
+    const formData = new FormData();
+    formData.append('title', dto.title);
+    if (dto.description) formData.append('description', dto.description);
+    if (dto.content) formData.append('content', dto.content);
+    formData.append('videoUrl', dto.videoUrl);
+    formData.append('sectionId', String(dto.sectionId));
+    formData.append('order', String(dto.order));
+
+    const headers = new Headers();
+    const token = localStorage.getItem('token');
+    if (token && token !== 'undefined' && token !== 'null') {
+      headers.set('Authorization', `Bearer ${token}`);
+    }
+
+    const response = await fetch(`${BASE_URL}/api/Lessons/CreateLesson`, {
       method: 'POST',
-      body: JSON.stringify(dto),
+      headers,
+      body: formData,
     });
+
+    if (!response.ok) {
+      let errorMessage = `HTTP Error ${response.status}: ${response.statusText}`;
+      try {
+        const errorBody = await response.json();
+        errorMessage = errorBody?.message || errorBody?.title || JSON.stringify(errorBody) || errorMessage;
+      } catch {
+        try { const text = await response.text(); if (text) errorMessage = text; } catch {}
+      }
+      throw new Error(errorMessage);
+    }
   }
 
   async updateLesson(id: number, dto: { title: string; description: string | null; content: string | null }): Promise<void> {

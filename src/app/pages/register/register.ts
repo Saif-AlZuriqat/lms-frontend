@@ -17,6 +17,7 @@ export class Register {
   confirmPassword = '';
   errorMessage = '';
   successMessage = '';
+  isLoading = false;
 
   constructor(
     private authService: AuthService,
@@ -24,6 +25,7 @@ export class Register {
   ) {}
 
   onRegister() {
+    if (this.isLoading) return;
     this.errorMessage = '';
     this.successMessage = '';
 
@@ -32,10 +34,11 @@ export class Register {
       return;
     }
 
+    this.isLoading = true;
     this.authService
       .register(this.userName, this.email, this.password, this.confirmPassword, this.fullName)
       .subscribe({
-        next: (response) => {
+        next: () => {
           this.successMessage = 'Account created! Redirecting to login...';
           setTimeout(() => {
             this.router.navigate(['/']);
@@ -43,6 +46,7 @@ export class Register {
         },
         error: (err) => {
           this.errorMessage = err.error || 'Registration failed. Please try again.';
+          this.isLoading = false;
         },
       });
   }

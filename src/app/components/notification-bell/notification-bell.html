@@ -1,0 +1,59 @@
+<div class="nb-wrap">
+
+  <!-- Transparent backdrop closes the panel on outside click -->
+  @if (isOpen()) {
+    <div class="nb-backdrop" (click)="close()"></div>
+  }
+
+  <!-- Bell button -->
+  <button class="nb-btn" (click)="toggle()" [class.nb-btn--active]="isOpen()">
+    <span class="material-symbols-outlined">notifications</span>
+    @if (unreadCount() > 0) {
+      <span class="nb-badge">{{ unreadCount() > 99 ? '99+' : unreadCount() }}</span>
+    }
+  </button>
+
+  <!-- Dropdown panel -->
+  @if (isOpen()) {
+    <div class="nb-panel">
+
+      <div class="nb-panel-header">
+        <span class="nb-panel-title">Notifications</span>
+        @if (unreadCount() > 0) {
+          <button class="nb-mark-all" (click)="markAllRead()">Mark all read</button>
+        }
+      </div>
+
+      @if (isLoading()) {
+        <div class="nb-loading">
+          <div class="nb-spinner"></div>
+        </div>
+      } @else if (notifications().length === 0) {
+        <div class="nb-empty">
+          <span class="material-symbols-outlined">notifications_off</span>
+          <p>No notifications yet</p>
+        </div>
+      } @else {
+        <div class="nb-list">
+          @for (n of notifications(); track n.id) {
+            <div class="nb-item" [class.nb-item--unread]="!n.isRead" (click)="markRead(n)">
+              <div class="nb-item-icon" [class.nb-item-icon--unread]="!n.isRead">
+                <span class="material-symbols-outlined">{{ typeIcon(n.type) }}</span>
+              </div>
+              <div class="nb-item-body">
+                <span class="nb-item-title">{{ n.title }}</span>
+                <span class="nb-item-text">{{ stripHtml(n.body) }}</span>
+                <span class="nb-item-time">{{ timeAgo(n.createdAt) }}</span>
+              </div>
+              @if (!n.isRead) {
+                <div class="nb-dot"></div>
+              }
+            </div>
+          }
+        </div>
+      }
+
+    </div>
+  }
+
+</div>

@@ -25,63 +25,32 @@ export class LearningPathsApiService {
   }
 
   async addPath(dto: { title: string; description: string | null; picture?: File | null }): Promise<void> {
-    const formData = new FormData();
-    formData.append('Title', dto.title);
-    if (dto.description) {
-      formData.append('Description', dto.description);
-    }
-    if (dto.picture) {
-      formData.append('Image', dto.picture);
-    }
-
-    const token = localStorage.getItem('token');
-    const headers: Record<string, string> = {};
-    if (token && token !== 'undefined' && token !== 'null') {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
-
-    const response = await fetch(`${BASE_URL}/api/LearningPath/AddPathAsync/`, {
-      method: 'POST',
-      headers,
-      body: formData,
-    });
-
-    if (!response.ok) {
-      let errorMessage = `HTTP Error ${response.status}: ${response.statusText}`;
-      try {
-        const errorBody = await response.json();
-        errorMessage = errorBody?.message || errorBody?.title || JSON.stringify(errorBody) || errorMessage;
-      } catch {
-        try {
-          const text = await response.text();
-          if (text) errorMessage = text;
-        } catch {}
-      }
-      throw new Error(errorMessage);
-    }
+    await this.sendFormData(`${BASE_URL}/api/LearningPath/AddPath`, 'POST', dto);
   }
 
   async updatePath(id: number, dto: { title: string; description: string | null; picture?: File | null }): Promise<void> {
+    await this.sendFormData(`${BASE_URL}/api/LearningPath/UpdatePath/${id}`, 'PUT', dto);
+  }
+
+  private async sendFormData(
+    url: string,
+    method: 'POST' | 'PUT',
+    dto: { title: string; description: string | null; picture?: File | null }
+  ): Promise<void> {
     const formData = new FormData();
     formData.append('Title', dto.title);
-    if (dto.description) {
-      formData.append('Description', dto.description);
-    }
-    if (dto.picture) {
-      formData.append('Image', dto.picture);
-    }
+    if (dto.description) formData.append('Description', dto.description);
+    if (dto.picture)     formData.append('Image', dto.picture);
 
+    // Use Headers API (same as fetchJson) — do NOT set Content-Type so
+    // the browser adds the multipart/form-data boundary automatically
+    const headers = new Headers();
     const token = localStorage.getItem('token');
-    const headers: Record<string, string> = {};
     if (token && token !== 'undefined' && token !== 'null') {
-      headers['Authorization'] = `Bearer ${token}`;
+      headers.set('Authorization', `Bearer ${token}`);
     }
 
-    const response = await fetch(`${BASE_URL}/api/LearningPath/UpdatePath/${id}`, {
-      method: 'PUT',
-      headers,
-      body: formData,
-    });
+    const response = await fetch(url, { method, headers, body: formData });
 
     if (!response.ok) {
       let errorMessage = `HTTP Error ${response.status}: ${response.statusText}`;
@@ -89,10 +58,7 @@ export class LearningPathsApiService {
         const errorBody = await response.json();
         errorMessage = errorBody?.message || errorBody?.title || JSON.stringify(errorBody) || errorMessage;
       } catch {
-        try {
-          const text = await response.text();
-          if (text) errorMessage = text;
-        } catch {}
+        try { const text = await response.text(); if (text) errorMessage = text; } catch {}
       }
       throw new Error(errorMessage);
     }
@@ -145,6 +111,7 @@ export class LearningPathsApiService {
       title: toString(node['title'] ?? node['Title']),
       description: toNullableString(node['description'] ?? node['Description']),
       content: toNullableString(node['content'] ?? node['Content']),
+      videoUrl: toNullableString(node['videoUrl'] ?? node['VideoUrl']),
       order: toNumber(node['order'] ?? node['Order']),
       sectionId: toNumber(node['sectionId'] ?? node['SectionId']),
     };
