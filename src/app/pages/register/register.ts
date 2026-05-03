@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink, Router } from '@angular/router';
 import { AuthService } from '../../services/auth';
@@ -22,6 +22,7 @@ export class Register {
   constructor(
     private authService: AuthService,
     private router: Router,
+    private cdr: ChangeDetectorRef
   ) {}
 
   onRegister() {
@@ -40,6 +41,7 @@ export class Register {
       .subscribe({
         next: () => {
           this.successMessage = 'Account created! Redirecting to login...';
+          this.cdr.detectChanges();
           setTimeout(() => {
             this.router.navigate(['/']);
           }, 2000);
@@ -47,6 +49,7 @@ export class Register {
         error: (err) => {
           this.errorMessage = err.error || 'Registration failed. Please try again.';
           this.isLoading = false;
+          this.cdr.detectChanges();
         },
       });
   }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink, Router } from '@angular/router';
 import { AuthService } from '../../services/auth';
@@ -18,6 +18,7 @@ export class Login implements OnInit {
   constructor(
     private authService: AuthService,
     private router: Router,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -41,6 +42,7 @@ export class Login implements OnInit {
         if (!token) {
           this.errorMessage = 'Login response did not include a token.';
           this.isLoading = false;
+          this.cdr.markForCheck();
           return;
         }
         this.authService.saveToken(token);
@@ -54,6 +56,7 @@ export class Login implements OnInit {
       error: (err) => {
         this.errorMessage = err.error || 'Login failed. Please check your credentials.';
         this.isLoading = false;
+        this.cdr.markForCheck();
       },
     });
   }
