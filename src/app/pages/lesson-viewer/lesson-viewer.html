@@ -19,6 +19,8 @@
         } @else if (lesson()?.videoUrl) {
           @if (lesson()!.type === 0) {
             <video class="lesson-video" [src]="getMediaUrl(lesson())" controls controlsList="nodownload"></video>
+          } @else if (lesson()!.type === 3 && getYouTubeEmbedUrl(lesson())) {
+            <iframe class="lesson-video" [src]="getYouTubeEmbedUrl(lesson())" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="width: 100%; height: 100%;"></iframe>
           } @else {
             <div class="external-material" style="text-align: center;">
               <span class="material-symbols-outlined material-icon" style="font-size: 48px; margin-bottom: 16px; color: var(--blue);">
@@ -51,13 +53,7 @@
 
           <h1>{{ lesson()!.title }}</h1>
 
-          <div class="tabs">
-            <span class="active">Overview</span>
-            <span>Notes</span>
-            <span>Resources</span>
-            <span>Discussion</span>
-          </div>
-          
+
           <div class="lesson-content">
             @if (lesson()!.description) {
               <p class="desc">{{ lesson()!.description }}</p>
@@ -96,7 +92,6 @@
                     }
                   </span>
                   <span class="lesson-name">{{ j + 1 }}. {{ l.title }}</span>
-                  <span class="lesson-time">5:00</span>
                 </div>
               }
             </div>

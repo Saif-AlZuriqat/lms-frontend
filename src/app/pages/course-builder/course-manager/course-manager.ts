@@ -275,8 +275,10 @@ export class CourseManagerPage implements OnInit {
   async submitLessonModal(): Promise<void> {
     if (!this.lessonTitle.trim() || this.lessonTargetSectionId === null) return;
     
+    const materialTypeNum = Number(this.lessonMaterialType);
+    
     // Validate based on material type
-    if (this.lessonMaterialType === 3) {
+    if (materialTypeNum === 3) {
       if (!this.lessonLinkUrl.trim()) {
         this.toast.error('Please provide a valid link URL.');
         return;
@@ -294,9 +296,9 @@ export class CourseManagerPage implements OnInit {
         title: this.lessonTitle.trim(),
         description: this.lessonDescription.trim() || null,
         content: '',
-        videoUrl: this.lessonMaterialType !== 3 ? (this.lessonVideoFile || undefined) : undefined,
-        linkUrl: this.lessonMaterialType === 3 ? this.lessonLinkUrl.trim() : undefined,
-        materialType: Number(this.lessonMaterialType),
+        videoUrl: materialTypeNum !== 3 ? (this.lessonVideoFile || undefined) : undefined,
+        linkUrl: materialTypeNum === 3 ? this.lessonLinkUrl.trim() : undefined,
+        materialType: materialTypeNum,
         sectionId: this.lessonTargetSectionId,
         order: this.lessonOrder,
       });

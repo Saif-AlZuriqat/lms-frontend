@@ -6,6 +6,8 @@ import { SectionsApiService } from '../../services/sections-api.service';
 import { CoursesApiService } from '../../services/courses-api.service';
 import { LessonResponseDTO, SectionResponseDTO, CourseResponseDTO } from '../../types/course-builder.types';
 
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+
 @Component({
   selector: 'app-lesson-viewer',
   standalone: true,
@@ -33,9 +35,18 @@ export class LessonViewer implements OnInit {
     private lessonsApi: LessonsApiService,
     private sectionsApi: SectionsApiService,
     private coursesApi: CoursesApiService,
+    private sanitizer: DomSanitizer
   ) {}
 
   ngOnInit() {
+    // Load local storage completions
+    try {
+      const stored = localStorage.getItem('completed_lessons');
+      if (stored) {
+        this.completedLessons.set(new Set(JSON.parse(stored)));
+      }
+    } catch(e) {}
+
     this.route.paramMap.subscribe(params => {
       const id = Number(params.get('id'));
       if (id) {
@@ -70,6 +81,19 @@ export class LessonViewer implements OnInit {
     } finally {
       this.isLoading.set(false);
     }
+  }
+
+  getYouTubeEmbedUrl(lesson: LessonResponseDTO | null): SafeResourceUrl | null {
+    if (!lesson || lesson.type !== 3 || !lesson.videoUrl) return null;
+    
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = lesson.videoUrl.match(regExp);
+
+    if (match && match[2].length === 11) {
+      const videoId = match[2];
+      return this.sanitizer.bypassSecurityTrustResourceUrl(`https://www.youtube.com/embed/${videoId}?autoplay=0`);
+    }
+    return null;
   }
 
   getMediaUrl(lesson: LessonResponseDTO | null): string | null {
@@ -117,6 +141,7 @@ export class LessonViewer implements OnInit {
       // Currently no API to un-complete, so we just remove from local state
       completed.delete(lessonId);
       this.completedLessons.set(completed);
+      localStorage.setItem('completed_lessons', JSON.stringify(Array.from(completed)));
       return;
     }
 
@@ -126,6 +151,7 @@ export class LessonViewer implements OnInit {
       await this.lessonsApi.completeLesson(lessonId);
       completed.add(lessonId);
       this.completedLessons.set(completed);
+      localStorage.setItem('completed_lessons', JSON.stringify(Array.from(completed)));
     } catch {
       // Ignore errors for now, or show toast
     } finally {
