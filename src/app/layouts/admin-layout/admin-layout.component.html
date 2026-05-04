@@ -1,0 +1,51 @@
+<div class="hr-layout">
+
+  <!-- Left Sidebar -->
+  <aside class="hr-sidebar">
+    <div class="hr-sidebar-brand">
+      <span class="brand-lms">LMS</span>
+      <span class="brand-name">Admin</span>
+      <div class="brand-sub">CORPORATE PORTAL</div>
+    </div>
+
+    <nav class="hr-sidebar-nav">
+      <a routerLink="/hr/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="hr-sidebar-link">
+        <span class="material-symbols-outlined">dashboard</span>
+        Dashboard
+      </a>
+      <a routerLink="/hr/create-user" routerLinkActive="active" class="hr-sidebar-link">
+        <span class="material-symbols-outlined">group</span>
+        Employees
+      </a>
+      <a routerLink="/learning-paths" routerLinkActive="active" class="hr-sidebar-link">
+        <span class="material-symbols-outlined">route</span>
+        Learning Paths
+      </a>
+      <a routerLink="/hr/assign-path" routerLinkActive="active" class="hr-sidebar-link">
+        <span class="material-symbols-outlined">assignment_ind</span>
+        Assign Path
+      </a>
+    </nav>
+  </aside>
+
+  <!-- Main -->
+  <div class="hr-main">
+
+    <!-- Top bar -->
+    <header class="hr-topbar">
+      <div class="hr-topbar-right">
+        <app-notification-bell></app-notification-bell>
+        <button class="hr-logout-btn" (click)="logout()">
+          <span class="material-symbols-outlined">logout</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Content Area -->
+    <div class="hr-content-wrapper">
+      <router-outlet></router-outlet>
+    </div>
+
+  </div>
+
+</div>

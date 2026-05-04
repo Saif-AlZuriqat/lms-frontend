@@ -1,47 +1,3 @@
-<div class="ap-layout">
-
-  <!-- Sidebar (same as HR dashboard) -->
-  <aside class="ap-sidebar">
-    <div class="ap-sidebar-brand">
-      <span class="brand-lms">LMS</span>
-      <span class="brand-name">Admin</span>
-      <div class="brand-sub">CORPORATE PORTAL</div>
-    </div>
-    <nav class="ap-sidebar-nav">
-      <a routerLink="/hr/dashboard" class="ap-sidebar-link">
-        <span class="material-symbols-outlined">dashboard</span>
-        Dashboard
-      </a>
-      <a routerLink="/hr/create-user" class="ap-sidebar-link">
-        <span class="material-symbols-outlined">group</span>
-        Employees
-      </a>
-      <a routerLink="/learning-paths" class="ap-sidebar-link">
-        <span class="material-symbols-outlined">route</span>
-        Learning Paths
-      </a>
-      <a routerLink="/hr/assign-path" class="ap-sidebar-link active">
-        <span class="material-symbols-outlined">assignment_ind</span>
-        Assign Path
-      </a>
-    </nav>
-  </aside>
-
-  <!-- Main -->
-  <div class="ap-main">
-
-    <!-- Top bar -->
-    <header class="ap-topbar">
-      <button class="ap-back" (click)="goBack()">
-        <span class="material-symbols-outlined">arrow_back</span>
-      </button>
-      <div>
-        <h1 class="ap-title">Assign Learning Path</h1>
-        <p class="ap-subtitle">Search for an employee and assign them a learning path.</p>
-      </div>
-      <app-notification-bell></app-notification-bell>
-    </header>
-
     <div class="ap-content">
 
       <!-- Success / Error messages -->
@@ -186,5 +142,3 @@
       </div>
 
     </div>
-  </div>
-</div>

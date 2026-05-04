@@ -1,138 +1,92 @@
-<div class="hr-layout">
+<!-- Content -->
+<div class="hr-content">
 
-  <!-- Left Sidebar -->
-  <aside class="hr-sidebar">
-    <div class="hr-sidebar-brand">
-      <span class="brand-lms">LMS</span>
-      <span class="brand-name">Admin</span>
-      <div class="brand-sub">CORPORATE PORTAL</div>
+  <!-- Welcome row -->
+  <div class="hr-welcome-row">
+    <div>
+      <h1 class="hr-welcome-title">Welcome back, {{ userName() || 'Admin' }}</h1>
+      <p class="hr-welcome-sub">Your workforce learning engagement is up this month.</p>
+    </div>
+    <a routerLink="/hr/assign-path" class="hr-assign-btn">
+      <span class="material-symbols-outlined">add_circle</span>
+      Assign Training
+    </a>
+  </div>
+
+  <!-- Learning Path Distribution -->
+  <div class="hr-section-card">
+    <div class="hr-section-header">
+      <h2>Learning Path Distribution</h2>
+      <a routerLink="/learning-paths" class="hr-view-link">
+        View Detailed Report <span class="material-symbols-outlined">chevron_right</span>
+      </a>
     </div>
 
-    <nav class="hr-sidebar-nav">
-      <a routerLink="/hr/dashboard" class="hr-sidebar-link active">
-        <span class="material-symbols-outlined">dashboard</span>
-        Dashboard
-      </a>
-      <a routerLink="/hr/create-user" class="hr-sidebar-link">
-        <span class="material-symbols-outlined">group</span>
-        Employees
-      </a>
-      <a routerLink="/learning-paths" class="hr-sidebar-link">
-        <span class="material-symbols-outlined">route</span>
-        Learning Paths
-      </a>
-      <a routerLink="/hr/assign-path" class="hr-sidebar-link">
-        <span class="material-symbols-outlined">assignment_ind</span>
-        Assign Path
-      </a>
-    </nav>
-  </aside>
-
-  <!-- Main -->
-  <div class="hr-main">
-
-    <!-- Top bar -->
-    <header class="hr-topbar">
-      <div class="hr-topbar-right">
-        <app-notification-bell></app-notification-bell>
-        <button class="hr-logout-btn" (click)="logout()">
-          <span class="material-symbols-outlined">logout</span>
-        </button>
-      </div>
-    </header>
-
-    <!-- Content -->
-    <div class="hr-content">
-
-      <!-- Welcome row -->
-      <div class="hr-welcome-row">
-        <div>
-          <h1 class="hr-welcome-title">Welcome back, {{ userName() || 'Admin' }}</h1>
-          <p class="hr-welcome-sub">Your workforce learning engagement is up this month.</p>
-        </div>
-        <a routerLink="/hr/assign-path" class="hr-assign-btn">
-          <span class="material-symbols-outlined">add_circle</span>
-          Assign Training
-        </a>
-      </div>
-
-      <!-- Learning Path Distribution -->
-      <div class="hr-section-card">
-        <div class="hr-section-header">
-          <h2>Learning Path Distribution</h2>
-          <a routerLink="/learning-paths" class="hr-view-link">
-            View Detailed Report <span class="material-symbols-outlined">chevron_right</span>
-          </a>
-        </div>
-
-        @if (paths().length === 0) {
-          <div class="hr-empty">No learning paths found.</div>
-        } @else {
-          <div class="hr-path-list">
-            @for (path of paths(); track path.id) {
-              <div class="hr-path-row">
-                <div class="hr-path-info">
-                  <span class="hr-path-name">{{ path.title }}</span>
-                  <span class="hr-path-enrolled">{{ getEnrolledCount(path.id) }} Enrolled</span>
-                </div>
-                <div class="hr-path-bar">
-                  <div class="hr-path-bar-fill" [style.width.%]="getBarWidth(path)"></div>
-                </div>
-              </div>
-            }
+    @if (paths().length === 0) {
+      <div class="hr-empty">No learning paths found.</div>
+    } @else {
+      <div class="hr-path-list">
+        @for (path of paths(); track path.id) {
+          <div class="hr-path-row">
+            <div class="hr-path-info">
+              <span class="hr-path-name">{{ path.title }}</span>
+              <span class="hr-path-enrolled">{{ getEnrolledCount(path.id) }} Enrolled</span>
+            </div>
+            <div class="hr-path-bar">
+              <div class="hr-path-bar-fill" [style.width.%]="getBarWidth(path)"></div>
+            </div>
           </div>
         }
       </div>
+    }
+  </div>
 
-      <!-- Bottom row: Recent Activity + Quick Actions -->
-      <div class="hr-bottom-row">
+  <!-- Bottom row: Recent Activity + Quick Actions -->
+  <div class="hr-bottom-row">
 
-        <!-- Recent Administrative Activity -->
-        <div class="hr-section-card hr-activity-card">
-          <div class="hr-section-header">
-            <h2>Recent Administrative Activity</h2>
-          </div>
+    <!-- Recent Administrative Activity -->
+    <div class="hr-section-card hr-activity-card">
+      <div class="hr-section-header">
+        <h2>Recent Administrative Activity</h2>
+      </div>
 
-          @if (activities().length === 0) {
-            <div class="hr-empty">No recent activity yet. Actions you take will appear here.</div>
-          } @else {
-            <div class="hr-activity-list">
-              @for (act of activities(); track act.timestamp) {
-                <div class="hr-activity-item">
-                  <div class="hr-activity-icon">
-                    <span class="material-symbols-outlined">{{ act.icon }}</span>
-                  </div>
-                  <div class="hr-activity-body">
-                    <p class="hr-activity-msg" [innerHTML]="act.message"></p>
-                    <span class="hr-activity-meta">{{ timeAgo(act.timestamp) }} &bull; {{ act.detail }}</span>
-                  </div>
-                </div>
-              }
+      @if (activities().length === 0) {
+        <div class="hr-empty">No recent activity yet. Actions you take will appear here.</div>
+      } @else {
+        <div class="hr-activity-list">
+          @for (act of activities(); track act.timestamp) {
+            <div class="hr-activity-item">
+              <div class="hr-activity-icon">
+                <span class="material-symbols-outlined">{{ act.icon }}</span>
+              </div>
+              <div class="hr-activity-body">
+                <p class="hr-activity-msg" [innerHTML]="act.message"></p>
+                <span class="hr-activity-meta">{{ timeAgo(act.timestamp) }} &bull; {{ act.detail }}</span>
+              </div>
             </div>
           }
         </div>
+      }
+    </div>
 
-        <!-- Quick Actions -->
-        <div class="hr-section-card hr-quick-card">
-          <div class="hr-section-header">
-            <h2>Quick Actions</h2>
+    <!-- Quick Actions -->
+    <div class="hr-section-card hr-quick-card">
+      <div class="hr-section-header">
+        <h2>Quick Actions</h2>
+      </div>
+      <div class="hr-quick-list">
+        <a routerLink="/hr/create-user" class="hr-quick-item">
+          <div class="hr-quick-icon">
+            <span class="material-symbols-outlined">person_add</span>
           </div>
-          <div class="hr-quick-list">
-            <a routerLink="/hr/create-user" class="hr-quick-item">
-              <div class="hr-quick-icon">
-                <span class="material-symbols-outlined">person_add</span>
-              </div>
-              <div class="hr-quick-info">
-                <span class="hr-quick-label">Create New Employee</span>
-                <span class="hr-quick-sub">Onboard new hires</span>
-              </div>
-              <span class="material-symbols-outlined hr-quick-arrow">arrow_forward</span>
-            </a>
+          <div class="hr-quick-info">
+            <span class="hr-quick-label">Create New Employee</span>
+            <span class="hr-quick-sub">Onboard new hires</span>
           </div>
-        </div>
-
+          <span class="material-symbols-outlined hr-quick-arrow">arrow_forward</span>
+        </a>
       </div>
     </div>
-  </div>
 
+  </div>
 </div>

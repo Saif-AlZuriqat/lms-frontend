@@ -1,205 +1,162 @@
-<div class="cu-layout">
+<div class="cu-content">
 
-  <!-- Sidebar -->
-  <aside class="cu-sidebar">
-    <div class="cu-sidebar-brand">
-      <span class="brand-lms">LMS</span>
-      <span class="brand-name">Admin</span>
-      <div class="brand-sub">CORPORATE PORTAL</div>
+  <!-- ── Employee list card ── -->
+  <div class="cu-card">
+
+    <div class="cu-list-header">
+      <div class="cu-list-header-left">
+        <h2>All Employees</h2>
+        @if (!isLoadingUsers()) {
+          <span class="cu-count">{{ users().length }} employee{{ users().length !== 1 ? 's' : '' }}</span>
+        }
+      </div>
+      <div class="cu-search-wrap">
+        <span class="material-symbols-outlined cu-search-icon">search</span>
+        <input
+          type="text"
+          class="cu-search-input"
+          placeholder="Search users..."
+          [value]="userSearch"
+          (input)="onUserSearch($event)"
+        />
+        @if (isLoadingUsers()) {
+          <div class="cu-spinner"></div>
+        }
+      </div>
     </div>
-    <nav class="cu-sidebar-nav">
-      <a routerLink="/hr/dashboard" class="cu-sidebar-link">
-        <span class="material-symbols-outlined">dashboard</span>
-        Dashboard
-      </a>
-      <a routerLink="/hr/create-user" class="cu-sidebar-link active">
-        <span class="material-symbols-outlined">group</span>
-        Employees
-      </a>
-      <a routerLink="/learning-paths" class="cu-sidebar-link">
-        <span class="material-symbols-outlined">route</span>
-        Learning Paths
-      </a>
-      <a routerLink="/hr/assign-path" class="cu-sidebar-link">
-        <span class="material-symbols-outlined">assignment_ind</span>
-        Assign Path
-      </a>
-    </nav>
-  </aside>
 
-  <!-- Main -->
-  <div class="cu-main">
-
-    <!-- Topbar -->
-    <header class="cu-topbar">
-      <div>
-        <h1 class="cu-page-title">Employee Management</h1>
-        <p class="cu-page-sub">HR Admin / <strong>Employees</strong></p>
-      </div>
-      <app-notification-bell></app-notification-bell>
-    </header>
-
-    <div class="cu-content">
-
-      <!-- ── Employee list card ── -->
-      <div class="cu-card">
-
-        <div class="cu-list-header">
-          <div class="cu-list-header-left">
-            <h2>All Employees</h2>
-            @if (!isLoadingUsers()) {
-              <span class="cu-count">{{ users().length }} employee{{ users().length !== 1 ? 's' : '' }}</span>
-            }
-          </div>
-          <div class="cu-search-wrap">
-            <span class="material-symbols-outlined cu-search-icon">search</span>
-            <input
-              type="text"
-              class="cu-search-input"
-              placeholder="Search users..."
-              [value]="userSearch"
-              (input)="onUserSearch($event)"
-            />
-            @if (isLoadingUsers()) {
-              <div class="cu-spinner"></div>
-            }
-          </div>
-        </div>
-
-        <div class="cu-table-wrap">
-          <table class="cu-table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Enrolled Paths</th>
-                <th>Joined</th>
-                <th style="width: 80px; text-align: right;">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              @if (isLoadingUsers()) {
-                <tr>
-                  <td colspan="5" class="cu-empty-row">
-                    <div class="cu-spinner"></div>
-                    Loading employees…
-                  </td>
-                </tr>
-              } @else if (users().length === 0) {
-                <tr>
-                  <td colspan="5" class="cu-empty-row">
-                    <span class="material-symbols-outlined">person_search</span>
-                    No employees found
-                  </td>
-                </tr>
-              }
-              @for (user of users(); track user.id) {
-                <tr>
-                  <td class="cu-name-cell">
-                    <div class="cu-avatar">{{ user.userName.charAt(0).toUpperCase() }}</div>
-                    <span>{{ user.userName }}</span>
-                  </td>
-                  <td class="cu-email-cell">{{ user.email }}</td>
-                  <td>
-                    <span class="cu-enroll-count">
-                      <span class="material-symbols-outlined">route</span>
-                      {{ user.enrollments.filter(e => e.learningPathId && e.learningPathId > 0).length }}
-                    </span>
-                  </td>
-                  <td class="cu-date-cell">{{ formatDate(user.createdAt) }}</td>
-                  <td style="text-align: right;">
-                    <button class="cu-icon-btn cu-text-red" (click)="openDeleteModal(user)" title="Delete User">
-                      <span class="material-symbols-outlined">delete</span>
-                    </button>
-                  </td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- ── Create user form (same structure as register page) ── -->
-      <div class="form-panel">
-        <div class="form-header">
-          <h2>Create Employee</h2>
-          <p>Required fields are marked with an asterisk.</p>
-        </div>
-
-        @if (errorMessage()) {
-          <div class="error-alert">{{ errorMessage() }}</div>
-        }
-        @if (successMessage()) {
-          <div class="success-alert">{{ successMessage() }}</div>
-        }
-
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="fullName">Full Name</label>
-            <div class="input-icon-wrap">
-              <span class="material-symbols-outlined input-icon-left">person</span>
-              <input id="fullName" [(ngModel)]="fullName" name="fullName" placeholder="Jane Miller" />
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="userName">Username *</label>
-            <div class="input-icon-wrap">
-              <span class="material-symbols-outlined input-icon-left">badge</span>
-              <input id="userName" [(ngModel)]="userName" name="userName" placeholder="jane.miller" />
-            </div>
-          </div>
-        </div>
-
-        <div class="form-grid" [ngStyle]="{'grid-template-columns': currentUserRole() === 'Admin' ? '1fr 1fr' : '1fr'}">
-          <div class="form-group">
-            <label for="email">Email *</label>
-            <div class="input-icon-wrap">
-              <span class="material-symbols-outlined input-icon-left">alternate_email</span>
-              <input id="email" type="email" [(ngModel)]="email" name="email" placeholder="jane@company.com" />
-            </div>
-          </div>
-
-          @if (currentUserRole() === 'Admin') {
-            <div class="form-group">
-              <label for="role">Role *</label>
-              <div class="input-icon-wrap">
-                <span class="material-symbols-outlined input-icon-left">admin_panel_settings</span>
-                <select id="role" [(ngModel)]="role" name="role">
-                  <option value="Employee">Employee</option>
-                  <option value="HR">HR</option>
-                </select>
-                <!-- Add a custom arrow for the select -->
-                <span class="material-symbols-outlined" style="position: absolute; right: 14px; top: 50%; transform: translateY(-50%); pointer-events: none; color: var(--gray-400);">expand_more</span>
-              </div>
-            </div>
+    <div class="cu-table-wrap">
+      <table class="cu-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Enrolled Paths</th>
+            <th>Joined</th>
+            <th style="width: 80px; text-align: right;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (isLoadingUsers()) {
+            <tr>
+              <td colspan="5" class="cu-empty-row">
+                <div class="cu-spinner"></div>
+                Loading employees…
+              </td>
+            </tr>
+          } @else if (users().length === 0) {
+            <tr>
+              <td colspan="5" class="cu-empty-row">
+                <span class="material-symbols-outlined">person_search</span>
+                No employees found
+              </td>
+            </tr>
           }
-        </div>
-
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="password">Password *</label>
-            <div class="input-icon-wrap">
-              <span class="material-symbols-outlined input-icon-left">lock</span>
-              <input id="password" type="password" [(ngModel)]="password" name="password" placeholder="••••••••" />
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="confirmPassword">Confirm Password *</label>
-            <div class="input-icon-wrap">
-              <span class="material-symbols-outlined input-icon-left">lock_person</span>
-              <input id="confirmPassword" type="password" [(ngModel)]="confirmPassword" name="confirmPassword" placeholder="••••••••" />
-            </div>
-          </div>
-        </div>
-
-        <button class="btn-primary" (click)="onCreateUser()" [disabled]="isSubmitting()">
-          {{ isSubmitting() ? 'Creating Employee...' : 'Create Employee' }}
-          <span class="material-symbols-outlined">person_add</span>
-        </button>
-      </div>
-
+          @for (user of users(); track user.id) {
+            <tr>
+              <td class="cu-name-cell">
+                <div class="cu-avatar">{{ user.userName.charAt(0).toUpperCase() }}</div>
+                <span>{{ user.userName }}</span>
+              </td>
+              <td class="cu-email-cell">{{ user.email }}</td>
+              <td>
+                <span class="cu-enroll-count">
+                  <span class="material-symbols-outlined">route</span>
+                  {{ user.enrollments.filter(e => e.learningPathId && e.learningPathId > 0).length }}
+                </span>
+              </td>
+              <td class="cu-date-cell">{{ formatDate(user.createdAt) }}</td>
+              <td style="text-align: right;">
+                <button class="cu-icon-btn cu-text-red" (click)="openDeleteModal(user)" title="Delete User">
+                  <span class="material-symbols-outlined">delete</span>
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
     </div>
   </div>
+
+  <!-- ── Create user form (same structure as register page) ── -->
+  <div class="form-panel">
+    <div class="form-header">
+      <h2>Create Employee</h2>
+      <p>Required fields are marked with an asterisk.</p>
+    </div>
+
+    @if (errorMessage()) {
+      <div class="error-alert">{{ errorMessage() }}</div>
+    }
+    @if (successMessage()) {
+      <div class="success-alert">{{ successMessage() }}</div>
+    }
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label for="fullName">Full Name</label>
+        <div class="input-icon-wrap">
+          <span class="material-symbols-outlined input-icon-left">person</span>
+          <input id="fullName" [(ngModel)]="fullName" name="fullName" placeholder="Jane Miller" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="userName">Username *</label>
+        <div class="input-icon-wrap">
+          <span class="material-symbols-outlined input-icon-left">badge</span>
+          <input id="userName" [(ngModel)]="userName" name="userName" placeholder="jane.miller" />
+        </div>
+      </div>
+    </div>
+
+    <div class="form-grid" [ngStyle]="{'grid-template-columns': currentUserRole() === 'Admin' ? '1fr 1fr' : '1fr'}">
+      <div class="form-group">
+        <label for="email">Email *</label>
+        <div class="input-icon-wrap">
+          <span class="material-symbols-outlined input-icon-left">alternate_email</span>
+          <input id="email" type="email" [(ngModel)]="email" name="email" placeholder="jane@company.com" />
+        </div>
+      </div>
+
+      @if (currentUserRole() === 'Admin') {
+        <div class="form-group">
+          <label for="role">Role *</label>
+          <div class="input-icon-wrap">
+            <span class="material-symbols-outlined input-icon-left">admin_panel_settings</span>
+            <select id="role" [(ngModel)]="role" name="role">
+              <option value="Employee">Employee</option>
+              <option value="HR">HR</option>
+            </select>
+            <!-- Add a custom arrow for the select -->
+            <span class="material-symbols-outlined" style="position: absolute; right: 14px; top: 50%; transform: translateY(-50%); pointer-events: none; color: var(--gray-400);">expand_more</span>
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label for="password">Password *</label>
+        <div class="input-icon-wrap">
+          <span class="material-symbols-outlined input-icon-left">lock</span>
+          <input id="password" type="password" [(ngModel)]="password" name="password" placeholder="••••••••" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="confirmPassword">Confirm Password *</label>
+        <div class="input-icon-wrap">
+          <span class="material-symbols-outlined input-icon-left">lock_person</span>
+          <input id="confirmPassword" type="password" [(ngModel)]="confirmPassword" name="confirmPassword" placeholder="••••••••" />
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-primary" (click)="onCreateUser()" [disabled]="isSubmitting()">
+      {{ isSubmitting() ? 'Creating Employee...' : 'Create Employee' }}
+      <span class="material-symbols-outlined">person_add</span>
+    </button>
+  </div>
+
 </div>
 
 <!-- Delete User Modal -->

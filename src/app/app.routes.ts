@@ -42,42 +42,43 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
 
-  // ── Course Builder (admin/instructor) ────────────────────
+  // ── Admin / HR Layout ────────────────────────────────────
   {
-    path: 'learning-paths',
-    component: LearningPathsPage,
-    canActivate: [authGuard]
-  },
-  {
-    path: 'learning-paths/:learningPathId',
-    component: CourseManagerPage,
-    canActivate: [authGuard]
-  },
-  {
-    path: 'lessons/:lessonId/edit',
-    component: LessonEditorPage,
-    canActivate: [authGuard]
-  },
-
-  // ── HR / Admin ───────────────────────────────────────────
-  {
-    path: 'hr/dashboard',
-    loadComponent: () => import('./pages/hr-dashboard/hr-dashboard').then(m => m.HrDashboard),
-    canActivate: [authGuard, roleGuard],
-    data: { roles: ['Admin', 'HR'] }
-  },
-  {
-    path: 'hr/create-user',
-    loadComponent: () => import('./pages/hr-create-user/hr-create-user').then(m => m.HrCreateUser),
-    canActivate: [authGuard, roleGuard],
-    data: { roles: ['Admin', 'HR'] }
-  },
-
-  {
-    path: 'hr/assign-path',
-    loadComponent: () => import('./pages/hr-assign-path/hr-assign-path').then(m => m.HrAssignPath),
-    canActivate: [authGuard, roleGuard],
-    data: { roles: ['Admin', 'HR'] }
+    path: '',
+    loadComponent: () => import('./layouts/admin-layout/admin-layout.component').then(m => m.AdminLayoutComponent),
+    canActivate: [authGuard],
+    children: [
+      {
+        path: 'learning-paths',
+        component: LearningPathsPage
+      },
+      {
+        path: 'learning-paths/:learningPathId',
+        component: CourseManagerPage
+      },
+      {
+        path: 'lessons/:lessonId/edit',
+        loadComponent: () => import('./pages/course-builder/lesson-editor/lesson-editor').then(m => m.LessonEditorPage)
+      },
+      {
+        path: 'hr/dashboard',
+        loadComponent: () => import('./pages/hr-dashboard/hr-dashboard').then(m => m.HrDashboard),
+        canActivate: [roleGuard],
+        data: { roles: ['Admin', 'HR'] }
+      },
+      {
+        path: 'hr/create-user',
+        loadComponent: () => import('./pages/hr-create-user/hr-create-user').then(m => m.HrCreateUser),
+        canActivate: [roleGuard],
+        data: { roles: ['Admin', 'HR'] }
+      },
+      {
+        path: 'hr/assign-path',
+        loadComponent: () => import('./pages/hr-assign-path/hr-assign-path').then(m => m.HrAssignPath),
+        canActivate: [roleGuard],
+        data: { roles: ['Admin', 'HR'] }
+      }
+    ]
   },
 
   // ── Employee ─────────────────────────────────────────────
