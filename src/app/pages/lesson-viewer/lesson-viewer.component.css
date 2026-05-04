@@ -1,0 +1,76 @@
+:host {
+  --navy: #0f1b3d;
+  --navy-light: #1e3a8a;
+  --blue: #2563eb;
+  --green: #10b981; 
+  --gray-50: #f9fafb;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-800: #1f2937;
+  --gray-900: #111827;
+  --white: #ffffff;
+}
+
+.viewer-wrapper {
+  background: #f5f6fa;
+  color: #10162f;
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+}
+
+.topbar {
+  height: 56px;
+  background: var(--navy);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+}
+
+.left-nav,
+.right-nav {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.back-btn {
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: 0.2s;
+}
+
+.back-btn:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  min-height: calc(100vh - 56px);
+}
+
+.main {
+  background: #f7f8fb;
+  overflow-y: auto;
+  height: calc(100vh - 56px);
+}
+
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+  .main { height: auto; overflow: visible; }
+}

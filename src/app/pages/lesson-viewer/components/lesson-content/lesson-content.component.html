@@ -1,0 +1,52 @@
+<div class="video-area">
+  @if (isLoading) {
+    <div class="lv-spinner"></div>
+  } @else if (error && !lesson) {
+    <div class="error-msg">{{ error }}</div>
+  } @else if (lesson?.videoUrl) {
+    @if (lesson!.type === 0) {
+      <video class="lesson-video" [src]="getMediaUrl(lesson)" controls controlsList="nodownload"></video>
+    } @else if (lesson!.type === 3 && getYouTubeEmbedUrl(lesson)) {
+      <iframe class="lesson-video" [src]="getYouTubeEmbedUrl(lesson)" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="width: 100%; height: 100%;"></iframe>
+    } @else {
+      <div class="external-material" style="text-align: center;">
+        <span class="material-symbols-outlined material-icon" style="font-size: 48px; margin-bottom: 16px; color: var(--blue);">
+          {{ lesson!.type === 1 ? 'picture_as_pdf' : (lesson!.type === 2 ? 'slideshow' : 'link') }}
+        </span>
+        <h3 style="margin-bottom: 8px;">{{ lesson!.type === 1 ? 'PDF Document' : (lesson!.type === 2 ? 'Presentation' : 'External Link') }}</h3>
+        <p style="margin-bottom: 24px; color: #6b7280;">This lesson contains external material that opens in a new tab.</p>
+        <a [href]="getMediaUrl(lesson)" target="_blank" class="btn-save" style="text-decoration: none; display: inline-block;">
+          Open Material
+        </a>
+      </div>
+    }
+  } @else {
+    <div class="no-video">
+      <span class="material-symbols-outlined">menu_book</span>
+      <p>No material available for this lesson.</p>
+    </div>
+  }
+</div>
+
+@if (lesson) {
+  <div class="course-info">
+    <div class="breadcrumb">
+      <span>Home</span>
+      <span class="material-symbols-outlined">chevron_right</span>
+      <span>Course</span>
+      <span class="material-symbols-outlined">chevron_right</span>
+      <span>{{ course?.title || 'Loading...' }}</span>
+    </div>
+
+    <h1>{{ lesson!.title }}</h1>
+
+    <div class="lesson-content">
+      @if (lesson!.description) {
+        <p class="desc">{{ lesson!.description }}</p>
+      }
+      @if (lesson!.content) {
+        <div class="html-content" [innerHTML]="lesson!.content"></div>
+      }
+    </div>
+  </div>
+}

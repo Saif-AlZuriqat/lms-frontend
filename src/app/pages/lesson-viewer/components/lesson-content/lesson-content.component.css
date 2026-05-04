@@ -1,0 +1,86 @@
+.video-area {
+  height: 470px;
+  background: #000;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.lesson-video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.course-info {
+  padding: 28px;
+}
+
+.breadcrumb {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  color: #64748b;
+  font-size: 13px;
+  margin-bottom: 22px;
+}
+
+.breadcrumb span:first-child {
+  color: var(--blue);
+}
+
+.breadcrumb .material-symbols-outlined {
+  font-size: 14px;
+}
+
+.course-info h1 {
+  font-size: 26px;
+  margin-bottom: 12px;
+  color: var(--navy);
+}
+
+.lesson-content {
+  font-size: 15px;
+  line-height: 1.6;
+  color: #334155;
+}
+.lesson-content .desc {
+  margin-bottom: 16px;
+}
+
+/* Loading / Error */
+.lv-spinner {
+  width: 40px; height: 40px;
+  border: 4px solid #444; border-top-color: white;
+  border-radius: 50%; animation: lv-spin 0.8s linear infinite;
+}
+@keyframes lv-spin { to { transform: rotate(360deg); } }
+
+.no-video {
+  color: #aaa;
+  text-align: center;
+}
+.no-video .material-symbols-outlined { font-size: 40px; }
+
+.error-msg {
+  color: #ef4444;
+  padding: 20px;
+  text-align: center;
+}
+
+.btn-save {
+  background: var(--blue);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.btn-save:hover {
+  background: var(--navy-light);
+}

@@ -1,0 +1,34 @@
+<div class="viewer-wrapper">
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="left-nav">
+      <button class="back-btn" (click)="goBack()">
+        <span class="material-symbols-outlined">arrow_back</span>
+        Back to Dashboard
+      </button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="main">
+      <app-lesson-content 
+        [lesson]="lesson()"
+        [course]="course()"
+        [isLoading]="isLoading()"
+        [error]="error()">
+      </app-lesson-content>
+    </section>
+
+    <app-lesson-sidebar
+      [course]="course()"
+      [sections]="sections()"
+      [expandedSectionIds]="expandedSectionIds()"
+      [completedLessonIds]="completedLessonIds()"
+      [currentLessonId]="lesson()?.id"
+      (toggleSection)="toggleSection($event)"
+      (openLesson)="openLesson($event)"
+      (toggleCompletion)="toggleCompletion($event)"
+      (backToTop)="goBack()">
+    </app-lesson-sidebar>
+  </main>
+</div>

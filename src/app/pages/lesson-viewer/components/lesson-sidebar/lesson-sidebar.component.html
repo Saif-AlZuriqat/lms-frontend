@@ -1,0 +1,39 @@
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <h2>{{ course?.title || 'Course Content' }}</h2>
+    <p>{{ sections.length }} sections • {{ countTotalLessons() }} lessons</p>
+  </div>
+
+  @for (section of sections; track section.id; let i = $index) {
+    <div class="section">
+      <div class="section-title" (click)="onToggleSection(section.id)">
+        <div>
+          <span class="material-symbols-outlined">{{ isSectionExpanded(section.id) ? 'expand_more' : 'chevron_right' }}</span> 
+          {{ section.title }}
+        </div>
+        <small>0/{{ section.lessons.length }}</small>
+      </div>
+
+      @if (isSectionExpanded(section.id)) {
+        <div class="lessons-list">
+          @for (l of section.lessons; track l.id; let j = $index) {
+            <div class="lesson" [class.active-lesson]="l.id === currentLessonId" (click)="onOpenLesson(l.id)">
+              <span class="check" [class.checked]="isLessonCompleted(l.id)" (click)="onToggleCompletion(l.id, $event)">
+                @if (isLessonCompleted(l.id)) {
+                  <span class="material-symbols-outlined" style="font-size: 14px;">check</span>
+                }
+              </span>
+              <span class="lesson-name">{{ j + 1 }}. {{ l.title }}</span>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+
+  <div class="bottom-btn">
+    <button (click)="onBackToTop()">
+      <span class="material-symbols-outlined">arrow_upward</span> Back to Top
+    </button>
+  </div>
+</aside>

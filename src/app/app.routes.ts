@@ -38,7 +38,7 @@ export const routes: Routes = [
   },
   {
     path: 'lesson/:id',
-    loadComponent: () => import('./pages/lesson-viewer/lesson-viewer').then(m => m.LessonViewer),
+    loadComponent: () => import('./pages/lesson-viewer/lesson-viewer.component').then(m => m.LessonViewerComponent),
     canActivate: [authGuard]
   },
 
