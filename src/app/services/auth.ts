@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-export type UserRole = 'Admin' | 'HR' | 'Employee';
+export type UserRole = 'HR' | 'MANAGER' | 'EMPLOYEE';
 
 export type LoginResponse = {
   Token?: string;
@@ -124,9 +124,9 @@ export class AuthService {
 
     const normalizedRoles = roles.map(r => r.trim().toLowerCase());
 
-    if (normalizedRoles.includes('admin')) return 'Admin';
     if (normalizedRoles.includes('hr')) return 'HR';
-    if (normalizedRoles.includes('employee')) return 'Employee';
+    if (normalizedRoles.includes('manager')) return 'MANAGER';
+    if (normalizedRoles.includes('employee')) return 'EMPLOYEE';
 
     return null;
   }

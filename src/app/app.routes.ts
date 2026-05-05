@@ -64,19 +64,19 @@ export const routes: Routes = [
         path: 'hr/dashboard',
         loadComponent: () => import('./pages/hr-dashboard/hr-dashboard').then(m => m.HrDashboard),
         canActivate: [roleGuard],
-        data: { roles: ['Admin', 'HR'] }
+        data: { roles: ['HR', 'MANAGER'] }
       },
       {
         path: 'hr/create-user',
         loadComponent: () => import('./pages/hr-create-user/hr-create-user').then(m => m.HrCreateUser),
         canActivate: [roleGuard],
-        data: { roles: ['Admin', 'HR'] }
+        data: { roles: ['HR', 'MANAGER'] }
       },
       {
         path: 'hr/assign-path',
         loadComponent: () => import('./pages/hr-assign-path/hr-assign-path').then(m => m.HrAssignPath),
         canActivate: [roleGuard],
-        data: { roles: ['Admin', 'HR'] }
+        data: { roles: ['HR', 'MANAGER'] }
       }
     ]
   },
@@ -86,6 +86,6 @@ export const routes: Routes = [
     path: 'employee/dashboard',
     loadComponent: () => import('./pages/employee-dashboard/employee-dashboard').then(m => m.EmployeeDashboard),
     canActivate: [authGuard, roleGuard],
-    data: { roles: ['Employee', 'Admin'] }
+    data: { roles: ['EMPLOYEE', 'HR'] }
   },
 ];

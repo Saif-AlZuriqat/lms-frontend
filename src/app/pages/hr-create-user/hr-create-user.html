@@ -109,7 +109,7 @@
       </div>
     </div>
 
-    <div class="form-grid" [ngStyle]="{'grid-template-columns': currentUserRole() === 'Admin' ? '1fr 1fr' : '1fr'}">
+    <div class="form-grid" [ngStyle]="{'grid-template-columns': currentUserRole() === 'HR' ? '1fr 1fr' : '1fr'}">
       <div class="form-group">
         <label for="email">Email *</label>
         <div class="input-icon-wrap">
@@ -118,14 +118,14 @@
         </div>
       </div>
 
-      @if (currentUserRole() === 'Admin') {
+      @if (currentUserRole() === 'HR') {
         <div class="form-group">
           <label for="role">Role *</label>
           <div class="input-icon-wrap">
             <span class="material-symbols-outlined input-icon-left">admin_panel_settings</span>
             <select id="role" [(ngModel)]="role" name="role">
-              <option value="Employee">Employee</option>
-              <option value="HR">HR</option>
+              <option value="EMPLOYEE">Employee</option>
+              <option value="MANAGER">Manager</option>
             </select>
             <!-- Add a custom arrow for the select -->
             <span class="material-symbols-outlined" style="position: absolute; right: 14px; top: 50%; transform: translateY(-50%); pointer-events: none; color: var(--gray-400);">expand_more</span>

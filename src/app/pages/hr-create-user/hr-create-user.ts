@@ -41,7 +41,7 @@ export class HrCreateUser implements OnInit {
   password = '';
   confirmPassword = '';
   fullName = '';
-  role: UserRole = 'Employee';
+  role: UserRole = 'EMPLOYEE';
   currentUserRole = signal<UserRole | null>(null);
   errorMessage = signal('');
   successMessage = signal('');
@@ -148,7 +148,7 @@ export class HrCreateUser implements OnInit {
           const createdName = this.userName.trim();
           this.activityService.log(
             'person_add',
-            `<strong>${this.authService.getUserName() || 'Admin'}</strong> created a new user account for <strong>${createdName}</strong>.`,
+            `<strong>${this.authService.getUserName() || 'HR'}</strong> created a new user account for <strong>${createdName}</strong>.`,
             'User Management'
           );
           this.successMessage.set('Employee created successfully.');
@@ -211,7 +211,7 @@ export class HrCreateUser implements OnInit {
       next: () => {
         this.activityService.log(
           'person_remove',
-          `<strong>${this.authService.getUserName() || 'Admin'}</strong> deleted user account <strong>${user.userName}</strong>.`,
+          `<strong>${this.authService.getUserName() || 'HR'}</strong> deleted user account <strong>${user.userName}</strong>.`,
           'User Management'
         );
         this.allUsers.update(users => users.filter(u => u.id !== user.id));
