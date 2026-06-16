@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
-/**
+/**=new edit component
  * Reusable inline editor component for titles and descriptions.
  *
  * Implements two-way bound input/textarea elements with confirmation/cancel event triggers.
