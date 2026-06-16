@@ -1,0 +1,205 @@
+<div class="lp-page">
+
+  <!-- Header -->
+  <div class="lp-header">
+    <div class="lp-header-text">
+      <h1>
+        <span class="material-symbols-outlined lp-header-icon">route</span>
+        Learning Paths
+      </h1>
+      <p class="lp-header-sub">Create and manage structured learning journeys for your team.</p>
+    </div>
+    <button class="btn-create" (click)="openCreateModal()">
+      <span class="material-symbols-outlined">add</span>
+      Create Learning Path
+    </button>
+  </div>
+
+  <!-- Content -->
+  @if (loading) {
+    <div class="lp-loading">
+      <div class="lp-spinner"></div>
+      <span>Loading learning paths…</span>
+    </div>
+  } @else if (error) {
+    <div class="lp-error">
+      <span class="material-symbols-outlined">error_outline</span>
+      {{ error }}
+    </div>
+  } @else if (paths.length === 0) {
+    <div class="lp-empty">
+      <span class="material-symbols-outlined lp-empty-icon">school</span>
+      <h2>No learning paths yet</h2>
+      <p>Create your first learning path to get started.</p>
+      <button class="btn-create-alt" (click)="openCreateModal()">
+        <span class="material-symbols-outlined">add</span>
+        Create Your First Path
+      </button>
+    </div>
+  } @else {
+    <div class="lp-grid">
+      @for (path of paths; track path.id; let i = $index) {
+        <app-learning-path-card
+          [path]="path"
+          [cardIndex]="i"
+          (manage)="manageCourses($event)"
+          (edit)="openEditModal($event)"
+          (remove)="deletePath($event)" />
+      }
+    </div>
+  }
+</div>
+
+<!-- Create / Edit Modal -->
+@if (modalOpen) {
+  <div class="modal-overlay" (click)="modalOpen = false">
+    <div class="modal-panel" (click)="$event.stopPropagation()">
+
+      <!-- Modal header -->
+      <div class="modal-header">
+        <h2>{{ editingId ? 'Edit Learning Path' : 'Create Learning Path' }}</h2>
+        <button class="modal-close" (click)="modalOpen = false">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <div class="modal-content">
+
+        <!-- Image Upload Area -->
+        <div class="upload-area" (click)="fileInput.click()"
+             (dragover)="onDragOver($event)"
+             (dragleave)="onDragLeave($event)"
+             (drop)="onDrop($event)"
+             [class.has-preview]="imagePreview"
+             [class.drag-over]="isDragOver">
+          @if (imagePreview) {
+            <img [src]="imagePreview" alt="Preview" class="upload-preview" />
+            <div class="upload-preview-overlay">
+              <span class="material-symbols-outlined">edit</span>
+              <span>Change Image</span>
+            </div>
+          } @else {
+            <div class="upload-placeholder">
+              <div class="upload-icon-ring">
+                <span class="material-symbols-outlined">cloud_upload</span>
+              </div>
+              <span class="upload-text">Drop an image here or click to browse</span>
+              <span class="upload-hint">PNG, JPG, WebP up to 5 MB</span>
+            </div>
+          }
+          <input
+            #fileInput
+            type="file"
+            accept="image/*"
+            (change)="onFileSelected($event)"
+            class="file-input-hidden"
+          />
+        </div>
+
+        @if (imagePreview) {
+          <button class="btn-remove-img" (click)="removeImage()">
+            <span class="material-symbols-outlined">delete</span>
+            Remove Image
+          </button>
+        }
+
+        <!-- Title -->
+        <div class="form-group">
+          <label for="lp-title">Title <span class="required">*</span></label>
+          <input
+            id="lp-title"
+            type="text"
+            [(ngModel)]="title"
+            placeholder="e.g. Full-Stack Engineering Track"
+            class="form-input"
+            autofocus
+          />
+        </div>
+
+        <!-- Description -->
+        <div class="form-group">
+          <label for="lp-desc">Description</label>
+          <textarea
+            id="lp-desc"
+            [(ngModel)]="description"
+            placeholder="Describe what learners will achieve…"
+            class="form-textarea"
+            rows="4"
+          ></textarea>
+        </div>
+
+      </div>
+
+      <!-- Modal footer -->
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="modalOpen = false">Cancel</button>
+        <button class="btn-save" (click)="submitModal()" [disabled]="!title.trim() || isSaving">
+          @if (isSaving) {
+            <div class="btn-spinner"></div>
+            Saving…
+          } @else {
+            <span class="material-symbols-outlined">check</span>
+            {{ editingId ? 'Update Path' : 'Create Path' }}
+          }
+        </button>
+      </div>
+
+    </div>
+  </div>
+}
+
+<!-- ── Delete Confirmation Modal ────────────────── -->
+@if (deleteModalOpen) {
+  <div class="modal-overlay" (click)="deleteModalOpen = false">
+    <div class="modal-panel modal-sm" (click)="$event.stopPropagation()">
+      <div class="modal-header" style="border-bottom: none; padding-bottom: 0;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="width: 40px; height: 40px; border-radius: 50%; background: #fee2e2; display: flex; align-items: center; justify-content: center; color: #ef4444; flex-shrink: 0;">
+            <span class="material-symbols-outlined">warning</span>
+          </div>
+          <h2>Delete Learning Path</h2>
+        </div>
+        <button class="modal-close" (click)="deleteModalOpen = false">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <div class="modal-content" style="padding-top: 12px;">
+        <p style="margin: 0 0 16px; font-size: 14px; color: #4b5563; line-height: 1.5;">
+          You are about to permanently delete the learning path <strong>{{ deletePathTitle }}</strong>. 
+          This action cannot be undone.
+        </p>
+
+        <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 10px; padding: 16px;">
+          <label for="deleteConfirmInput" style="display: block; font-size: 13px; color: #374151; margin-bottom: 8px; font-weight: 600;">
+            To confirm, please type <strong>delete</strong> below:
+          </label>
+          <input
+            id="deleteConfirmInput"
+            type="text"
+            [(ngModel)]="deleteConfirmText"
+            class="form-input"
+            placeholder="Type 'delete' here"
+            autocomplete="off"
+            style="border-color: #e5e7eb;"
+            (keyup.enter)="deleteConfirmText.trim().toLowerCase() === 'delete' && confirmDeletePath()"
+          />
+        </div>
+      </div>
+
+      <div class="modal-footer" style="background: #f9fafb; border-top: 1px solid #e5e7eb;">
+        <button class="btn-cancel" (click)="deleteModalOpen = false">Cancel</button>
+        <button 
+          class="btn-save" 
+          (click)="confirmDeletePath()" 
+          [disabled]="deleteConfirmText.trim().toLowerCase() !== 'delete'"
+          style="background: #dc2626; box-shadow: 0 3px 12px rgba(220, 38, 38, 0.25);"
+        >
+          <span class="material-symbols-outlined">delete</span>
+          Delete Learning Path
+        </button>
+      </div>
+    </div>
+  </div>
+}
+

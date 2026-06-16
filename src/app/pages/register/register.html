@@ -1,0 +1,101 @@
+<div class="page-wrapper">
+  <div class="auth-card">
+    <div class="form-panel">
+      <div class="auth-logo-container">
+        <img src="assets/ABS-LOGO.png" alt="Advanced Business Solutions" class="auth-logo" />
+      </div>
+
+      <div class="form-header">
+        <h2>Create Account</h2>
+        <p>Enter your credentials to begin.</p>
+      </div>
+
+      @if (errorMessage) {
+        <div class="error-alert">{{ errorMessage }}</div>
+      }
+      @if (successMessage) {
+        <div class="success-alert">{{ successMessage }}</div>
+      }
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="fullName">Full Name</label>
+          <div class="input-icon-wrap">
+            <span class="material-symbols-outlined input-icon-left">person</span>
+            <input id="fullName" [(ngModel)]="fullName" name="fullName" placeholder="John Doe" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="userName">Username</label>
+          <div class="input-icon-wrap">
+            <span class="material-symbols-outlined input-icon-left">badge</span>
+            <input id="userName" [(ngModel)]="userName" name="userName" placeholder="john_doe" />
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <div class="input-icon-wrap">
+          <span class="material-symbols-outlined input-icon-left">alternate_email</span>
+          <input id="email" type="email" [(ngModel)]="email" name="email" placeholder="name@university.edu" />
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="password">Password</label>
+          <div class="input-icon-wrap">
+            <span class="material-symbols-outlined input-icon-left">lock</span>
+            <input
+              id="password"
+              [type]="showPassword ? 'text' : 'password'"
+              [(ngModel)]="password"
+              name="password"
+              placeholder="••••••••"
+              class="input-with-toggle"
+            />
+            <button
+              type="button"
+              class="password-toggle-btn"
+              (click)="showPassword = !showPassword"
+              [aria-label]="showPassword ? 'Hide password' : 'Show password'"
+            >
+              <span class="material-symbols-outlined">{{ showPassword ? 'visibility_off' : 'visibility' }}</span>
+            </button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="confirmPassword">Confirm Password</label>
+          <div class="input-icon-wrap">
+            <span class="material-symbols-outlined input-icon-left">lock_person</span>
+            <input
+              id="confirmPassword"
+              [type]="showConfirmPassword ? 'text' : 'password'"
+              [(ngModel)]="confirmPassword"
+              name="confirmPassword"
+              placeholder="••••••••"
+              class="input-with-toggle"
+            />
+            <button
+              type="button"
+              class="password-toggle-btn"
+              (click)="showConfirmPassword = !showConfirmPassword"
+              [aria-label]="showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'"
+            >
+              <span class="material-symbols-outlined">{{ showConfirmPassword ? 'visibility_off' : 'visibility' }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-primary" (click)="onRegister()" [disabled]="isLoading">
+        {{ isLoading ? 'Creating account...' : 'Create Account' }}
+        <span class="material-symbols-outlined">{{ isLoading ? 'hourglass_empty' : 'arrow_forward' }}</span>
+      </button>
+
+      <div class="divider"><span>Already have an account?</span></div>
+      <a routerLink="/" class="btn-secondary">Log in instead</a>
+    </div>
+  </div>
+</div>

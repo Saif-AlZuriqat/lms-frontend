@@ -1,0 +1,102 @@
+<div class="page-wrapper">
+  <!-- Top Banner -->
+  <div class="lp-banner">
+    <div class="lp-banner-content">
+      <!-- Breadcrumbs -->
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <span class="breadcrumb-link" (click)="goBack()">Home</span>
+        <span class="breadcrumb-sep">&gt;</span>
+        <span class="breadcrumb-current">{{ path()?.title || 'Learning Path' }}</span>
+      </nav>
+
+      <div class="lp-header-row">
+        <button type="button" class="back-btn" (click)="goBack()" aria-label="Go Back">
+          <span class="material-symbols-outlined">arrow_back</span>
+        </button>
+        <div class="lp-header-info">
+          <h1>{{ path()?.title || 'Loading...' }}</h1>
+        </div>
+      </div>
+      <p class="banner-desc">{{ path()?.description || 'A comprehensive learning path.' }}</p>
+      
+      <div class="banner-meta">
+        <div class="meta-item">
+          <span class="material-symbols-outlined">menu_book</span>
+          <span>{{ path()?.courses?.length || 0 }} {{ (path()?.courses?.length === 1) ? 'Course' : 'Courses' }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-container">
+    @if (isLoading()) {
+      <div class="loading-state">
+        <div class="loading-spinner"></div>
+        <span>Loading learning path details...</span>
+      </div>
+    } @else if (error()) {
+      <div class="error-alert">{{ error() }}</div>
+    } @else if (path()) {
+      
+      <div class="courses-section">
+        <h2 class="section-title">Courses in This Path</h2>
+
+        @if (!path()!.courses || path()!.courses.length === 0) {
+          <div class="empty-state">
+            <span class="material-symbols-outlined empty-icon">school</span>
+            <p>No courses have been added to this learning path yet.</p>
+          </div>
+        } @else {
+          <div class="courses-list">
+            @for (course of path()!.courses; track course.id; let i = $index) {
+              <div class="course-card" (click)="openCourse(course)">
+                <div class="course-order-wrap">
+                  <div class="course-order">{{ i + 1 }}</div>
+                </div>
+
+                <div class="course-thumb">
+                  @if (course.image) {
+                    <img [src]="getCourseImageUrl(course)" alt="" class="thumb-img" />
+                  } @else {
+                    <div class="thumb-placeholder">
+                      <span class="material-symbols-outlined">image</span>
+                    </div>
+                  }
+                </div>
+
+                <div class="course-info">
+                  <h3>{{ course.title }}</h3>
+                  <p class="course-desc">{{ course.description || 'Learn the foundational topics for this subject.' }}</p>
+                  <div class="course-meta">
+                    <span class="meta-item">
+                      <span class="material-symbols-outlined">play_circle</span>
+                      {{ getLessonCount(course) }} lessons
+                    </span>
+                    <span class="meta-item">
+                      <span class="material-symbols-outlined">folder</span>
+                      {{ getSectionCount(course) }} sections
+                    </span>
+                  </div>
+                </div>
+
+                <div class="course-status">
+                  <span class="status-pill" [class.status-pill--complete]="!isStaffPreview() && getCourseProgress(course.id) >= 100">
+                    {{ isStaffPreview() ? 'Preview' : getCourseStatus(course.id) }}
+                  </span>
+                  @if (!isStaffPreview()) {
+                    <div class="course-progress">
+                      <div class="course-progress-track">
+                        <div class="course-progress-fill" [style.width.%]="getCourseProgress(course.id)"></div>
+                      </div>
+                      <div class="progress-text">{{ getCourseProgress(course.id) }}%</div>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>

@@ -1,0 +1,47 @@
+:host {
+  display: block;
+  --navy: #0f1b3d;
+  --navy-light: #1e3a8a;
+  --blue: #2563eb;
+  --green: #10b981;
+  --gray-50: #f9fafb;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-800: #1f2937;
+  --gray-900: #111827;
+  --white: #ffffff;
+}
+
+.viewer-wrapper {
+  background: linear-gradient(180deg, #f5f7fb 0%, #eef1f8 100%);
+  color: #0f172a;
+  height: calc(100vh - 64px);
+  overflow: hidden;
+  font-family: 'Inter', sans-serif;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 380px;
+  height: calc(100vh - 64px);
+}
+
+.main {
+  background: transparent;
+  overflow-y: auto;
+  height: calc(100vh - 64px);
+}
+
+@media (max-width: 900px) {
+  .viewer-wrapper {
+    height: auto;
+    overflow: visible;
+  }
+  .layout {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+  .main { height: auto; overflow: visible; }
+}

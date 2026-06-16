@@ -1,0 +1,128 @@
+<!-- Hero -->
+<div class="ed-hero">
+    <div class="ed-hero-orb orb1"></div>
+    <div class="ed-hero-orb orb2"></div>
+    <div class="ed-hero-content">
+      <h1>Welcome back, <span class="ed-hero-name">{{ userName() || 'there' }}</span></h1>
+      <div class="ed-search">
+        <span class="material-symbols-outlined ed-search-icon">search</span>
+        <input
+          type="text"
+          class="ed-search-input"
+          placeholder="Search learning paths..."
+          [value]="searchQuery()"
+          (input)="onSearch($event)"
+        />
+        @if (searchQuery()) {
+          <button class="ed-search-clear" (click)="searchQuery.set('')">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="ed-content">
+
+    @if (isLoading()) {
+      <div class="ed-loading">
+        <div class="ed-spinner"></div>
+      </div>
+    } @else if (error()) {
+      <div class="ed-error">
+        <span class="material-symbols-outlined">error_outline</span>
+        {{ error() }}
+      </div>
+    } @else {
+
+      <!-- Continue Learning (only when enrolled in at least one path) -->
+      @if (continuePath()) {
+        <div class="ed-section">
+          <h2 class="ed-section-title">Continue Learning</h2>
+          <app-continue-learning
+            [continuePath]="continuePath()!"
+            [continuePathProgress]="continuePathProgress()"
+            [isContinueCompleted]="isContinueCompleted()"
+            [continueState]="continueState()"
+            (resume)="resume()"
+          ></app-continue-learning>
+        </div>
+      }
+
+      <!-- Enrolled courses -->
+      @if (enrolledCourses().length > 0) {
+        <app-my-courses
+          [enrolledCourses]="enrolledCourses()"
+          [courseProgressMap]="courseProgressMap()"
+          (open)="openCourse($event.course, $event.learningPathId)"
+        ></app-my-courses>
+      }
+
+      <!-- ── My Learning Paths (enrolled) ────────────────── -->
+      @if (filteredEnrolled().length > 0 || (enrolledPaths().length > 0 && searchQuery())) {
+        <div class="ed-section">
+          <h2 class="ed-section-title">
+            My Learning Paths
+            <span class="ed-section-count">{{ enrolledPaths().length }}</span>
+          </h2>
+
+          @if (filteredEnrolled().length === 0) {
+            <div class="ed-empty">
+              <span class="material-symbols-outlined">search_off</span>
+              <p>No enrolled paths match "{{ searchQuery() }}"</p>
+            </div>
+          } @else {
+            <div class="ed-grid stagger-container">
+              @for (path of filteredEnrolled(); track path.id; let i = $index) {
+                <app-learning-path-card
+                  [path]="path"
+                  [isEnrolled]="true"
+                  [progress]="getProgress(path.id)"
+                  [gradient]="getGradient(i)"
+                  (clickPath)="openPath($event)"
+                ></app-learning-path-card>
+              }
+            </div>
+          }
+        </div>
+      }
+
+      <!-- ── Other Learning Paths (not enrolled) ──────── -->
+      @if (filteredAvailable().length > 0 || (availablePaths().length > 0 && searchQuery())) {
+        <div class="ed-section">
+          <h2 class="ed-section-title">
+            Other Paths
+            <span class="ed-section-count ed-section-count--gray">{{ availablePaths().length }}</span>
+          </h2>
+
+          @if (filteredAvailable().length === 0) {
+            <div class="ed-empty">
+              <span class="material-symbols-outlined">search_off</span>
+              <p>No other paths match "{{ searchQuery() }}"</p>
+            </div>
+          } @else {
+            <div class="ed-grid stagger-container">
+              @for (path of filteredAvailable(); track path.id; let i = $index) {
+                <app-learning-path-card
+                  [path]="path"
+                  [isEnrolled]="false"
+                  [gradient]="getGradient(i + enrolledPaths().length)"
+                ></app-learning-path-card>
+              }
+            </div>
+          }
+        </div>
+      }
+
+      <!-- Empty state: no paths in the system at all -->
+      @if (allPaths().length === 0) {
+        <div class="ed-empty">
+          <span class="material-symbols-outlined">route</span>
+          <p>No learning paths available yet.</p>
+          <span>Check back later or contact your HR team.</span>
+        </div>
+      }
+
+    }
+  </div>

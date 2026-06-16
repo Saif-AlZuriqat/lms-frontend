@@ -1,0 +1,674 @@
+:host {
+  display: block;
+}
+
+/* ── Container ─────────────────────────────────────── */
+.lv-stage {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Content Body (everything below the video) ────── */
+.lv-content-body {
+  width: 100%;
+  max-width: 1300px;
+  margin: 0;
+  padding: 24px 48px 60px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ── Breadcrumb ────────────────────────────────────── */
+.lv-breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.lv-crumb {
+  color: #6b7280;
+  text-decoration: none;
+  font-family: inherit;
+  font-size: 13px;
+}
+
+.lv-crumb--link {
+  background: transparent;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.15s, color 0.15s;
+}
+
+.lv-crumb--link:hover {
+  background: #eef2f7;
+  color: #1d4ed8;
+}
+
+.lv-crumb--link:active {
+  background: #dbeafe;
+}
+
+.lv-crumb--current {
+  color: #111827;
+  font-weight: 700;
+  padding: 4px 0;
+}
+
+/* Admin breadcrumb (pill style with vertical pipe separators) */
+.lv-breadcrumb--admin {
+  gap: 6px;
+}
+
+.lv-pipe {
+  width: 1px;
+  height: 18px;
+  background: #cbd5e1;
+  display: inline-block;
+  border-radius: 1px;
+}
+
+.lv-crumb--pill {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  padding: 6px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #475569;
+  transition: all 0.18s;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.lv-crumb--pill:hover {
+  background: #f1f5f9;
+  color: #1d4ed8;
+  border-color: #cbd5e1;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px -4px rgba(37, 99, 235, 0.25);
+}
+
+.lv-crumb--pill:active {
+  transform: translateY(0);
+}
+
+.lv-crumb--pill-current {
+  background: linear-gradient(135deg, #0f1b3d, #2563eb);
+  color: #ffffff;
+  border-color: transparent;
+  box-shadow: 0 4px 12px -2px rgba(37, 99, 235, 0.45);
+}
+
+.lv-crumb--pill-current:hover {
+  background: linear-gradient(135deg, #1e3a8a, #1d4ed8);
+  color: #ffffff;
+  border-color: transparent;
+  box-shadow: 0 6px 16px -4px rgba(37, 99, 235, 0.55);
+}
+
+.lv-sep {
+  font-size: 14px !important;
+  color: #cbd5e1;
+}
+
+/* ── Lesson Header ─────────────────────────────────── */
+.lv-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.lv-header-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.lv-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: transparent;
+  border: none;
+  color: #2563eb;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 13.5px;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background 0.18s, color 0.18s;
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+
+.lv-back-link:hover {
+  background: rgba(37, 99, 235, 0.08);
+  color: #1d4ed8;
+}
+
+.lv-back-link .material-symbols-outlined {
+  font-size: 18px !important;
+}
+
+.lv-title {
+  font-size: 30px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 10px;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+.lv-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.lv-meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+}
+
+.lv-meta-item .material-symbols-outlined {
+  font-size: 16px !important;
+  color: #94a3b8;
+}
+
+/* ── Media Stage (full-bleed, flush at top) ────────── */
+.lv-media-stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: 661px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #1c1d1f;
+  overflow: hidden;
+}
+
+.lv-video,
+.lv-media-stage iframe {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  border: none;
+}
+
+/* states */
+.lv-media-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  color: #cbd5e1;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 60px 20px;
+}
+
+.lv-media-state--error { color: #fca5a5; }
+.lv-media-state--empty .material-symbols-outlined,
+.lv-media-state--error .material-symbols-outlined {
+  font-size: 48px;
+  opacity: 0.7;
+}
+
+.lv-spinner {
+  width: 44px;
+  height: 44px;
+  border: 4px solid rgba(255, 255, 255, 0.14);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: lv-spin 0.8s linear infinite;
+}
+
+@keyframes lv-spin { to { transform: rotate(360deg); } }
+
+/* ── External Material Card ────────────────────────── */
+.lv-external {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+}
+
+.lv-external-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 460px;
+}
+
+.lv-external-tile {
+  width: 96px;
+  height: 96px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 14px 32px -10px rgba(0, 0, 0, 0.5);
+}
+
+.lv-external-tile .material-symbols-outlined {
+  font-size: 46px !important;
+  color: #93c5fd;
+}
+
+.lv-external-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #f8fafc;
+  margin: 0 0 12px;
+  letter-spacing: -0.01em;
+}
+
+.lv-external-desc {
+  font-size: 14px;
+  color: #cbd5e1;
+  margin: 0 0 28px;
+  line-height: 1.55;
+  max-width: 380px;
+}
+
+.lv-external-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 26px;
+  background: #2563eb;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 14px;
+  border-radius: 10px;
+  text-decoration: none;
+  box-shadow: 0 8px 24px -6px rgba(37, 99, 235, 0.55);
+  transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+.lv-external-cta:hover {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+  box-shadow: 0 12px 32px -6px rgba(37, 99, 235, 0.65);
+}
+
+.lv-external-cta .material-symbols-outlined {
+  font-size: 18px !important;
+}
+
+/* ── Course Complete Banner ───────────────────────── */
+.lv-complete-banner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #1e293b, #0f172a);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 24px -8px rgba(15, 23, 42, 0.5);
+  animation: lv-banner-in 0.4s ease-out;
+  color: #f8fafc;
+  text-align: center;
+}
+
+.lv-complete-banner--final {
+  background: linear-gradient(135deg, #172554, #1e3a8a);
+  border-color: rgba(96, 165, 250, 0.2);
+  box-shadow: 0 8px 24px -8px rgba(30, 58, 138, 0.5);
+}
+
+@keyframes lv-banner-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.lv-complete-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.lv-complete-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 8px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.lv-complete-banner--final .lv-complete-title {
+  color: #ffffff;
+}
+
+.lv-complete-sub {
+  font-size: 14px;
+  color: #94a3b8;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.lv-complete-banner--final .lv-complete-sub {
+  color: #bfdbfe;
+}
+
+/* ── Action Bar (Mark Complete + Next Lesson) ─────── */
+.lv-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 4px 2px;
+  flex-wrap: wrap;
+}
+
+.lv-actions-left,
+.lv-actions-right {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.lv-btn-complete {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: #0f172a;
+  color: #ffffff;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 13.5px;
+  border: 1px solid #0f172a;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(15, 27, 61, 0.12);
+}
+
+.lv-btn-complete:hover:not(:disabled) {
+  background: #1e293b;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(15, 27, 61, 0.22);
+}
+
+.lv-btn-complete.is-complete {
+  background: #10b981;
+  border-color: #10b981;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+}
+
+.lv-btn-complete:disabled {
+  cursor: default;
+  opacity: 0.85;
+}
+
+.lv-btn-complete .material-symbols-outlined {
+  font-size: 18px !important;
+}
+
+.lv-lesson-count {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #64748b;
+  white-space: nowrap;
+}
+
+.lv-btn-next {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: #eff6ff;
+  color: #2563eb;
+  border: 1px solid #dbeafe;
+  border-radius: 8px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 13.5px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08);
+}
+
+.lv-btn-next:hover {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.25);
+}
+
+.lv-btn-next .material-symbols-outlined {
+  font-size: 18px !important;
+  transition: transform 0.2s ease;
+}
+
+.lv-btn-next:hover .material-symbols-outlined {
+  transform: translateX(3px);
+}
+
+/* Next Course variant — green/emerald to signal forward progression in the path */
+.lv-btn-next-course {
+  background: #ecfdf5;
+  color: #059669;
+  border-color: #d1fae5;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.08);
+}
+
+.lv-btn-next-course:hover {
+  background: #10b981;
+  color: #ffffff;
+  border-color: #10b981;
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.25);
+}
+
+/* Back to Path variant — neutral slate for end-of-path */
+.lv-btn-back-path {
+  background: #f8fafc;
+  color: #475569;
+  border-color: #e2e8f0;
+  box-shadow: none;
+}
+
+.lv-btn-back-path:hover {
+  background: #475569;
+  color: #ffffff;
+  border-color: #475569;
+  box-shadow: 0 6px 16px rgba(71, 85, 105, 0.25);
+}
+
+/* ── Integrated Description Section ────────────────── */
+.lv-info-container {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.lv-info-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.lv-info-heading {
+  font-size: 17px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lv-info-heading .material-symbols-outlined {
+  font-size: 20px !important;
+  color: #2563eb;
+}
+
+.lv-info-text {
+  font-size: 15px;
+  line-height: 1.7;
+  color: #334155;
+  margin: 0;
+}
+
+.lv-info-content {
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: #334155;
+}
+
+.lv-info-content :first-child { margin-top: 0; }
+.lv-info-content :last-child { margin-bottom: 0; }
+.lv-info-content h1,
+.lv-info-content h2,
+.lv-info-content h3 {
+  color: #0f172a;
+  margin: 20px 0 10px;
+  font-weight: 700;
+}
+.lv-info-content p { margin: 0 0 12px; }
+.lv-info-content ul,
+.lv-info-content ol { padding-left: 20px; margin: 0 0 12px; }
+.lv-info-content code {
+  background: #f1f5f9;
+  padding: 3px 6px;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+.lv-info-content pre {
+  background: #0f172a;
+  color: #e2e8f0;
+  padding: 16px;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 0 0 12px;
+}
+
+.lv-info-empty {
+  font-size: 14.5px;
+  color: #64748b;
+  font-style: italic;
+  margin: 0;
+}
+
+.lv-info-divider {
+  height: 1px;
+  background: #e2e8f0;
+  margin: 8px 0;
+}
+
+/* Course Overview Specifics */
+.lv-course-overview-row {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.lv-course-overview-img {
+  width: 100px;
+  height: 100px;
+  border-radius: 12px;
+  object-fit: cover;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+  flex-shrink: 0;
+}
+
+.lv-course-overview-text-col {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.lv-course-overview-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+/* ── Responsive ───────────────────────────────────── */
+@media (max-width: 900px) {
+  .lv-content-body {
+    width: 100%;
+    padding: 16px 20px 40px;
+  }
+
+  .lv-title {
+    font-size: 24px;
+  }
+
+  .lv-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .lv-back-link {
+    align-self: flex-start;
+    margin-top: 0;
+  }
+
+  .lv-external {
+    min-height: 240px;
+  }
+
+  .lv-external-tile {
+    width: 78px;
+    height: 78px;
+  }
+
+  .lv-external-tile .material-symbols-outlined {
+    font-size: 36px !important;
+  }
+
+  .lv-external-title { font-size: 19px; }
+
+  .lv-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .lv-actions-left,
+  .lv-actions-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .lv-btn-complete,
+  .lv-btn-next {
+    flex: 1;
+    justify-content: center;
+  }
+}
