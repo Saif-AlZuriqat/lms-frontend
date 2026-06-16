@@ -123,7 +123,7 @@ export const routes: Routes = [
     ]
   },
 
-  // ── Employee ─────────────────────────────────────────────
+
   {
     path: 'employee',
     loadComponent: () => import('./shared/layouts/employee-layout/employee-layout.component').then(m => m.EmployeeLayoutComponent),
@@ -144,3 +144,5 @@ export const routes: Routes = [
     ]
   },
 ];
+
+//HELLO
