@@ -44,7 +44,7 @@ export class CourseDetails implements OnInit {
   /**
    * Signal displaying the reason explanation if the course is locked.
    */
-  lockReason = signal('Complete the previous course to at least 85% to unlock this one.');
+  lockReason = signal('Complete the previous course to at least 100% to unlock this one.');
 
   /**
    * Signal carrying active API transaction error messages.
@@ -128,7 +128,7 @@ export class CourseDetails implements OnInit {
         this.lockReason.set(
           this.pendingLockReason
             ? this.cleanReason(this.pendingLockReason)
-            : 'Complete the previous course to at least 85% to unlock this one.'
+            : 'Complete the previous course to at least 100% to unlock this one.'
         );
       } else {
         this.error.set('Failed to load course.');
@@ -199,7 +199,7 @@ export class CourseDetails implements OnInit {
     const match = raw.match(/Complete previous course.*$/i);
     if (match) return match[0];
     if (raw.toLowerCase().includes('403')) {
-      return 'Complete the previous course to at least 85% to unlock this one.';
+      return 'Complete the previous course to at least 100% to unlock this one.';
     }
     return raw;
   }
