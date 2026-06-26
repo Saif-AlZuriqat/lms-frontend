@@ -47,6 +47,12 @@ export class LessonSidebarComponent {
   @Input() isPreviewMode = false;
 
   /**
+   * Lesson ID that is currently locked because the video hasn't been fully watched.
+   * When set, the sidebar blocks the completion toggle for this lesson.
+   */
+  @Input() videoLockedLessonId?: number;
+
+  /**
    * Event emitted when a section accordion header is clicked.
    * Passes the clicked section's ID.
    */
@@ -133,6 +139,11 @@ export class LessonSidebarComponent {
    * @param event - The underlying checkbox change DOM event.
    */
   onToggleCompletion(lessonId: number, event: Event) {
+    // Block completion toggle for the currently-locked video lesson
+    if (this.videoLockedLessonId !== undefined && lessonId === this.videoLockedLessonId) {
+      event.stopPropagation();
+      return;
+    }
     this.toggleCompletion.emit({ lessonId, event });
   }
 

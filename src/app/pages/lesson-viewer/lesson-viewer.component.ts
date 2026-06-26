@@ -195,6 +195,12 @@ export class LessonViewerComponent implements OnInit {
   error = signal('');
 
   /**
+   * Whether the current video lesson has been fully watched.
+   * true for non-video lessons (no restriction needed).
+   */
+  videoFullyWatched = signal(true);
+
+  /**
    * Parent learning path ID context (can be null if directly assigned).
    */
   pathId: number | null = null;
@@ -271,6 +277,9 @@ export class LessonViewerComponent implements OnInit {
     try {
       const lesson = await this.lessonsApi.getLessonById(lessonId);
       this.lesson.set(lesson);
+
+      // Reset video watched state: locked for video lessons, unlocked for others
+      this.videoFullyWatched.set(lesson.type !== 0 || this.isPreviewMode());
 
       this.expandedSections.update((set) => new Set(set).add(lesson.sectionId));
 
@@ -417,11 +426,13 @@ export class LessonViewerComponent implements OnInit {
    * Optimistically marks a lesson as completed in the UI and pushes the update to the database.
    * Reverts changes in the UI should the network operation fail.
    *
-   * @param eventData - Object containing the unique lesson ID and the mouse trigger event.
+   * @param eventData - Object containing the unique lesson ID and the optional mouse trigger event.
    */
-  async toggleCompletion(eventData: { lessonId: number; event: Event }) {
+  async toggleCompletion(eventData: { lessonId: number; event?: Event }) {
     const { lessonId, event } = eventData;
-    event.stopPropagation();
+    if (event) {
+      event.stopPropagation();
+    }
 
     if (this.isPreviewMode()) return;
 
@@ -448,12 +459,26 @@ export class LessonViewerComponent implements OnInit {
   /**
    * Marks the currently displayed lesson as complete (no-op if already complete or in preview mode).
    *
-   * @param event - The originating click event.
+   * @param event - The optional originating click event.
    */
-  markCurrentComplete(event: Event): void {
+  markCurrentComplete(event?: Event): void {
     const current = this.lesson();
     if (!current) return;
     void this.toggleCompletion({ lessonId: current.id, event });
+  }
+
+  /**
+   * Called when the video player fires the 'ended' event.
+   * Unlocks the "Next" buttons and automatically marks the lesson as complete.
+   */
+  onVideoEnded(): void {
+    this.videoFullyWatched.set(true);
+    
+    // Automatically mark the lesson as complete when the video ends
+    const current = this.lesson();
+    if (current && !this.isCurrentLessonComplete() && !this.isPreviewMode()) {
+      void this.toggleCompletion({ lessonId: current.id });
+    }
   }
 
   /**

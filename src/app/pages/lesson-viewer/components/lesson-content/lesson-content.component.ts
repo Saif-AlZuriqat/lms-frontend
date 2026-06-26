@@ -1,4 +1,14 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  ViewChild,
+  ElementRef,
+  OnChanges,
+  SimpleChanges,
+  AfterViewInit,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { LessonResponseDTO, CourseResponseDTO, BASE_URL } from '../../../../types/course-builder.types';
@@ -14,7 +24,7 @@ import { LessonResponseDTO, CourseResponseDTO, BASE_URL } from '../../../../type
   templateUrl: './lesson-content.component.html',
   styleUrl: './lesson-content.component.css'
 })
-export class LessonContentComponent {
+export class LessonContentComponent implements OnChanges, AfterViewInit {
   /**
    * The currently active lesson to display.
    */
@@ -66,6 +76,12 @@ export class LessonContentComponent {
   @Input() isCompleting = false;
 
   /**
+   * Whether the current video lesson has been fully watched.
+   * For non-video lessons this is always true (no restriction).
+   */
+  @Input() videoFullyWatched = true;
+
+  /**
    * Event emitted when the user clicks "Mark as Complete" on the active lesson.
    */
   @Output() markComplete = new EventEmitter<Event>();
@@ -104,6 +120,11 @@ export class LessonContentComponent {
   @Output() nextCourse = new EventEmitter<void>();
 
   /**
+   * Event emitted when a video lesson has been watched to the end.
+   */
+  @Output() videoEnded = new EventEmitter<void>();
+
+  /**
    * Event emitted when the user clicks the top-right "Back to Course Builder" link.
    */
   @Output() back = new EventEmitter<void>();
@@ -118,12 +139,117 @@ export class LessonContentComponent {
    */
   @Output() navigate = new EventEmitter<'home' | 'paths' | 'courses' | 'course'>();
 
+  /** Reference to the native <video> element for seek/rate interception. */
+  @ViewChild('videoPlayer') videoPlayerRef!: ElementRef<HTMLVideoElement>;
+
+  /**
+   * The furthest point (in seconds) the user has legitimately reached by
+   * watching without seeking. Any seek attempt past this value is reverted.
+   * @private
+   */
+  private maxAllowedTime = 0;
+
   /**
    * Constructs the LessonContentComponent.
    *
    * @param sanitizer - Angular service to bypass security checks and trust dynamic iframe/video resources.
    */
   constructor(private sanitizer: DomSanitizer) {}
+
+  // ── Lifecycle hooks ──────────────────────────────────────────────
+
+  ngOnChanges(changes: SimpleChanges): void {
+    // Reset video tracking state whenever the lesson changes
+    if (changes['lesson']) {
+      this.maxAllowedTime = 0;
+    }
+  }
+
+  ngAfterViewInit(): void {
+    if (!this.isPreviewMode && !this.isComplete) {
+      this.lockPlaybackRate();
+    }
+  }
+
+  // ── Video enforcement handlers ───────────────────────────────────
+
+  /**
+   * Called on every `timeupdate` event from the <video>.
+   * Advances `maxAllowedTime` as the user watches naturally.
+   */
+  onTimeUpdate(): void {
+    if (this.isPreviewMode || this.isComplete) return;
+    
+    const video = this.videoPlayerRef?.nativeElement;
+    if (!video || video.seeking) return;
+    
+    if (video.currentTime > this.maxAllowedTime) {
+      // Natural playback advances in small increments (usually ~0.25s).
+      // If the jump is larger than 1 second, it's an uncaptured seek/skip.
+      if (video.currentTime - this.maxAllowedTime <= 1.0) {
+        this.maxAllowedTime = video.currentTime;
+      } else {
+        // Snap back to the furthest allowed point
+        video.currentTime = this.maxAllowedTime;
+      }
+    }
+  }
+
+  /**
+   * Called on the `seeking` event from the <video>.
+   * If the user tries to seek past the furthest naturally-watched point,
+   * snap them back. Rewinding is always allowed.
+   */
+  onSeeking(): void {
+    if (this.isPreviewMode || this.isComplete) return;
+
+    const video = this.videoPlayerRef?.nativeElement;
+    if (!video) return;
+    
+    // Prevent seeking ahead of maxAllowedTime
+    if (video.currentTime > this.maxAllowedTime) {
+      video.currentTime = this.maxAllowedTime;
+    }
+  }
+
+  /**
+   * Called when the video's `ended` event fires.
+   * Emits videoEnded so the parent can unlock "Mark Complete".
+   */
+  onVideoEnded(): void {
+    this.videoEnded.emit();
+  }
+
+  /**
+   * Called on the `ratechange` event from the <video>.
+   * Forces the playback rate back to 1× to prevent speed manipulation.
+   */
+  onRateChange(): void {
+    if (this.isPreviewMode || this.isComplete) return;
+
+    const video = this.videoPlayerRef?.nativeElement;
+    if (!video) return;
+    if (video.playbackRate !== 1) {
+      video.playbackRate = 1;
+    }
+  }
+
+  /**
+   * Whether the current lesson is a native video (type 0) that still
+   * needs to be watched before the user can proceed.
+   */
+  get isVideoLocked(): boolean {
+    return !!this.lesson && this.lesson.type === 0 && !this.videoFullyWatched && !this.isPreviewMode && !this.isComplete;
+  }
+
+  /**
+   * Locks the playback rate on the current <video> element.
+   * @private
+   */
+  private lockPlaybackRate(): void {
+    const video = this.videoPlayerRef?.nativeElement;
+    if (video) video.playbackRate = 1;
+  }
 
   /**
    * Evaluates if the lesson has a valid YouTube link and parses its ID,

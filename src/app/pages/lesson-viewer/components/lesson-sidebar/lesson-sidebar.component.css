@@ -285,6 +285,13 @@
   pointer-events: none;
 }
 
+.m-lesson-status.is-video-locked {
+  border-color: #d97706;
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 /* lesson text */
 .m-lesson-text {
   flex: 1;

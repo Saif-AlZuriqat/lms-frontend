@@ -16,11 +16,13 @@
         [isLastLessonOfCourse]="isLastLessonOfCourse()"
         [isCourseComplete]="isCourseComplete()"
         [courseTitle]="course()?.title || ''"
+        [videoFullyWatched]="videoFullyWatched()"
         (markComplete)="markCurrentComplete($event)"
         (nextLesson)="goToNextLesson()"
         (nextCourse)="goToNextCourse()"
         (back)="goBack()"
-        (navigate)="onBreadcrumbNavigate($event)">
+        (navigate)="onBreadcrumbNavigate($event)"
+        (videoEnded)="onVideoEnded()">
       </app-lesson-content>
     </section>
 
@@ -31,6 +33,7 @@
       [completedLessonIds]="completedLessonIds()"
       [currentLessonId]="lesson()?.id"
       [isPreviewMode]="isPreviewMode()"
+      [videoLockedLessonId]="!videoFullyWatched() && !isCurrentLessonComplete() && lesson()?.type === 0 ? lesson()!.id : undefined"
       (toggleSection)="toggleSection($event)"
       (openLesson)="openLesson($event)"
       (toggleCompletion)="toggleCompletion($event)"

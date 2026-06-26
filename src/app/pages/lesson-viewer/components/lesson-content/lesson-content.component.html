@@ -14,7 +14,11 @@
       </div>
     } @else if (lesson?.videoUrl) {
       @if (lesson!.type === 0) {
-        <video class="lv-video" [src]="getMediaUrl(lesson)" controls controlsList="nodownload"></video>
+        <video #videoPlayer class="lv-video" [src]="getMediaUrl(lesson)" controls controlsList="nodownload nofullscreen"
+          (timeupdate)="onTimeUpdate()"
+          (seeking)="onSeeking()"
+          (ended)="onVideoEnded()"
+          (ratechange)="onRateChange()"></video>
       } @else if (lesson!.type === 3 && getYouTubeEmbedUrl(lesson)) {
         <iframe class="lv-video" [src]="getYouTubeEmbedUrl(lesson)" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
       } @else {
@@ -160,7 +164,8 @@
             <button type="button"
                     class="lv-btn-complete"
                     [class.is-complete]="isComplete"
-                    [disabled]="isComplete || isCompleting"
+                    [class.is-video-locked]="isVideoLocked"
+                    [disabled]="isComplete || isCompleting || isVideoLocked"
                     (click)="markComplete.emit($event)">
               <span class="material-symbols-outlined">
                 @if (isComplete) {
@@ -173,6 +178,8 @@
                 <span>Completed</span>
               } @else if (isCompleting) {
                 <span>Saving…</span>
+              } @else if (isVideoLocked) {
+                <span>Watch Full Video</span>
               } @else {
                 <span>Mark as Complete</span>
               }
@@ -187,7 +194,7 @@
                 Lesson {{ currentLessonNumber }} of {{ totalLessons }}
               </span>
             }
-            <button type="button" class="lv-btn-next" (click)="nextLesson.emit()">
+            <button type="button" class="lv-btn-next" [disabled]="isVideoLocked" (click)="nextLesson.emit()">
               Next Lesson
               <span class="material-symbols-outlined">arrow_forward</span>
             </button>
@@ -197,7 +204,7 @@
                 Lesson {{ currentLessonNumber }} of {{ totalLessons }} · Course finished
               </span>
             }
-            <button type="button" class="lv-btn-next lv-btn-next-course" (click)="nextCourse.emit()">
+            <button type="button" class="lv-btn-next lv-btn-next-course" [disabled]="isVideoLocked" (click)="nextCourse.emit()">
               Next Course
               <span class="material-symbols-outlined">arrow_forward</span>
             </button>

@@ -430,6 +430,20 @@
   opacity: 0.85;
 }
 
+.lv-btn-complete.is-video-locked {
+  background: #78350f;
+  border-color: #78350f;
+  color: #fef3c7;
+  box-shadow: 0 4px 12px rgba(120, 53, 15, 0.15);
+  cursor: not-allowed;
+}
+
+.lv-btn-next:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 .lv-btn-complete .material-symbols-outlined {
   font-size: 18px !important;
 }

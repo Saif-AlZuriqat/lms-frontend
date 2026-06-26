@@ -53,6 +53,7 @@
                       [class.is-complete]="isLessonCompleted(l.id)"
                       [class.is-active]="l.id === currentLessonId && !isLessonCompleted(l.id)"
                       [class.is-preview]="isPreviewMode"
+                      [class.is-video-locked]="videoLockedLessonId !== undefined && l.id === videoLockedLessonId"
                       (click)="onToggleCompletion(l.id, $event)">
                   @if (isLessonCompleted(l.id)) {
                     <span class="material-symbols-outlined">check</span>
