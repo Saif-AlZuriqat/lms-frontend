@@ -8,6 +8,7 @@ import { LearningPathsApiService } from '../../../core/services/learning-paths-a
 import { LessonsApiService } from '../../../core/services/lessons-api.service';
 import { SectionsApiService } from '../../../core/services/sections-api.service';
 import { ToastService } from '../../../core/services/toast.service';
+import { AuthService } from '../../../core/services/auth';
 import {
   BASE_URL,
   CourseResponseDTO,
@@ -251,7 +252,17 @@ export class CourseManagerPage implements OnInit {
     private readonly lessonsApi: LessonsApiService,
     private readonly toast: ToastService,
     private readonly cdr: ChangeDetectorRef,
+    private readonly authService: AuthService,
   ) {}
+
+  /**
+   * Returns true if the active user possesses a role allowed to add external links.
+   * Only SUPERADMIN and HR can add links (MANAGER cannot).
+   */
+  get canAddLinks(): boolean {
+    const role = this.authService.getUserRole();
+    return role === 'SUPERADMIN' || role === 'HR';
+  }
 
   /**
    * Initial page hook. Resolves path identity parameter and triggers initial data pull.
