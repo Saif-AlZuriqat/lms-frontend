@@ -29,6 +29,8 @@ export interface CourseResponseDTO {
   order?: number;
   /** Parent learning path ID associated with the course */
   learningPathId?: number;
+  expectedTimeValue?: number | null;
+  expectedTimeUnit?: string | null;
   /** Subdivided course syllabus sections list */
   sections?: {
     id: number;
@@ -306,6 +308,8 @@ function normalizeCourse(raw: unknown): CourseResponseDTO {
     image: toNullableString(getValue(node, 'image', 'Image')),
     order: toNumber(getValue(node, 'order', 'Order'), Number.MAX_SAFE_INTEGER),
     learningPathId: toNumber(getValue(node, 'learningPathId', 'LearningPathId')),
+    expectedTimeValue: toNullableNumber(getValue(node, 'expectedTimeValue', 'ExpectedTimeValue')),
+    expectedTimeUnit: toNullableString(getValue(node, 'expectedTimeUnit', 'ExpectedTimeUnit')),
     sections: readArray(getValue(node, 'sections', 'Sections')).map(
       normalizeSection
     ).sort(byOrderThenId),

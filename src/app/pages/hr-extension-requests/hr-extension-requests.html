@@ -1,0 +1,112 @@
+<div class="hr-page">
+  <div class="hr-header">
+    <div class="hr-header-left">
+      <a routerLink="/hr" class="hr-back-btn">
+        <span class="material-symbols-outlined">arrow_back</span>
+      </a>
+      <div>
+        <h1>Extension Requests</h1>
+        <p>Review and resolve pending deadline extension requests</p>
+      </div>
+    </div>
+  </div>
+
+  @if (isLoading()) {
+    <div class="hr-loading">
+      <div class="hr-spinner"></div>
+      <p>Loading requests...</p>
+    </div>
+  } @else if (error()) {
+    <div class="hr-error">{{ error() }}</div>
+  } @else if (requests().length === 0) {
+    <div class="hr-empty">
+      <span class="material-symbols-outlined hr-empty-icon">check_circle</span>
+      <h2>All caught up!</h2>
+      <p>There are no pending extension requests.</p>
+    </div>
+  } @else {
+    <div class="requests-grid">
+      @for (req of requests(); track req.id) {
+        <div class="request-card">
+          <div class="req-header">
+            <div class="req-user">
+              <div class="user-avatar">{{ req.user.fullName.charAt(0) }}</div>
+              <div>
+                <span class="user-name">{{ req.user.fullName }}</span>
+                <span class="user-email">{{ req.user.email }}</span>
+              </div>
+            </div>
+            <span class="req-date">{{ req.requestedAt | date:'shortDate' }}</span>
+          </div>
+          <div class="req-body">
+            <div class="req-course-info">
+              <span class="material-symbols-outlined">menu_book</span>
+              <span class="course-title">{{ req.enrollment.course.title }}</span>
+            </div>
+            <div class="req-deadline-info">
+              <span class="material-symbols-outlined">event</span>
+              <span>Current Deadline: {{ req.enrollment.deadline ? (req.enrollment.deadline | date:'mediumDate') : 'None' }}</span>
+            </div>
+          </div>
+          <div class="req-actions">
+            <button class="btn-reject" (click)="openResolveModal(req, false)">Reject</button>
+            <button class="btn-approve" (click)="openResolveModal(req, true)">Approve</button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>
+
+@if (resolveModalOpen && selectedRequest) {
+  <div class="modal-overlay" (click)="closeModal()">
+    <div class="modal-panel" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>{{ isApproving ? 'Approve' : 'Reject' }} Extension Request</h2>
+        <button class="modal-close" (click)="closeModal()">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      
+      <div class="modal-content">
+        <div class="req-summary">
+          <p><strong>Employee:</strong> {{ selectedRequest.user.fullName }}</p>
+          <p><strong>Course:</strong> {{ selectedRequest.enrollment.course.title }}</p>
+        </div>
+
+        @if (isApproving) {
+          <p class="ext-instruction">Specify the amount of time to extend the deadline by:</p>
+          <div class="form-group row-group">
+            <div class="input-half">
+              <label>Time Value</label>
+              <input type="number" [(ngModel)]="extensionValue" class="form-input" min="1" placeholder="e.g. 1" />
+            </div>
+            <div class="input-half">
+              <label>Time Unit</label>
+              <select [(ngModel)]="extensionUnit" class="form-input">
+                <option value="" disabled selected>Select unit</option>
+                <option value="Minutes">Minutes</option>
+                <option value="Hours">Hours</option>
+                <option value="Days">Days</option>
+                <option value="Weeks">Weeks</option>
+                <option value="Months">Months</option>
+              </select>
+            </div>
+          </div>
+        } @else {
+          <p>Are you sure you want to reject this extension request? The deadline will remain unchanged.</p>
+        }
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="closeModal()">Cancel</button>
+        <button class="btn-save" [class.btn-danger]="!isApproving" (click)="submitResolution()" [disabled]="isSubmitting || (isApproving && (!extensionValue || !extensionUnit))">
+          @if (isSubmitting) {
+            <div class="btn-spinner"></div>
+          }
+          <span>{{ isApproving ? 'Approve Request' : 'Reject Request' }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+}

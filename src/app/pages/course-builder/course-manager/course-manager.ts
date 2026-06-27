@@ -118,6 +118,12 @@ export class CourseManagerPage implements OnInit {
   courseDescription = '';
 
   /**
+   * Expected Time properties.
+   */
+  courseExpectedTimeValue: number | null = null;
+  courseExpectedTimeUnit = '';
+
+  /**
    * Chosen course picture file.
    */
   selectedFile: File | null = null;
@@ -403,6 +409,8 @@ export class CourseManagerPage implements OnInit {
     this.editingCourseId = null;
     this.courseTitle = '';
     this.courseDescription = '';
+    this.courseExpectedTimeValue = null;
+    this.courseExpectedTimeUnit = '';
     this.selectedFile = null;
     this.imagePreview = null;
     this.courseModalOpen = true;
@@ -417,6 +425,8 @@ export class CourseManagerPage implements OnInit {
     this.editingCourseId = course.id;
     this.courseTitle = course.title;
     this.courseDescription = course.description ?? '';
+    this.courseExpectedTimeValue = course.expectedTimeValue ?? null;
+    this.courseExpectedTimeUnit = course.expectedTimeUnit ?? '';
     this.selectedFile = null;
     this.imagePreview = null;
     this.courseModalOpen = true;
@@ -518,6 +528,8 @@ export class CourseManagerPage implements OnInit {
           description: this.courseDescription.trim() || null,
           learningPathId: this.pathId,
           picture: this.selectedFile,
+          expectedTimeValue: this.courseExpectedTimeValue,
+          expectedTimeUnit: this.courseExpectedTimeUnit || null,
         });
         this.toast.success('Course created');
       } else {
@@ -526,6 +538,8 @@ export class CourseManagerPage implements OnInit {
           description: this.courseDescription.trim() || null,
           learningPathId: this.pathId,
           picture: this.selectedFile,
+          expectedTimeValue: this.courseExpectedTimeValue,
+          expectedTimeUnit: this.courseExpectedTimeUnit || null,
         });
         this.toast.success('Course updated');
       }

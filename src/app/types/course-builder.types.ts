@@ -37,6 +37,8 @@ export interface CourseResponseDTO {
   order: number;
   learningPathId: number;
   pictureUrl: string | null;
+  expectedTimeValue?: number | null;
+  expectedTimeUnit?: string | null;
   sections: SectionResponseDTO[];
 }
 

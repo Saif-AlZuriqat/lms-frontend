@@ -29,7 +29,15 @@ export class AdminLayoutComponent {
    * @param authService - The AuthService used to manage identity status, usernames, and sessions.
    * @param router - The Router used to redirect administrators upon navigation actions or logout.
    */
-  constructor(public authService: AuthService, private router: Router) {}
+  constructor(
+    public authService: AuthService,
+    private router: Router
+  ) {}
+
+  canApproveExtensions(): boolean {
+    const role = this.authService.getUserRole();
+    return role === 'SUPERADMIN' || role === 'HR';
+  }
 
   /**
    * Returns the capitalized first initial of the current user's display name.

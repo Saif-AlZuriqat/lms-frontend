@@ -76,6 +76,15 @@
                       <span class="material-symbols-outlined">folder</span>
                       {{ getSectionCount(course) }} sections
                     </span>
+                    @if (getCourseDeadline(course.id)) {
+                      <span class="meta-item" [class.overdue]="isCourseDeadlinePassed(course.id)">
+                        <span class="material-symbols-outlined">event</span>
+                        {{ getCourseDeadline(course.id) | date:'mediumDate' }}
+                      </span>
+                      @if (isCourseDeadlinePassed(course.id)) {
+                        <button class="btn-primary btn-small btn-extension" (click)="openExtensionModal(course.id, $event)">Request Extension</button>
+                      }
+                    }
                   </div>
                 </div>
 
@@ -100,3 +109,34 @@
     }
   </div>
 </div>
+
+<!-- Extension Request Modal -->
+@if (extensionModalOpen) {
+  <div class="modal-overlay" (click)="closeExtensionModal()">
+    <div class="modal-panel" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Request Deadline Extension</h2>
+        <button class="modal-close" (click)="closeExtensionModal()">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <div class="modal-content">
+        <p>Are you sure you want to request a deadline extension for this course?</p>
+        <p class="text-muted">An HR administrator will review your request and may grant additional time.</p>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-secondary" (click)="closeExtensionModal()">Cancel</button>
+        <button class="btn-primary" (click)="submitExtensionRequest()" [disabled]="isSubmittingExtension">
+          @if (isSubmittingExtension) {
+            <div class="spinner"></div>
+            <span>Submitting...</span>
+          } @else {
+            <span>Submit Request</span>
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+}

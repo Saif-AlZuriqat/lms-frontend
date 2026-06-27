@@ -23,15 +23,17 @@
       </div>
       <span class="material-symbols-outlined hr-quick-arrow">arrow_forward</span>
     </a>
-    <a routerLink="/hr/assign-course" class="hr-quick-item">
-      <div class="hr-quick-icon">
-        <span class="material-symbols-outlined">menu_book</span>
-      </div>
-      <div class="hr-quick-info">
-        <span class="hr-quick-label">Assign Course</span>
-        <span class="hr-quick-sub">Enroll employee in a course</span>
-      </div>
-      <span class="material-symbols-outlined hr-quick-arrow">arrow_forward</span>
-    </a>
+    @if (canApproveExtensions()) {
+      <a routerLink="/hr/extension-requests" class="hr-quick-item">
+        <div class="hr-quick-icon">
+          <span class="material-symbols-outlined">pending_actions</span>
+        </div>
+        <div class="hr-quick-info">
+          <span class="hr-quick-label">Extension Requests</span>
+          <span class="hr-quick-sub">Review deadline extensions</span>
+        </div>
+        <span class="material-symbols-outlined hr-quick-arrow">arrow_forward</span>
+      </a>
+    }
   </div>
 </div>

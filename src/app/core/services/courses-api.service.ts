@@ -16,6 +16,10 @@ interface CourseFormDto {
   learningPathId: number;
   /** An optional picture/banner cover image file associated with the course */
   picture?: File | null;
+  /** Expected time numeric value */
+  expectedTimeValue?: number | null;
+  /** Expected time unit (minutes, hours, days, weeks, months) */
+  expectedTimeUnit?: string | null;
 }
 
 /**
@@ -161,6 +165,14 @@ export class CoursesApiService {
 
     if (dto.picture) {
       formData.append('Image', dto.picture);
+    }
+
+    if (dto.expectedTimeValue !== null && dto.expectedTimeValue !== undefined) {
+      formData.append('ExpectedTimeValue', String(dto.expectedTimeValue));
+    }
+
+    if (dto.expectedTimeUnit) {
+      formData.append('ExpectedTimeUnit', dto.expectedTimeUnit);
     }
 
     return formData;

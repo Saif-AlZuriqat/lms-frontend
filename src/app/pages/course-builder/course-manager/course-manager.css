@@ -1269,3 +1269,6 @@
   }
 }
 
+
+.row-group { display: flex; gap: 16px; width: 100%; }
+.input-half { flex: 1; min-width: 0; }

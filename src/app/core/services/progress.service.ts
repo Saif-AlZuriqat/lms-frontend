@@ -281,6 +281,37 @@ export class ProgressService {
   }
 
   /**
+   * Fetches the enrollment deadline for the current user in a specific course.
+   *
+   * @param courseId - The unique identifier of the course.
+   * @returns A promise resolving to a Date object or null if no deadline.
+   */
+  async getCourseDeadline(courseId: number): Promise<Date | null> {
+    if (this.isStaffUser()) {
+      return null;
+    }
+
+    try {
+      const data = await fetchJson<unknown>(
+        `${BASE_URL}/api/Progress/Deadline/${courseId}`
+      );
+
+      const node = asObject(data);
+      const dataNode = asObject(getValue(node, 'data', 'Data'));
+      
+      const deadlineStr = getValue(node, 'deadline', 'Deadline') ?? getValue(dataNode, 'deadline', 'Deadline');
+      
+      if (typeof deadlineStr === 'string' && deadlineStr) {
+        return new Date(deadlineStr);
+      }
+      
+      return null;
+    } catch (err) {
+      return null;
+    }
+  }
+
+  /**
    * Determines if the current user has administrative/staff permissions.
    *
    * @returns True if the user is SUPERADMIN, HR, or MANAGER, otherwise false.

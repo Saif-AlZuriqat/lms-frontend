@@ -97,6 +97,12 @@ export const routes: Routes = [
         data: { roles: ['SUPERADMIN', 'HR', 'MANAGER'] }
       },
       {
+        path: 'hr/extension-requests',
+        loadComponent: () => import('./pages/hr-extension-requests/hr-extension-requests').then(m => m.HrExtensionRequests),
+        canActivate: [roleGuard],
+        data: { roles: ['SUPERADMIN', 'HR'] }
+      },
+      {
         path: 'hr/assign-path',
         loadComponent: () => import('./pages/hr-assign-path/hr-assign-path').then(m => m.HrAssignPath),
         canActivate: [roleGuard],

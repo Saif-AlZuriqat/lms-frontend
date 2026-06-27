@@ -1,11 +1,13 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CoursesApiService } from '../../core/services/courses-api.service';
 import { SectionsApiService } from '../../core/services/sections-api.service';
 import { ProgressService } from '../../core/services/progress.service';
 import { AuthService } from '../../core/services/auth';
-import { CourseResponseDTO, SectionResponseDTO } from '../../types/course-builder.types';
+import { BASE_URL, CourseResponseDTO, SectionResponseDTO } from '../../types/course-builder.types';
+import { computed } from '@angular/core';
 
 /**
  * Component displaying details for a specific course.
@@ -16,7 +18,7 @@ import { CourseResponseDTO, SectionResponseDTO } from '../../types/course-builde
 @Component({
   selector: 'app-course-details',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './course-details.html',
   styleUrl: './course-details.css',
 })
@@ -47,6 +49,13 @@ export class CourseDetails implements OnInit {
   lockReason = signal('Complete the previous course to at least 100% to unlock this one.');
 
   /**
+   * Computed signal to check if the lock is due to a deadline expiration.
+   */
+  isDeadlineLock = computed(() => {
+    return this.lockReason().toLowerCase().includes('deadline');
+  });
+
+  /**
    * Signal carrying active API transaction error messages.
    */
   error = signal('');
@@ -60,6 +69,24 @@ export class CourseDetails implements OnInit {
    * Parent learning path ID context (can be null if directly assigned).
    */
   pathId: number | null = null;
+
+  /**
+   * The current enrollment deadline for the course.
+   */
+  courseDeadline = signal<Date | null>(null);
+
+  /**
+   * Computed signal to check if the deadline has passed.
+   */
+  isDeadlinePassed = computed(() => {
+    const deadline = this.courseDeadline();
+    if (!deadline) return false;
+    return new Date(deadline).getTime() < Date.now();
+  });
+
+  /** Extension request modal state */
+  extensionModalOpen = false;
+  isSubmittingExtension = false;
 
   /**
    * Temporarily stores the pending lock reason transferred from router navigation states.
@@ -154,9 +181,17 @@ export class CourseDetails implements OnInit {
       this.isLocked.set(true);
       const reason = result.reason ?? this.pendingLockReason;
       if (reason) this.lockReason.set(this.cleanReason(reason));
+      
+      const deadline = await this.progressService.getCourseDeadline(courseId);
+      this.courseDeadline.set(deadline);
+
       this.isLoading.set(false);
       return;
     }
+    
+    const deadline = await this.progressService.getCourseDeadline(courseId);
+    this.courseDeadline.set(deadline);
+    
     await this.loadSections(courseId);
   }
 
@@ -238,6 +273,44 @@ export class CourseDetails implements OnInit {
     this.router.navigate(['/lesson', lessonId], {
       state: { courseId: this.course()?.id, pathId: this.pathId },
     });
+  }
+
+  // ── Extension Request Logic ────────────────────────────────
+
+  openExtensionModal(): void {
+    this.extensionModalOpen = true;
+  }
+
+  closeExtensionModal(): void {
+    this.extensionModalOpen = false;
+  }
+
+  async submitExtensionRequest(): Promise<void> {
+    const courseId = this.course()?.id;
+    if (!courseId) return;
+
+    this.isSubmittingExtension = true;
+    try {
+      const token = this.authService.getToken();
+      const response = await fetch(`${BASE_URL}/api/ExtensionRequest/Request/${courseId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to submit extension request');
+      }
+
+      alert('Extension request submitted successfully.');
+      this.closeExtensionModal();
+    } catch (err) {
+      alert((err as Error).message);
+    } finally {
+      this.isSubmittingExtension = false;
+    }
   }
 
   /**

@@ -38,6 +38,16 @@ export class LearningPathDetails implements OnInit {
   courseProgressMap = signal<Map<number, number>>(new Map());
 
   /**
+   * Signal cache tracking active deadlines for each course ID.
+   */
+  courseDeadlineMap = signal<Map<number, Date>>(new Map());
+
+  /** Extension request modal state */
+  extensionModalOpen = false;
+  isSubmittingExtension = false;
+  selectedCourseForExtension: number | null = null;
+
+  /**
    * Signal tracking whether the path details API request is active.
    */
   isLoading = signal(true);
@@ -172,6 +182,56 @@ export class LearningPathDetails implements OnInit {
     return 'Available';
   }
 
+  getCourseDeadline(courseId: number): Date | null {
+    return this.courseDeadlineMap().get(courseId) ?? null;
+  }
+
+  isCourseDeadlinePassed(courseId: number): boolean {
+    const deadline = this.getCourseDeadline(courseId);
+    if (!deadline) return false;
+    return new Date(deadline).getTime() < Date.now();
+  }
+
+  // ── Extension Request Logic ────────────────────────────────
+
+  openExtensionModal(courseId: number, event: Event): void {
+    event.stopPropagation();
+    this.selectedCourseForExtension = courseId;
+    this.extensionModalOpen = true;
+  }
+
+  closeExtensionModal(): void {
+    this.extensionModalOpen = false;
+    this.selectedCourseForExtension = null;
+  }
+
+  async submitExtensionRequest(): Promise<void> {
+    if (!this.selectedCourseForExtension) return;
+
+    this.isSubmittingExtension = true;
+    try {
+      const token = this.authService.getToken();
+      const response = await fetch(`${this.baseUrl}/api/ExtensionRequest/Request/${this.selectedCourseForExtension}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to submit extension request');
+      }
+
+      this.toast.success('Extension request submitted successfully.');
+      this.closeExtensionModal();
+    } catch (err) {
+      this.toast.error('Could not submit extension request.');
+    } finally {
+      this.isSubmittingExtension = false;
+    }
+  }
+
   /**
    * Angular initialization hook. Extracts the ID parameter from the active routing parameters
    * and triggers the path details payload fetch.
@@ -233,6 +293,15 @@ export class LearningPathDetails implements OnInit {
     const progressMap = new Map<number, number>();
     results.forEach((result) => progressMap.set(result.courseId, result.progress));
     this.courseProgressMap.set(progressMap);
+
+    const deadlineResults = await Promise.all(
+      courseIds.map(async (courseId) => ({ courseId, deadline: await this.progressService.getCourseDeadline(courseId) }))
+    );
+    const deadlineMap = new Map<number, Date>();
+    deadlineResults.forEach(res => {
+      if (res.deadline) deadlineMap.set(res.courseId, res.deadline);
+    });
+    this.courseDeadlineMap.set(deadlineMap);
   }
 
   /**

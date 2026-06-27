@@ -33,6 +33,12 @@
         <span class="material-symbols-outlined">monitoring</span>
         Team Progress
       </a>
+      @if (canApproveExtensions()) {
+        <a routerLink="/hr/extension-requests" routerLinkActive="active" class="hr-sidebar-link">
+          <span class="material-symbols-outlined">schedule</span>
+          Extension Requests
+        </a>
+      }
     </nav>
     <div class="hr-sidebar-spacer"></div>
     <div class="hr-sidebar-footer">
